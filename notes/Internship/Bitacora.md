@@ -1,0 +1,11 @@
+01-02-2023=Continued with approval for animal protocol, and Numpy book. Started experimental design of random-experiment to present to santiago.
+31-01-2023=Started animal protocol. Got UO ID Card.
+30-01-2023=General meeting. Proposal about new form of training (Randomize). New task delegated: Mice water and ethanol and kim wipes. Continued with numpy book
+27-01-2023=Attended to the conference "Genomics in action" and 
+26-01-2023=Attended to the conference "Genomics in action"; sent the request for my UO ID Card and refreshed Numpy concepts.
+25-01-2023= Mice training with Max.
+24-01-2023=Papers "Are our genes important for Cooperation?" - Avital (2022) and "Differentially altered social dominance-a and cooperative-like behavios in Shank2- and Shank3- mutant mice"-Han(2020) and started reading Numpy book "From Python to Numpy" .
+23-01-2023= General meeting.
+20-01-2023=  Read "Approved animal protocol" and introduction to project "Cooperation in mice" by Brigid.
+19-01-2023= Read chapter 3, 16 and paper "Evidence for social cooperation in rodents by automated maze".
+18-01-2023= Read chapter 1 and 2 of book in to do list. Met with the people in the ION office (Jenna/Meg) to get my UO ID (email and card).
