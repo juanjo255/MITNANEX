@@ -4,14 +4,18 @@
 
 + If this proposal is approved or taking into account, the idea with the experimental design would be built it from the same template established for the "traditional" approach, but with a few differences. 
 
-+ Here I refer to the normal or traditional experiment as the "alternative experiment" and to my proposal as the "randomized experiment".
++ Here I refer to the normal or traditional experiment as the "alternative experiment" and to my proposal as the "randomized experiment" or seek-and-find experiment.
 
-+ Name was born in honor to Ronal Fisher a great biostatistics and pioneer in aplication of randomization in experimental design.
+## Philosophy
+
++ This section describes the reasoning behind the Seek-and-find experiment.
+
+> The final state that this approach want to achieve, is that once mice are by their own (lights turned off), they would have to coordinate each other to find the available port which is harder to achieved when they lose interaction with each other. The alternate experiment was teaching them a collective pattern, they learned the same pattern independently but using it at the same time, in the case that a pattern emerged during this experiment would be the product of the cooperation itself.
 
 
 ## Key points
 
-+ This section describes the points that makes this proposal different from the "alternate" one.
++ This section describes the points that makes this proposal different from the alternate experiment.
 
 > 1. **Random use of lights:** This method is used for train the mice in the alternate experiment. During this experiment they will to fulfill the same objective, except that they will to indicate the availability of a port not in an alternate behavior but a random behavior (the pair of ports to be open will be random).  
 > 2. **Port use limit:** This method will add this new hyperparameter. This hyperparameter will limit the times a port can be use in a row, in such a way we would force the move of the mice. The parameter has to be established over a value of 2, otherwise we would repeating the behavior of the alternate experiment. This port limit will be taught even during the appearance of the light, that is, a pair of light cannot be turned on more than n in a row.
@@ -19,7 +23,7 @@
 
 ## Troubleshooting
 
-+ This section describes the problems found so far with the Fisher experiment and a potential solution for each of them. The problems can belong to the alternate experiment or could emerged with the randomized experiment.
++ This section describes the problems the Seek-and-find experiment face si far and the solution that this approach give for each of them. The problems can belong to the alternate experiment or could emerged with the randomized experiment.
 
 > 1. **Go-and-come pattern:** This problem can make the experiment questionable, given that between, for example, perforate and solid barrier there are barely differences (results with a solid performance of 59% and perforate performance of 59% during same stages), which does not seem being convincing, since basics statistics say that every mice pair by chance have only 25% of success in every trial (is it really social cooperation?). 
 >> **Solution:** Random use of lights.
@@ -29,9 +33,9 @@
 >> 	**Explanation:** Port use limit will work to force mice to change ports so we can start seeing the cooperation to move to the other pair of ports. Inter-trial interval will try to prevent mice of being aware of a limited port use by setting a "long enough time" for the mouse get away from the port, in that way we could decrease the go-and-come pattern.
 
 
-## Predictions
+## Prediction
 
-+ This section describes my predictions for this experiment. This is the base that support the prosperity of my proposal. Are my results different from the ones of the alternate experiment? What kind of result do I expect?
++ This section describes my prediction for this experiment. This is the base that support the prosperity of my proposal. Are my results different from the ones of the alternate experiment? What kind of result do I expect?
 
-> 1. **Marked difference between perforate and solid barrier:** Given the decrease of the ease to grasp a pattern, I would expect a worst performance in the solid barrier, since would be harder to synchronize their movements.
+>  **Marked difference between perforate and solid barrier:** Given the decrease of the ease to grasp a pattern, I would expect a worst performance in the solid barrier compared with the perforate barrier, since would be harder to synchronize their movements.
 
