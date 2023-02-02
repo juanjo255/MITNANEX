@@ -33,5 +33,5 @@
 
 + This section describes my predictions for this experiment. This is the base that support the prosperity of my proposal. Are my results different from the ones of the alternate experiment? What kind of result do I expect?
 
-> 
+> 1. **Marked difference between perforate and solid barrier:** Given the decrease of the ease to grasp a pattern, I would expect a worst performance in the solid barrier, since would be harder to synchronize their movements.
 
