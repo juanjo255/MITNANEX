@@ -7,7 +7,7 @@ This is intended to be a extractor for mitocondrial nanopore reads from the whol
 Status: In development
 
 Steps achieved: 
- + Filtered NCBI databases to retrieve Nanopore mitogenomes and their corresponding Nanopore reads for validation (benchmarking).
+ + Filtering NCBI databases to retrieve Nanopore mitogenomes and their corresponding Nanopore reads for validation (benchmarking).
  + Gathering of literature about mitochondrial mitogenome biology and tools state of art of mito-tools.  
 
 Next Step: 
