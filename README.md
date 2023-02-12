@@ -9,3 +9,6 @@ Status: In development
 Steps achieved: 
  + Filtered NCBI databases to retrieve Nanopore mitogenomes and their corresponding Nanopore reads for validation (benchmarking).
  + Gathering of literature about mitochondrial mitogenome biology and tools state of art of mito-tools.  
+
+Next Step: 
+ + Assess possible approaches. 
