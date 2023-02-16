@@ -1,18 +1,22 @@
 {
   "main": {
-    "id": "64af4d98092ca566",
+    "id": "4a71138de9b4f3be",
     "type": "split",
     "children": [
       {
-        "id": "0b646791447659f7",
+        "id": "65306c59f437d864",
         "type": "tabs",
         "children": [
           {
-            "id": "e3b2fc97a2d54346",
+            "id": "f34cac289eb1f860",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "notes/MITNANEX/Tools.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -21,15 +25,15 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "069e4b0a85cf0530",
+    "id": "ae0fd925d36ef891",
     "type": "split",
     "children": [
       {
-        "id": "bff226ffac1b8e26",
+        "id": "99f25f84308c4363",
         "type": "tabs",
         "children": [
           {
-            "id": "c8f9a570fe64358f",
+            "id": "23d26d460a7de202",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
@@ -39,7 +43,7 @@
             }
           },
           {
-            "id": "fc730c6fe1053919",
+            "id": "5cdded1bd6c7080a",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -54,7 +58,7 @@
             }
           },
           {
-            "id": "d33a6377705ae416",
+            "id": "b4e9449379cbb48c",
             "type": "leaf",
             "state": {
               "type": "starred",
@@ -65,22 +69,23 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 300
   },
   "right": {
-    "id": "dd5dc23123bc7a76",
+    "id": "82f2f443e99a734f",
     "type": "split",
     "children": [
       {
-        "id": "42e64ae0cdf5ba51",
+        "id": "f4d40bfded6ee59f",
         "type": "tabs",
         "children": [
           {
-            "id": "f60047bb251a0e16",
+            "id": "2aa9d0469848a4fd",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
+                "file": "notes/MITNANEX/Tools.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -92,18 +97,19 @@
             }
           },
           {
-            "id": "5c468628ea0feb24",
+            "id": "0daa04932bc440b9",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "notes/MITNANEX/Tools.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
             }
           },
           {
-            "id": "264bee9c6584ac03",
+            "id": "8251fb864796949f",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -114,11 +120,13 @@
             }
           },
           {
-            "id": "2d7e785552d0c89c",
+            "id": "ae8ab58833e4da0f",
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "notes/MITNANEX/Tools.md"
+              }
             }
           }
         ]
@@ -138,17 +146,14 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "e3b2fc97a2d54346",
+  "active": "f34cac289eb1f860",
   "lastOpenFiles": [
-    "Internship/Experimental design - Random proposal.md",
-    "Internship/Bitacora.md",
-    "Internship/Personal data UO.md",
-    "Talaromyces/Mitocondria.md",
-    "Oregon/Genomics Conference/UCSC Genome Browser.md",
-    "Oregon/Houses.md",
-    "Oregon/Data/Screenshot 2022-11-13 at 10.17.12 AM.png",
-    "Talaromyces/Secuenciación de Nanopore 12-12-2022.md",
-    "Talaromyces/Data/Screenshot 2022-12-13 at 8.15.16 AM.png",
-    "Talaromyces/Data/Screenshot 2022-12-08 at 8.19.01 PM.png"
+    "notes/MITNANEX/Mitochondrial DNA facts.md",
+    "notes/MITNANEX/Main document.md",
+    "notes/MITNANEX/Tools.md",
+    "notes/MITNANEX/ORTHOSKIM.md",
+    "notes/MITNANEX/Resumes/GetOrganelle.md",
+    "notes/MITNANEX/Resumes/HMM incompleto.md",
+    "notes/MITNANEX/Resumes/MEANGS.md"
   ]
 }

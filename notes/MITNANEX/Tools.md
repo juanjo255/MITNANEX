@@ -1,7 +1,6 @@
-# TOOLS
-> Here, I write summaries of some of the tools that exist to do the same task, in that way, we get ideas to develop our tool, also I write about other tools that can be useful.
-> 
-> There are two types of strategies in which tools can be ranked: **seed-based** and **seed-free**. 
+
+> This document is to annotate tools to review in order to know more about the state of art of tools meant to manage mitochondrial DNA in different ways.
+> Tools are classified into two types of strategies: **seed-based** and **seed-free**. Also, we will review useful tools that do not fit into these categories due to their purpose. Those are ranked into 'Others'. 
 > 
 > Seed-based:
 >> + [[GetOrganelle]]
@@ -13,3 +12,4 @@
 >> +[[MitoZ]]
 >> Others:
 >> + [[ORTHOSKIM]]
+>> + [[Fast Alignment-Free Similarity Estimation By Tensor Sketching]]
