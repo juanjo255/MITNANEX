@@ -1,1 +1,6 @@
 notes/Internship
+*.fasta
+*.paf
+*fastq
+*.fna
+
