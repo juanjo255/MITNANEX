@@ -1,4 +1,5 @@
 import pandas as pd
+from hash_function import hash_ids
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -18,6 +19,7 @@ import numpy as np
 # 11	int	Mapping quality (0-255 with 255 for missing)
 
 
+    
 class cluster:
     """
     Store each cluster of reads, each cluster contains reads in the form of their id
@@ -43,13 +45,8 @@ class cluster:
         """
         self.id_sequences.append(id_sequence)
 
-    def compute_depth():
-        pass
 
-def cluster_reads():
-    pass
-
-def filter_alignment(alignment: str) -> cluster:
+def filter_alignment(alignment: str, cluster_pointers:hash_ids) -> cluster:
     """Take one line of a paf format given by minimap2, filter it and save it in a cluster
     Args:
         align (str): One line from paf file which contains the default paf format given
@@ -73,22 +70,23 @@ def filter_alignment(alignment: str) -> cluster:
     ## Here containment is just the read aligned to other read at least threshold_contaiment
     threshold_containment = 0.8
     if fields[10] >= min(fields[1], fields[6]) * threshold_containment:
-        cluster_reads()
+        pass
 
 
-# @profile # This to measure memory consumption
-def open_paf(paf_file: str):
-    file = open(paf_file, "r")
+# @profile # This is to measure memory consumption
+def run () -> None:
+    file = open("overlaps_talaro_18_07_2023.paf", "r")
     alignment = file.readline()
-
     # while alignment:
     #    alignment = file.readline()
-
-
+    
+    cluster_pointers = hash_ids()
+    clusters = list()
+    
+    filter_alignment(alignment, cluster_pointers)
+    
+    
 if __name__ == "__main__":
     chunksize = 1000
-    # for chunk in pd.read_csv('overlaps_talaro_18_07_2023.paf', chunksize=chunksize, delimiter="\t"):
-    #     print (chunk)
-    #     break
-    # file = np.genfromtxt('overlaps_talaro_18_07_2023.paf',delimiter='\t')
-    open_paf("overlaps_talaro_18_07_2023.paf")
+    run()
+    

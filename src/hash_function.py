@@ -5,16 +5,17 @@ import numpy as np
 
 ## NOTE: This arrays does not contain the cluster of reads,
 ## it contains a pointer to other array which contain the objects where reads are contain
-class hash_ids():
+class hash_ids:
     
-    def __init__(self, size_table=int(1e5)) -> None:
-        self.size_table = np.zeros(size_table, dtype=int)
+    def __init__(self, size_table=int(1e10)) -> None:
+        self.size_table = size_table
+        self.read_ids = np.zeros(size_table, dtype=int)
 
-    def __setitem__ (self, hash_key, value):
-        self.size_table[hash_key] = value
+    def __setitem__ (self, hash_key, value) -> None:
+        self.read_ids[hash_key] = value
 
-    def __getitem__(self, hash_key):
-        return self.size_table[hash_key]
+    def __getitem__(self, key) -> int:
+        hash_key = hash(key) % self.size_table
+        return self.read_ids[hash_key]
 
 a = hash_ids()
-
