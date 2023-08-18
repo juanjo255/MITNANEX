@@ -45,7 +45,7 @@ def filter_alignment(alignment: str) -> psa:
 
 
 # @profile # This is to measure memory consumption
-def run () -> None:
+def run () -> hash_table_clusters:
     file = open("overlaps_talaro_18_07_2023.paf", "r")
     alignment = file.readline().strip()
     clusters = hash_table_clusters()
@@ -59,10 +59,12 @@ def run () -> None:
             print("Asignando cluster")
             assign_cluster(pass_alignment, cluster_pointers, clusters)
 
-        # new line
+        # New align
         alignment = file.readline().strip()
 
     #print("groups",clusters.clusters)
+    file.close()
+    return clusters
     
 if __name__ == "__main__":
     run()
