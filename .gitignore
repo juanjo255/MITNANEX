@@ -3,4 +3,4 @@ notes/Internship
 *.paf
 *fastq
 *.fna
-
+.vscode/
