@@ -1,5 +1,6 @@
 import numpy as np
 from cluster import cluster
+from psa import psa
 ## This function is to do something like a hash table
 ## where each id is convert it to a position in an array
 
@@ -11,7 +12,8 @@ class hash_table_ids:
         self.size_table = size_table
         self.read_ids = np.zeros(size_table, dtype=int)
 
-    def set_cluster_pointer (self, hash_key, value:int) -> None:
+    def set_cluster_pointer (self, key:str, value:int) -> None:
+        hash_key = hash(key) % self.size_table
         self.read_ids[hash_key] = value
 
     def get_cluster_pointer (self, key:str) -> int:
@@ -23,11 +25,14 @@ class hash_table_clusters:
     def __init__(self) -> None:
         self.clusters = []
 
-    def set_cluster (self, aligment_fields:list) -> int:
-        new_cluster = cluster(aligment_fields)
+    def set_cluster (self, alignment:psa) -> int:
+        new_cluster = cluster(alignment)
         self.clusters.append(new_cluster)
-        ## NOTE: This is not the correct index but is to avoid the zero
+        
+        ## NOTE: This is not the correct index but is to avoid the zero. 
         ## Since hash_table_ids initialize an array of zeros.
+        ## The idea is to link the index of the clusters in clusters with the reads in hash_table_ids
+        
         return len(self.clusters)
 
     def get_cluster (self, key:int) -> cluster:
