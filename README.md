@@ -1,6 +1,6 @@
-# MITNANEX PROJECT
+<p align="center"><img src="images/mi.png" alt="MITNANEX"></p>
 
-MITochondrial NANopore reads EXtrator
+# MITochondrial NANopore reads EXtrator
 
 This is intended to be a extractor for mitocondrial nanopore reads from the whole genome sequencing, in order to be able to assembly mitogenome or do any other proccess where researchers think mitocrondrial reads could be useful.
 
@@ -11,4 +11,4 @@ Steps achieved:
  + Gathering of literature about mitochondrial mitogenome biology and tools state of art of mito-tools.  
 
 Next Step: 
- + Assess possible approaches. 
+ + Assess clustering using all vs all aligments (so far minimap2)
