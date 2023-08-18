@@ -38,7 +38,7 @@ def filter_alignment(alignment: str) -> psa:
     ## NOTE: So far I do not take into account the difference between internal matches and containments
     ## Here containment is just the read aligned to other read at least threshold_contaiment
     threshold_containment = 0.8
-    if alignment.align_length >= min(alignment.query_length, alignment.refence_length) * threshold_containment:
+    if alignment.align_length >= min(alignment.query_length, alignment.reference_length) * threshold_containment:
         return alignment
 
     return None 
@@ -48,11 +48,11 @@ def filter_alignment(alignment: str) -> psa:
 def run () -> None:
     file = open("overlaps_talaro_18_07_2023.paf", "r")
     alignment = file.readline().strip()
+    clusters = hash_table_clusters()
+    cluster_pointers = hash_table_ids(size_table=int(1e10))
     while alignment:
     
-        cluster_pointers = hash_table_ids(size_table=int(1e10))
-        clusters = hash_table_clusters()
-        print(alignment)
+        #print(alignment)
         #print("Filtrando alignment")
         pass_alignment = filter_alignment(alignment)
         if pass_alignment:
@@ -62,7 +62,7 @@ def run () -> None:
         # new line
         alignment = file.readline().strip()
 
-    print("groups",clusters.clusters)
+    #print("groups",clusters.clusters)
     
 if __name__ == "__main__":
     run()

@@ -8,8 +8,7 @@ class cluster:
         self, alignment:psa) -> None:
         self.id_sequences: list = [alignment.query_id, alignment.reference_id]
         # self.best_chain_score: int = alignment_fields[14]
-        # self.longest_read: int = alignment_fields
-        # self.total_bases: int = alignment_fields
+        self.longest_read: int = max(alignment.reference_length, alignment.query_length)
         self.coverage: int = 2 #self.total_bases // alignment_fields
 
     def add_id(self, id_sequence: str) -> None:
@@ -27,3 +26,13 @@ class cluster:
         Update self.coverage 
         """
         self.coverage = len(self.id_sequences)
+
+    def update_longest_read(self, read_length_longest:int):
+        """
+        Update the length of the longest read in the cluster
+        
+        Args:
+            read_length (int): length of the read to add
+        """
+        self.longest_read = read_length_longest
+        

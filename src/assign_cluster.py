@@ -19,17 +19,30 @@ def assign_cluster(alignment:psa, cluster_pointers:hash_table_ids, clusters:hash
 
     if query_pointer and reference_pointer:
         # Scenario 1: both of them already saved
-        # NOTE: Can two reads in two different clusters? 
+        # NOTE: Can two reads in two different clusters?
+        if query_pointer != reference_pointer:
+            print(query_pointer, reference_pointer)
+            print(alignment.query_id,alignment.reference_id)
+            print("2 READS PUEDEN ESTAR EN GRUPOS DIFERENTES")
         pass
+    
     elif query_pointer:
         # Scenario 2: only query_pointer already saved
         query_cluster = clusters.get_cluster(query_pointer)
         query_cluster.add_id(alignment.reference_id)
+        # Update the longest read of the cluster 
+        if query_cluster.longest_read < alignment.reference_length:
+            query_cluster.update_longest_read(alignment.reference_length)
+            
     elif reference_pointer:
         # Scenario 3: only query_pointer already saved
         # Add to the existing cluster
         reference_cluster = clusters.get_cluster(reference_pointer)
         reference_cluster.add_id(alignment.query_id)
+        # Update the longest read of the cluster 
+        if reference_cluster.longest_read < alignment.query_length:
+            reference_cluster.update_longest_read(alignment.query_length)
+            
     else:
         # Scenario 4: no one saved
         ## We create a new cluster and set the pointer for the reads
