@@ -1,4 +1,4 @@
-<p align="center"><img src="images/mi.png" alt="MITNANEX"></p>
+<p align="center"><img src="images/MITNANEX.png" alt="MITNANEX"></p>
 
 # MITochondrial NANopore reads EXtrator
 
