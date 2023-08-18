@@ -1,52 +1,60 @@
-import pandas as pd
-from hash_function import hash_ids
-import matplotlib.pyplot as plt
-import numpy as np
+from hash_function import hash_table_ids, hash_table_clusters
+from psa import psa
+
 
 ## PAF FORMAT
 
-# 0	string	Query sequence name
-# 1	int	Query sequence length
-# 2	int	Query start coordinate (0-based)
-# 3	int	Query end coordinate (0-based)
-# 4	char	‘+’ if query/target on the same strand; ‘-’ if opposite
+# 0	string	query sequence name
+# 1	int	query sequence length
+# 2	int	query start coordinate (0-based)
+# 3	int	query end coordinate (0-based)
+# 4	char	‘+’ if query_pointer/target on the same strand; ‘-’ if opposite
 # 5	string	Target sequence name
 # 6	int	Target sequence length
 # 7	int	Target start coordinate on the original strand
 # 8	int	Target end coordinate on the original strand
 # 9	int	Number of matching bases in the mapping
-# 10	int	Number bases, including gaps, in the mapping
-# 11	int	Mapping quality (0-255 with 255 for missing)
+# 10int	Number bases, including gaps, in the mapping
+# 11int	Mapping quality (0-255 with 255 for missing)
 
 
+def asign_cluster(alignment:psa, cluster_pointers:hash_table_ids, clusters:hash_table_clusters) -> int:
+    """Asign a cluster to a pair of reads
+
+    Args:
+        alignment_fields (list): alignment_fields of a pairwise alignment in PAF format
+        cluster_pointers (hash_table_ids): Contains pointers to clusters
+        clusters (hash_table_clusters): Contains clusters
+
+    Returns:
+        int: 
+    """
     
-class cluster:
-    """
-    Store each cluster of reads, each cluster contains reads in the form of their id
+    ## Get the cluster pointer if it exists in table for both reads query_pointer and reference_pointer
+    query_pointer = cluster_pointers.get_cluster_pointer(alignment.query_id)
+    reference_pointer = cluster_pointers.get_cluster_pointer(alignment.reference_id)
 
-    """
+    if query_pointer and reference_pointer:
+        # Scenario 1: both of them already saved
+        # NOTE: Can two reads in two different clusters? 
+        pass
+    elif query_pointer:
+        # Scenario 2: only query_pointer already saved
+        query_cluster = clusters.get_cluster(query_pointer)
+        query_cluster.add_id(alignment.reference_id)
+    elif reference_pointer:
+        # Scenario 3: only query_pointer already saved
+        # Add to the existing cluster
+        reference_cluster = clusters.get_cluster(reference_pointer)
+        reference_cluster.add_id(alignment.query_id)
+    else:
+        # Scenario 4: no one saved
+        ## We create a new cluster and set the pointer for the reads
+        new_cluster = clusters.set_cluster()
+        cluster_pointers.set_cluster_pointer(new_cluster, alignment.query_id)
+        cluster_pointers.set_cluster_pointer(new_cluster, alignment.reference_id)
 
-    def __init__(
-        self, id_sequences: str, best_chain_score: int, longest_read: int
-    ) -> None:
-        self.id_sequences: list = list(id_sequences)
-        self.best_chain_score: int = best_chain_score
-        self.longest_read: int = longest_read
-        self.total_bases: int = longest_read
-        self.depth: int = self.total_bases // longest_read
-        self.cluster_id = id(self)
-
-    def add_sequence(self, id_sequence: str) -> None:
-        """
-        Add an ID read to the cluster
-
-        Args:
-            id_sequence (str): read ID
-        """
-        self.id_sequences.append(id_sequence)
-
-
-def filter_alignment(alignment: str, cluster_pointers:hash_ids) -> cluster:
+def filter_alignment(alignment: psa, cluster_pointers:hash_table_ids):
     """Take one line of a paf format given by minimap2, filter it and save it in a cluster
     Args:
         align (str): One line from paf file which contains the default paf format given
@@ -55,21 +63,17 @@ def filter_alignment(alignment: str, cluster_pointers:hash_ids) -> cluster:
     Returns:
         cluster: class where the read will be gathered otherwise it will initialized a new cluster.
     """
-    ## One aligment information
-    fields: list = alignment.split("\t")
 
-    ## filter reads shorter than 500 pb
+    ## filter mappings shorter than 500 pb
     length_threshold = 500
-    if (int(fields[1].strip()) < length_threshold) or (
-        int(fields[6]) < length_threshold
-    ):
+    if (int(alignment.align_length) < length_threshold):
         return None
 
-    ## filter only hits that where one read contains threshold
+    ## filter only hits that where one read contains the other one equal or greater to threshold
     ## NOTE: So far I do not take into account the difference between internal matches and containments
     ## Here containment is just the read aligned to other read at least threshold_contaiment
     threshold_containment = 0.8
-    if fields[10] >= min(fields[1], fields[6]) * threshold_containment:
+    if alignment.align_length >= min(alignment.query_length, alignment.refence_length) * threshold_containment:
         pass
 
 
@@ -80,10 +84,10 @@ def run () -> None:
     # while alignment:
     #    alignment = file.readline()
     
-    cluster_pointers = hash_ids()
-    clusters = list()
-    
-    filter_alignment(alignment, cluster_pointers)
+    cluster_pointers = hash_table_ids(size_table=int(1e10))
+    clusters = hash_table_clusters
+    alignment = psa(alignment.split("\t"))
+    filter_alignment(alignment, cluster_pointers, clusters)
     
     
 if __name__ == "__main__":
