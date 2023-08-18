@@ -10,7 +10,7 @@ class hash_table_ids:
     
     def __init__(self, size_table=int(1e10)) -> None:
         self.size_table = size_table
-        self.read_ids = np.zeros(size_table, dtype=int)
+        self.read_ids = np.zeros(size_table, dtype=np.uint8)
 
     def set_cluster_pointer (self, key:str, value:int) -> None:
         hash_key = hash(key) % self.size_table
