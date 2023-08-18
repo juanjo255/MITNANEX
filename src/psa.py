@@ -9,7 +9,7 @@ class psa:
         self.end_query = alignment_fields[3]
         self.strand = alignment_fields[4]
         self.reference_id = alignment_fields[5]
-        self.refence_length = int(alignment_fields[6])
+        self.reference_length = int(alignment_fields[6])
         self.begin_reference = alignment_fields [7]
         self.end_reference = alignment_fields[8]
         self.match_bases = int(alignment_fields[9])
