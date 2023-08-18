@@ -1,12 +1,12 @@
+from psa import psa
 class cluster:
     """
     Store each cluster of reads, each cluster contains reads in the form of their id
-
     """
 
     def __init__(
-        self, alignment_fields) -> None:
-        self.id_sequences: list = list(alignment_fields[0],alignment_fields[5])
+        self, alignment:psa) -> None:
+        self.id_sequences: list = list(alignment.query_id, alignment.reference_id)
         # self.best_chain_score: int = alignment_fields[14]
         # self.longest_read: int = alignment_fields
         # self.total_bases: int = alignment_fields
