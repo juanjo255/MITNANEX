@@ -56,7 +56,7 @@ def run () -> hash_table_clusters:
         #print("Filtrando alignment")
         pass_alignment = filter_alignment(alignment)
         if pass_alignment:
-            print("Asignando cluster")
+            #print("Asignando cluster")
             assign_cluster(pass_alignment, cluster_pointers, clusters)
 
         # New align
