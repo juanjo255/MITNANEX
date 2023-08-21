@@ -1,4 +1,3 @@
-import numpy as np
 import time
 from src.mitnanex import run
 import pandas as pd

@@ -6,3 +6,4 @@ notes/Internship
 *fastq.gz
 *.fna
 .vscode/
+**/__pycache__
