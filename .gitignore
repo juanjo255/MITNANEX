@@ -1,6 +1,8 @@
 notes/Internship
 *.fasta
+*.fasta.gz
 *.paf
 *fastq
+*fastq.gz
 *.fna
 .vscode/

@@ -1,6 +1,6 @@
-from hash_function import hash_table_ids, hash_table_clusters
-from psa import psa
-from assign_cluster import assign_cluster
+from .hash_function import hash_table_ids, hash_table_clusters
+from .psa import psa
+from .assign_cluster import assign_cluster
 
 ## PAF FORMAT
 

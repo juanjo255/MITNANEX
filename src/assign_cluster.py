@@ -1,5 +1,5 @@
-from psa import psa
-from hash_function import hash_table_ids, hash_table_clusters
+from .psa import psa
+from .hash_function import hash_table_ids, hash_table_clusters
 
 def assign_cluster(alignment:psa, cluster_pointers:hash_table_ids, clusters:hash_table_clusters) -> int:
     """Asign a cluster to a pair of reads
@@ -21,10 +21,10 @@ def assign_cluster(alignment:psa, cluster_pointers:hash_table_ids, clusters:hash
         # Scenario 1: both of them already saved
         # NOTE: Can two reads in two different clusters?
         if query_pointer != reference_pointer:
-            print(query_pointer, reference_pointer)
-            print(alignment.query_id,alignment.reference_id)
-            print("2 READS PUEDEN ESTAR EN GRUPOS DIFERENTES")
-        pass
+            #print(query_pointer, reference_pointer)
+            #print(alignment.query_id,alignment.reference_id)
+            #print("2 READS PUEDEN ESTAR EN GRUPOS DIFERENTES")
+            pass
     
     elif query_pointer:
         # Scenario 2: only query_pointer already saved
