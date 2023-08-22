@@ -50,6 +50,7 @@ def run () -> hash_table_clusters:
     alignment = file.readline().strip()
     clusters = hash_table_clusters()
     cluster_pointers = hash_table_ids(size_table=int(1e10))
+    
     while alignment:
     
         #print(alignment)
