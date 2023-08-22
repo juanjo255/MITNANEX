@@ -1,9 +1,8 @@
 from .psa import psa
 from .hash_function import hash_table_ids, hash_table_clusters
 
-
 def assign_cluster(
-    alignment: psa, cluster_pointers: hash_table_ids, clusters: hash_table_clusters
+    alignment: psa, cluster_pointers: hash_table_ids, clusters: hash_table_clusters,
 ) -> int:
     """Asign a cluster to a pair of reads
 
@@ -25,6 +24,7 @@ def assign_cluster(
         ## If two reads in different cluster, save the read in the cluster of the longest read in the aligment
         ## Otherwise, save both in both clusters
         if query_pointer != reference_pointer:
+            
 
             longest_read_pointer, longest_read_length = (
                 (query_pointer, alignment.query_length)
@@ -74,3 +74,4 @@ def assign_cluster(
         new_cluster_id = clusters.set_cluster(alignment)
         cluster_pointers.set_cluster_pointer(alignment.query_id, new_cluster_id)
         cluster_pointers.set_cluster_pointer(alignment.reference_id, new_cluster_id)
+
