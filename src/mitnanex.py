@@ -1,6 +1,7 @@
-from .hash_function import hash_table_ids, hash_table_clusters
-from .psa import psa
-from .assign_cluster import assign_cluster
+from hash_function import hash_table_ids, hash_table_clusters
+from psa import psa
+from assign_cluster import assign_cluster
+import numpy as np
 
 ## PAF FORMAT
 
@@ -63,8 +64,14 @@ def run () -> hash_table_clusters:
         # New align
         alignment = file.readline().strip()
 
-    #print("groups",clusters.clusters)
     file.close()
+
+    ## Merge clusters if their longest_read_id is the same
+    longest_read_per_cluster = [cluster.longest_read_id for cluster in clusters.clusters]
+    unique_longest_reads, count_unique_longest_reads = np.unique(longest_read_per_cluster, return_counts=True) 
+    
+    duplicated_clusters = unique_longest_reads[count_unique_longest_reads > 1]
+    #print(len(duplicated_clusters))
     return clusters
     
 if __name__ == "__main__":

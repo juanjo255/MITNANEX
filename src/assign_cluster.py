@@ -1,5 +1,5 @@
-from .psa import psa
-from .hash_function import hash_table_ids, hash_table_clusters
+from psa import psa
+from hash_function import hash_table_ids, hash_table_clusters
 
 def assign_cluster(
     alignment: psa, cluster_pointers: hash_table_ids, clusters: hash_table_clusters,
@@ -31,6 +31,7 @@ def assign_cluster(
                 if alignment.query_length > alignment.reference_length
                 else (reference_pointer, alignment.reference_length, alignment.reference_id)
             )
+            
             longest_read_cluster = clusters.get_cluster(longest_read_pointer)
             longest_read_cluster.add_id(alignment.reference_id)
             # Update the longest read of the cluster
