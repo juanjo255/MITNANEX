@@ -7,3 +7,5 @@ notes/Internship
 *.fna
 .vscode/
 **/__pycache__
+*.tsv
+*.csv

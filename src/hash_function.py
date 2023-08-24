@@ -1,6 +1,6 @@
 import numpy as np
-from .cluster import cluster
-from .psa import psa
+from cluster import cluster
+from psa import psa
 ## This function is to do something like a hash table
 ## where each id is convert it to a position in an array
 
@@ -38,3 +38,6 @@ class hash_table_clusters:
     def get_cluster (self, key:int) -> cluster:
         ## NOTE: Check set_cluster method
         return self.clusters[key-1]
+
+    def merge_clusters (self, clusters):
+        pass
