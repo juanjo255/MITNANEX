@@ -1,5 +1,5 @@
-from psa import psa
-from hash_function import hash_table_ids, hash_table_clusters
+from src.psa import psa
+from src.hash_function import hash_table_ids, hash_table_clusters
 
 def assign_cluster(
     alignment: psa, cluster_pointers: hash_table_ids, clusters: hash_table_clusters,

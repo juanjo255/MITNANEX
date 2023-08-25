@@ -1,6 +1,6 @@
 import numpy as np
-from cluster import cluster
-from psa import psa
+from src.cluster import cluster
+from src.psa import psa
 ## This function is to do something like a hash table
 ## where each id is convert it to a position in an array
 
