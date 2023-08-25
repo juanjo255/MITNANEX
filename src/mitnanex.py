@@ -39,7 +39,7 @@ def filter_alignment(alignment: str) -> psa:
     ## NOTE: So far I do not take into account the difference between internal matches and containments
     ## Here containment is just the read aligned to other read at least threshold_contaiment
     threshold_containment = 0.8
-    if alignment.align_length >= min(alignment.query_length, alignment.reference_length) * threshold_containment:
+    if alignment.align_length >= min(alignment.query_length, alignment.reference_length) * threshold_containment and (alignment.match_bases/alignment.align_length) > 0.6:
         return alignment
 
     return None 
@@ -66,12 +66,12 @@ def run () -> hash_table_clusters:
 
     file.close()
 
-    ## Merge clusters if their longest_read_id is the same
-    longest_read_per_cluster = [cluster.longest_read_id for cluster in clusters.clusters]
-    unique_longest_reads, count_unique_longest_reads = np.unique(longest_read_per_cluster, return_counts=True) 
+    ## Check if a I there are more than one cluster with the same longest read
+    # longest_read_per_cluster = [cluster.longest_read_id for cluster in clusters.clusters]
+    # unique_longest_reads, count_unique_longest_reads = np.unique(longest_read_per_cluster, return_counts=True) 
     
-    duplicated_clusters = unique_longest_reads[count_unique_longest_reads > 1]
-    #print(len(duplicated_clusters))
+    # duplicated_clusters = unique_longest_reads[count_unique_longest_reads > 1]
+    # print(duplicated_clusters)
     return clusters
     
 if __name__ == "__main__":
