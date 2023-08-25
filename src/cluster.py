@@ -1,4 +1,4 @@
-from psa import psa
+from src.psa import psa
 class cluster:
     """
     Store each cluster of reads, each cluster contains reads in the form of their id

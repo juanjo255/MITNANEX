@@ -1,7 +1,15 @@
-from hash_function import hash_table_ids, hash_table_clusters
-from psa import psa
-from assign_cluster import assign_cluster
-import numpy as np
+
+# Add the root project directory to the Python path
+import sys
+import os
+root_project_dir = os.path.dirname(os.path.abspath(__name__))
+sys.path.append(root_project_dir)
+from src.hash_function import hash_table_ids, hash_table_clusters
+from src.psa import psa
+from src.assign_cluster import assign_cluster
+
+
+
 
 ## PAF FORMAT
 
