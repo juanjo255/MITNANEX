@@ -17,18 +17,18 @@ file = (file.groupby(by=0))
 
 reads_per_cluster_gc = pd.read_csv('gc_content_per_cluster.tsv', delimiter='\t',header=None)
 reads_per_cluster_gc.sort_values(by=0,inplace=True)
-reads_per_cluster_gc['covertura'] = 0#file.size().values
-reads_per_cluster_gc['covertura2'] = file.size().values
+reads_per_cluster_gc['covertura2'] = 0#file.size().values
+reads_per_cluster_gc['covertura'] = file.size().values
 reads_per_cluster_gc.rename(columns={2:'gc_content'}, inplace=True)
 
 ## First view before Kmeans
 #plt.scatter(x=reads_per_cluster_gc['gc_content'], y=reads_per_cluster_gc['covertura'])
 #plt.show()
 
-kmeans = KMeans(n_clusters=2, max_iter=100, init='k-means++', random_state=0, n_init=1, verbose=1)
+kmeans = KMeans(n_clusters=20, max_iter=100, init='k-means++', random_state=0, n_init=1, verbose=1)
 prediction = kmeans.fit_predict(reads_per_cluster_gc.loc[:, ['covertura','gc_content']])
 
 
-plt.scatter(x=reads_per_cluster_gc['gc_content'], y=reads_per_cluster_gc['covertura2'], c=prediction)
+plt.scatter(x=reads_per_cluster_gc['gc_content'], y=reads_per_cluster_gc['covertura'], c=prediction)
 
 plt.show()

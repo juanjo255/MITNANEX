@@ -24,8 +24,7 @@ def assign_cluster(
         ## If two reads in different cluster, save the read in the cluster of the longest read in the aligment
         ## Otherwise, save both in both clusters
         if query_pointer != reference_pointer:
-            
-
+            ## Add the shortest read to the cluster of the longest read in the alignment 
             longest_read_pointer, longest_read_length, longest_read_id = (
                 (query_pointer, alignment.query_length, alignment.query_id)
                 if alignment.query_length > alignment.reference_length
@@ -37,25 +36,13 @@ def assign_cluster(
             # Update the longest read of the cluster
             if longest_read_cluster.longest_read_length < longest_read_length:
                 longest_read_cluster.update_longest_read(longest_read_length, longest_read_id)
-        else:
-            # Save in query cluster
-            query_cluster = clusters.get_cluster(query_pointer)
-            query_cluster.add_id(alignment.reference_id)
-            # Update the longest read of the cluster
-            if query_cluster.longest_read_length < alignment.reference_length:
-                query_cluster.update_longest_read(alignment.reference_length, alignment.reference_id)
-
-            # Save in reference cluster
-            reference_cluster = clusters.get_cluster(reference_pointer)
-            reference_cluster.add_id(alignment.query_id)
-            # Update the longest read of the cluster
-            if reference_cluster.longest_read_length < alignment.query_length:
-                reference_cluster.update_longest_read(alignment.query_length, alignment.query_id)
 
     elif query_pointer:
         # Scenario 2: only query_pointer already saved
         query_cluster = clusters.get_cluster(query_pointer)
         query_cluster.add_id(alignment.reference_id)
+        # Save cluster id in read location 
+        cluster_pointers.set_cluster_pointer(alignment.reference_id, query_pointer)
         # Update the longest read of the cluster
         if query_cluster.longest_read_length < alignment.reference_length:
             query_cluster.update_longest_read(alignment.reference_length, alignment.reference_id)
@@ -65,6 +52,8 @@ def assign_cluster(
         # Add to the existing cluster
         reference_cluster = clusters.get_cluster(reference_pointer)
         reference_cluster.add_id(alignment.query_id)
+        # Save cluster id in read location 
+        cluster_pointers.set_cluster_pointer(alignment.query_id, reference_pointer)
         # Update the longest read of the cluster
         if reference_cluster.longest_read_length < alignment.query_length:
             reference_cluster.update_longest_read(alignment.query_length, alignment.query_id)

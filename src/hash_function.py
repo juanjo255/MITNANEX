@@ -10,7 +10,7 @@ class hash_table_ids:
     
     def __init__(self, size_table=int(1e10)) -> None:
         self.size_table = size_table
-        self.read_ids = np.zeros(size_table, dtype=np.uint8)
+        self.read_ids = np.zeros(size_table, dtype=np.uint32)
 
     def set_cluster_pointer (self, key:str, value:int) -> None:
         hash_key = hash(key) % self.size_table
@@ -18,6 +18,7 @@ class hash_table_ids:
 
     def get_cluster_pointer (self, key:str) -> int:
         hash_key = hash(key) % self.size_table
+        
         return self.read_ids[hash_key]
 
 class hash_table_clusters:
@@ -39,5 +40,3 @@ class hash_table_clusters:
         ## NOTE: Check set_cluster method
         return self.clusters[key-1]
 
-    def merge_clusters (self, clusters):
-        pass
