@@ -2,7 +2,6 @@ import time
 from src.mitnanex import run
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 from sklearn.cluster import KMeans
 
 inicio = time.time()
