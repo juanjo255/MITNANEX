@@ -26,7 +26,7 @@ while oneline:
             
     oneline=file.readline()
 
-print(coverages_df.head())
+print(coverages_df.describe())
 final = time.time()
 tiempo = final - inicio
 print("my code", tiempo)
@@ -34,7 +34,7 @@ print("my code", tiempo)
 ## First view before Kmeans
 #plt.scatter(x=coverages_df['GC_percentage'], y=coverages_df['coverage'])
 
-kmeans = KMeans(n_clusters=4, max_iter=100, init='k-means++', random_state=0, n_init=1, verbose=1)
+kmeans = KMeans(n_clusters=3, max_iter=100, init='k-means++', random_state=0, n_init=1, verbose=1)
 prediction = kmeans.fit_predict(coverages_df.loc[:, ['coverage','GC_percentage']])
 
 
