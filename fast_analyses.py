@@ -12,7 +12,7 @@ a = run()
 coverages_df = pd.DataFrame({"coverage":[i.coverage for i in a.clusters], "longest_read_len":[i.longest_read_length for i in a.clusters], "id_longest_read": [i.longest_read_id for i in a.clusters] })
 #coverages_df.sort_values(by='coverage',inplace=True, ascending=False)
 coverages_df ['GC_percentage'] = 0
-file = open('../all_talaro_porechop_18_07_2023.fastq', 'r')
+file = open('test/aedes_vexans_mt_reads_subsample.fastq', 'r')
 oneline = file.readline()
 while oneline:
     if oneline.startswith("@") and len(oneline.split(" ")) > 1:
@@ -34,7 +34,7 @@ print("my code", tiempo)
 ## First view before Kmeans
 #plt.scatter(x=coverages_df['GC_percentage'], y=coverages_df['coverage'])
 
-kmeans = KMeans(n_clusters=2, max_iter=100, init='k-means++', random_state=0, n_init=1, verbose=1)
+kmeans = KMeans(n_clusters=4, max_iter=100, init='k-means++', random_state=0, n_init=1, verbose=1)
 prediction = kmeans.fit_predict(coverages_df.loc[:, ['coverage','GC_percentage']])
 
 
