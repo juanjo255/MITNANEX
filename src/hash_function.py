@@ -33,7 +33,7 @@ class hash_table_clusters:
         ## NOTE: This is not the correct index but is to avoid the zero. 
         ## Since hash_table_ids initialize an array of zeros.
         ## The idea is to link the index of the clusters in clusters with the reads in hash_table_ids
-        
+        new_cluster.set_cluster_id(len(self.clusters))
         return len(self.clusters)
 
     def get_cluster (self, key:int) -> cluster:

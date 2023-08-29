@@ -19,52 +19,20 @@ from .assign_cluster import assign_cluster
 # 11int	Mapping quality (0-255 with 255 for missing)
 
 
-def filter_alignment(alignment: str) -> psa:
-    """Take one line of a paf format given by minimap2, filter it and save it in a cluster
-    Args:
-        align (str): One line from paf file which contains the default paf format given
-            by ava-ont function in minimap2.
-
-    Returns:
-        cluster: class where the read will be gathered otherwise it will initialized a new cluster.
-    """
-    alignment = psa(alignment.split("\t"))
-    ## filter mappings shorter than 500 pb
-    length_threshold = 500
-    if int(alignment.align_length) < length_threshold:
-        return None
-
-    ## filter only hits that where one read contains the other one equal or greater to threshold
-    ## NOTE: So far I do not take into account the difference between internal matches and containments
-    ## Here containment is just the read aligned to other read at least threshold_contaiment
-    threshold_containment = 0.8
-    if (
-        alignment.align_length
-        >= min(alignment.query_length, alignment.reference_length)
-        * threshold_containment
-        and (alignment.match_bases / alignment.align_length) > 0.6
-    ):
-        return alignment
-
-    return None
-
 
 # @profile # This is to measure memory consumption
 def run() -> hash_table_clusters:
-    file = open("test/aedes_vexans_reads_subsample_overlaps.paf", "r")
+    file = open("test/overlaps_talaro_18_07_2023_sorted_containment.paf", "r")
     alignment = file.readline().strip()
     clusters = hash_table_clusters()
     cluster_pointers = hash_table_ids(size_table=int(1e5))
 
+    # Iterate through each alignment
     while alignment:
-        # print(alignment)
-        # print("Filtrando alignment")
-        pass_alignment = filter_alignment(alignment)
-        if pass_alignment:
-            # print("Asignando cluster")
-            assign_cluster(pass_alignment, cluster_pointers, clusters)
+        alignment = psa(alignment.strip().split("\t"))
+        assign_cluster(alignment, cluster_pointers, clusters)
 
-        # New align
+        # New alignment
         alignment = file.readline().strip()
 
     file.close()
