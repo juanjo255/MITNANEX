@@ -17,6 +17,7 @@ class cluster:
         
         ## NOTE: This coverage is number of reads saved in this cluster
         self.coverage: int = 2 #self.total_bases // alignment_fields
+        self.id_cluster = None
 
     def add_id(self, id_sequence: str) -> None:
         """
@@ -43,4 +44,7 @@ class cluster:
         """
         self.longest_read_length = read_length_longest
         self.longest_read_id = longest_read_id
+
+    def set_cluster_id (self, id:int):
+        self.id_cluster = id
         
