@@ -3,6 +3,12 @@ from src.mitnanex import run
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.cluster import KMeans
+from src.hash_function import estimate_hash_table_size
+inicio = time.time()
+estimate_hash_table_size('test/overlaps_aedes_vexans_all_reads_subsample_sorted_containment.paf','test/aedes_vexans_all_reads_subsample_sorted_length.fastq')
+final = time.time()
+tiempo = final - inicio
+print("my code", tiempo)
 
 inicio = time.time()
 a = run()

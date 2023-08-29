@@ -1,4 +1,4 @@
-from .hash_function import hash_table_ids, hash_table_clusters
+from .hash_function import hash_table_ids, hash_table_clusters, estimate_hash_table_size
 from .psa import psa
 from .assign_cluster import assign_cluster
 
@@ -22,7 +22,8 @@ from .assign_cluster import assign_cluster
 
 # @profile # This is to measure memory consumption
 def run() -> hash_table_clusters:
-    file = open("test/overlaps_talaro_18_07_2023_sorted_containment.paf", "r")
+    file = open("test/overlaps_aedes_vexans_all_reads_subsample_sorted_containment.paf", "r")
+    #size_table = estimate_hash_table_size('test/aedes_vexans_all_reads_subsample_sorted_length.fastq')
     alignment = file.readline().strip()
     clusters = hash_table_clusters()
     cluster_pointers = hash_table_ids(size_table=int(1e5))
@@ -50,3 +51,4 @@ if __name__ == "__main__":
     # root_project_dir = os.path.dirname(os.path.abspath(__name__))
     # sys.path.append(root_project_dir)
     run()
+    
