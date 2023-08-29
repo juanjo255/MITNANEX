@@ -40,3 +40,32 @@ class hash_table_clusters:
         ## NOTE: Check set_cluster method
         return self.clusters[key-1]
 
+def estimate_hash_table_size(path:str,path2) -> int:
+    """number of reads in fast file
+
+    Args:
+        path (str): location of the file
+    """
+    file = open(path, "r")
+    file2 = open(path2, "r")
+    line = file.readline().strip()
+    line2 = file2.readline().strip()
+    size = 0
+    size2 = 0
+    while line:
+        # if line.startswith(('A','T','G','C')):
+        #     size+=1
+        if line.split("\t")[0] != file.readline().strip().split("\t")[0]:
+            #print(line.split("\t")[0])
+            size+=1
+        # New alignment
+        line = file.readline().strip()
+    while line2:
+        if line2.startswith(('A','T','G','C')):
+            size2+=1
+        # New alignment
+        line2 = file2.readline().strip()
+    file.close()
+    file2.close()
+    print(size, size2)
+    return size
