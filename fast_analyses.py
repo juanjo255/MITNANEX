@@ -3,25 +3,24 @@ from src.mitnanex import run
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.cluster import KMeans
-from src.hash_function import estimate_hash_table_size
-inicio = time.time()
-estimate_hash_table_size('test/overlaps_aedes_vexans_all_reads_subsample_sorted_containment.paf','test/aedes_vexans_all_reads_subsample_sorted_length.fastq')
-final = time.time()
-tiempo = final - inicio
-print("my code", tiempo)
+from Bio import SeqIO
+from src.utils import convert_fq_to_fa
 
-inicio = time.time()
-a = run()
+## FASTA file is lighter 
+convert_fq_to_fa('test/aedes_vexans_all_reads_subsample_sorted_length.fastq', 'test/aedes_vexans_all_reads_subsample_sorted_length.fasta')
 
-# I need to plot the coverage of clusters
-coverages_df = pd.DataFrame(
-    {
-        "coverage": [i.coverage for i in a.clusters],
-        "longest_read_len": [i.longest_read_length for i in a.clusters],
-        "id_longest_read": [i.longest_read_id for i in a.clusters],
-        "id_cluster":[i.id_cluster for i in a.clusters],
-    }
-)
+# inicio = time.time()
+# a = run()
+
+# # I need to plot the coverage of clusters
+# coverages_df = pd.DataFrame(
+#     {
+#         "coverage": [i.coverage for i in a.clusters],
+#         "longest_read_len": [i.longest_read_length for i in a.clusters],
+#         "id_longest_read": [i.longest_read_id for i in a.clusters],
+#         "id_cluster":[i.id_cluster for i in a.clusters],
+#     }
+# )
 # # coverages_df.sort_values(by='coverage',inplace=True, ascending=False)
 # coverages_df["GC_percentage"] = 0
 # file = open("test/aedes_vexans_mt_reads_subsample.fastq", "r")
@@ -40,11 +39,11 @@ coverages_df = pd.DataFrame(
 
 #     oneline = file.readline()
 
-print(coverages_df.describe())
-print(coverages_df.sort_values(by='coverage', ascending=False).head())
-final = time.time()
-tiempo = final - inicio
-print("my code", tiempo)
+# #print(coverages_df.describe())
+# prueba = coverages_df.sort_values(by='coverage', ascending=False).head(50)
+# final = time.time()
+# tiempo = final - inicio
+# print("my code", tiempo)
 
 #print("323a391b-0c08-46bd-bc32-26ecbadfed9f" in a.clusters[10].id_sequences)
 
