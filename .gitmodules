@@ -1,0 +1,3 @@
+[submodule "mercat2"]
+	path = mercat2
+	url = https://github.com/raw-lab/mercat2.git
