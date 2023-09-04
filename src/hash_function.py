@@ -1,6 +1,7 @@
 import numpy as np
 from .cluster import cluster
 from .psa import psa
+from collections import Counter
 ## This function is to do something like a hash table
 ## where each id is convert it to a position in an array
 
@@ -9,17 +10,18 @@ from .psa import psa
 class hash_table_ids:
     
     def __init__(self, size_table=int(1e10)) -> None:
-        self.size_table = size_table
-        self.read_ids = np.zeros(size_table, dtype=np.uint32)
+        # self.size_table = size_table
+        # self.read_ids = np.zeros(size_table, dtype=np.uint32)
+        self.read_ids = Counter()
 
     def set_cluster_pointer (self, key:str, value:int) -> None:
-        hash_key = hash(key) % self.size_table
-        self.read_ids[hash_key] = value
+        #hash_key = hash(key) % self.size_table
+        self.read_ids[key] = value
 
     def get_cluster_pointer (self, key:str) -> int:
-        hash_key = hash(key) % self.size_table
+        #hash_key = hash(key) % self.size_table
         
-        return self.read_ids[hash_key]
+        return self.read_ids[key]
 
 class hash_table_clusters:
     
@@ -69,3 +71,5 @@ def estimate_hash_table_size(path:str,path2) -> int:
     file2.close()
     print(size, size2)
     return size
+
+
