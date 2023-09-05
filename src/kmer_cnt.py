@@ -20,8 +20,6 @@ def possible_kmers(k, ncl="ATCG") -> list:
 
 
 possible_kmers_list = possible_kmers(k=3)
-print(len(possible_kmers_list))
-
 
 ## Get the all kmer from a sequence
 ## The lexicographically lower kmer between forward and reverse complement is used
