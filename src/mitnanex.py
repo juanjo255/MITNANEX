@@ -32,8 +32,8 @@ def run() -> hash_table_clusters:
     # Iterate through each alignment
     while alignment:
         alignment = psa(alignment.strip().split("\t"))
-        assign_cluster(alignment, cluster_pointers, clusters_list)
-
+        if alignment.map_identity >= 0.6:
+            assign_cluster(alignment, cluster_pointers, clusters_list)
         # New alignment
         alignment = file.readline().strip()
 

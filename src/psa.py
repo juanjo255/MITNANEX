@@ -15,4 +15,5 @@ class psa:
         self.match_bases = int(alignment_fields[9])
         self.align_length = int(alignment_fields[10])
         self.mapping_quality = int(alignment_fields[11])
+        self.map_identity = self.match_bases / self.align_length
     
