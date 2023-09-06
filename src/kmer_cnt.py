@@ -30,8 +30,9 @@ def count_kmer(k: int, seq: str, possible_kmers_list: list) -> Counter:
     # cluster = cluster_pointers.get_cluster_pointer(id)
     seq = str(seq)
     len_seq = len(seq)
+    tot_kmer_expected = len_seq - k + 1
     kmer_counter = Counter(possible_kmers_list)
-    for i in range(len_seq - k + 1):
+    for i in range(tot_kmer_expected):
         kmer_for = seq[i : (i + k)]
         kmer_rev = kmer_for.translate(comp_tab)[::-1]
         if kmer_for < kmer_rev:
@@ -41,14 +42,14 @@ def count_kmer(k: int, seq: str, possible_kmers_list: list) -> Counter:
 
         kmer_counter[kmer] += 1
     print(kmer_counter)
-    norm_kmers(kmer_counter)
+    kmer_counter = norm_kmers(kmer_counter, tot_kmer_expected)
+    print(kmer_counter)
     return kmer_counter
 
-def norm_kmers (kmer_counter:Counter) -> Counter:
-    total_kmer_found = sum( i for i in kmer_counter.values() if i > 1)
+def norm_kmers (kmer_counter:Counter, tot_kmer_expected:int) -> Counter:
     for kmer in kmer_counter:
         if kmer_counter[kmer] > 1:
-            kmer_counter[kmer] = kmer_counter[kmer] / total_kmer_found
+            kmer_counter[kmer] = (kmer_counter[kmer] - 1)  / tot_kmer_expected
     return kmer_counter
     
-#count_kmer(3, "AAATTT", possible_kmers_list)
+count_kmer(3, "AAATTT", possible_kmers_list)
