@@ -41,9 +41,7 @@ def count_kmer(k: int, seq: str, possible_kmers_list: list) -> Counter:
             kmer = kmer_rev
 
         kmer_counter[kmer] += 1
-    print(kmer_counter)
     kmer_counter = norm_kmers(kmer_counter, tot_kmer_expected)
-    print(kmer_counter)
     return kmer_counter
 
 def norm_kmers (kmer_counter:Counter, tot_kmer_expected:int) -> Counter:
