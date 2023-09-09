@@ -1,7 +1,5 @@
 from collections import Counter
 from itertools import product
-import numpy as np
-
 
 ##### KMER COUNTING #####
 ## Get complement  complement
@@ -19,15 +17,14 @@ def possible_kmers(k, ncl="ATCG") -> list:
     return canon_kmers
 
 
-possible_kmers_list = possible_kmers(k=3)
-
 ## Get the all kmer from a sequence
 ## The lexicographically lower kmer between forward and reverse complement is used
 ## The reason to use the data structure, Counter store hasable elements,
 # which make it faster
-def count_kmer(k: int, seq: str, possible_kmers_list: list) -> Counter:
+def count_kmer(k: int, seq: str ) -> Counter:
     ## get the cluster to add the kmer composition
     # cluster = cluster_pointers.get_cluster_pointer(id)
+    possible_kmers_list: list=possible_kmers(k)
     seq = str(seq)
     len_seq = len(seq)
     tot_kmer_expected = len_seq - k + 1
@@ -48,6 +45,11 @@ def norm_kmers (kmer_counter:Counter, tot_kmer_expected:int) -> Counter:
     for kmer in kmer_counter:
         if kmer_counter[kmer] > 1:
             kmer_counter[kmer] = (kmer_counter[kmer] - 1)  / tot_kmer_expected
+        else:
+            kmer_counter[kmer] = float(kmer_counter[kmer])
     return kmer_counter
-    
-count_kmer(3, "AAATTT", possible_kmers_list)
+
+# possible_kmers_list = possible_kmers(k=3)
+# print(len(possible_kmers_list))
+# count_kmer(3, "AAATTT", possible_kmers_list)
+# print(len(possible_kmers_list))
