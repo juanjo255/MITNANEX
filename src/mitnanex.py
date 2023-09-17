@@ -20,11 +20,12 @@ from .utils import get_sequences_by_id
 # 11int	Mapping quality (0-255 with 255 for missing)
 
 
-
 # @profile # This is to measure memory consumption
 def run() -> hash_table_clusters:
-    file = open("test/overlaps_aedes_vexans_all_reads_subsample_sorted_containment.paf", "r")
-    #size_table = estimate_hash_table_size('test/aedes_vexans_all_reads_subsample_sorted_length.fastq')
+    file = open(
+        "test/s_cervisae_CEN.PK113-7D_containments.paf", "r"
+    )
+    # size_table = estimate_hash_table_size('test/aedes_vexans_all_reads_subsample_sorted_length.fastq')
     alignment = file.readline().strip()
     clusters_list = hash_table_clusters()
     cluster_pointers = hash_table_ids(size_table=int(1e5))
@@ -49,8 +50,7 @@ def run() -> hash_table_clusters:
     ## Get cluster sequence and cluster
     # repr_reads = [cluster.longest_read_id for cluster in clusters_list.clusters]
     # get_sequences_by_id(repr_reads)
-    
-    
+
     return clusters_list
 
 
@@ -58,4 +58,3 @@ if __name__ == "__main__":
     # root_project_dir = os.path.dirname(os.path.abspath(__name__))
     # sys.path.append(root_project_dir)
     run()
-    

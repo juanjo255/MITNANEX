@@ -21,9 +21,8 @@ def assign_cluster(
 
     if query_pointer and reference_pointer:
         # Scenario 1: both of them already saved
-        # If two reads in different cluster, save the read in the cluster of the longest read in the aligment
+        # If two reads in different cluster, save the read in the cluster of the longest read in the aligment  # noqa: E501
         # Otherwise, save both in both clusters
-        pass
         if query_pointer != reference_pointer:
             ## Add the shortest read to the cluster of the longest read in the alignment 
             longest_read_pointer, longest_read_length, longest_read_id = (
