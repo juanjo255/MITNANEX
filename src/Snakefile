@@ -1,0 +1,10 @@
+rule read_overlap:
+    input:
+        "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads.sorted.fastq",
+        "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads.sorted.fastq"
+    output:
+        "test/s_cervisae_CEN.PK113-7D_containments.paf"
+    shell:
+        "bwa mem {input} | samtools view -Sb - > {output}"
+        """minimap2 -x ava-ont --dual=yes s_cervisae_CEN.PK113-7D.fasta {input} 
+        | fpa keep --containment --length-upper 500 > {output}"""
