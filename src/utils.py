@@ -21,4 +21,5 @@ def write_fasta(fasta:str, sequences_ids:set, output:str):
                 n+=1
                 final_records.append(record)
                 sequences_ids.remove(record.id)
-    #SeqIO.write(sequences=final_records, handle=output, format='fasta')
+    print(f"{n} reads retrieved")
+    SeqIO.write(sequences=final_records, handle=output, format='fasta')

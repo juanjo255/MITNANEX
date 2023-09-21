@@ -23,7 +23,7 @@ from .utils import get_sequences_by_id
 # @profile # This is to measure memory consumption
 def run() -> hash_table_clusters:
     file = open(
-        "test/s_cervisae_CEN.PK113-7D_containments.paf", "r"
+        "test/s_cervisae_CEN.PK113-7D_containments_sorted_reversed.paf", "r"
     )
     # size_table = estimate_hash_table_size('test/aedes_vexans_all_reads_subsample_sorted_length.fastq')
     alignment = file.readline().strip()
