@@ -12,9 +12,13 @@ def get_sequences_by_id(fasta:str, ids:list) -> tuple:
             if record.id in ids:
                 yield (record.id, record.seq)
     return
-def write_fasta(fasta:str, sequences_ids:list, output:str):
+def write_fasta(fasta:str, sequences_ids:set, output:str):
+    final_records = list()
+    n=0
     with open(fasta) as handle:
         for record in SeqIO.parse(handle, "fasta"):
-            if record.id in sequences_ids:
-                SeqIO.write(sequences=record, handle=output, format='fasta')
-    return
+            if (record.id).strip() in sequences_ids:
+                n+=1
+                final_records.append(record)
+                sequences_ids.remove(record.id)
+    #SeqIO.write(sequences=final_records, handle=output, format='fasta')

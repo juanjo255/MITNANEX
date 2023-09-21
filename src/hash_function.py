@@ -26,7 +26,7 @@ class hash_table_ids:
 class hash_table_clusters:
     
     def __init__(self) -> None:
-        self.clusters = []
+        self.clusters = list()
 
     def set_cluster (self, alignment:psa) -> int:
         new_cluster = cluster(alignment)
