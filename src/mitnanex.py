@@ -1,7 +1,7 @@
 from .hash_function import hash_table_ids, hash_table_clusters
 from .psa import psa
 from .assign_cluster import assign_cluster
-from .utils import get_sequences_by_id, convert_fq_to_fa, write_fasta
+from .utils import get_sequences_by_id, convert_fq_to_fa, write_reads_file
 from .kmer_cnt import count_kmer
 import pandas as pd
 from sklearn.decomposition import PCA
@@ -46,6 +46,15 @@ if __name__ == "__main__":
     # root_project_dir = os.path.dirname(os.path.abspath(__name__))
     # sys.path.append(root_project_dir)
 
+    # FIXME: Is this true?
+    # Transform fastq to reads_file so it is faster to iterate 
+    reads_file = "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.sorted_reversed.fastq"
+    reads_file= convert_fq_to_fa(
+        fastq=reads_file,
+        output=reads_file,
+    )
+
+    # MAIN PROGRAM
     clusters_list = run()
 
     # I need to plot the coverage of clusters
@@ -61,37 +70,24 @@ if __name__ == "__main__":
     clusters = clusters_info
     clusters.sort_values(by="id_longest_read", inplace=True)
 
-    convert_fq_to_fa(
-        "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.sorted_reversed.fastq",
-        "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.sorted_reversed.fasta",
-    )
-
-    fasta = "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.sorted_reversed.fasta"
+    
     repr_reads = [i for i in clusters["id_longest_read"]]
-    hist = list()
-    for i in get_sequences_by_id(fasta, repr_reads):
+    kmer_profiles = list()
+    for i in get_sequences_by_id(reads_file, repr_reads):
         ids, seq = i
-        hist.append([*count_kmer(k=3, seq=seq).values(), ids])
+        kmer_profiles.append([*count_kmer(k=3, seq=seq).values(), ids])
 
-    ## Get the real mt sequences ##
-    with open("test/list_ids_reads_mt.txt", "r") as handle_ids_mt:
-        ids_mt = handle_ids_mt.read().splitlines()
-        ids_mt = [i[1:] for i in ids_mt]
-
-    hist_df = pd.DataFrame(hist)
-    hist_df.rename(columns={hist_df.iloc[:, -1].name: "ids"}, inplace=True)
-    hist_df.head()
+    kmer_profiles_df = pd.DataFrame(kmer_profiles)
+    kmer_profiles_df.rename(columns={kmer_profiles_df.iloc[:, -1].name: "ids"}, inplace=True)
+    kmer_profiles_df.head()
 
     ## Dimensionality reduction with PCA and clustering with k-means ##
     pca = PCA(n_components=2)
-    pca.fit(hist_df.iloc[:, :-2])
-
-    kmer_reduction = pca.fit_transform(hist_df.iloc[:, :-2])
-    kmer_reduction = pd.DataFrame(kmer_reduction)
+    kmer_reduction = pca.fit_transform(kmer_profiles_df.iloc[:, :-2])
+    kmer_reduction = pd.DataFrame(kmer_reduction, columns=['comp1','comp2'])
 
     ## Merging the dataframe with ids and other relevant information ##
-    kmer_reduction = pd.concat([kmer_reduction, hist_df["ids"]], axis=1)
-    kmer_reduction.rename(columns={0: "comp1", 1: "comp2"}, inplace=True)
+    kmer_reduction['ids'] = kmer_profiles_df["ids"]
     kmer_reduction = kmer_reduction.merge(
         clusters, how="left", left_on="ids", right_on="id_longest_read"
     )
@@ -130,6 +126,6 @@ if __name__ == "__main__":
     for i in selected_cluster["id_cluster"]:
         sequences_ids.update(clusters_list.get_cluster(i).id_sequences)
         
-    write_fasta(
-        fasta=fasta, sequences_ids=sequences_ids, output="test/mt_reads_v1.fasta"
+    write_reads_file(
+        reads_file=reads_file, sequences_ids=sequences_ids, output="test/mt_reads_v1.reads_file"
     )
