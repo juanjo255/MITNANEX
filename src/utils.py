@@ -1,10 +1,11 @@
 from Bio import SeqIO
 
 def convert_fq_to_fa (fastq:str, output:str) -> None:
+    output = "".join(output.split(".")) + '.fasta'
     with open(fastq) as handle:
         count_sequences = SeqIO.convert(handle, "fastq", output, 'fasta')
         print(f"{count_sequences} sequences converted to fasta")
-    return
+    return output
 
 def get_sequences_by_id(fasta:str, ids:list) -> tuple:
     with open(fasta) as handle:
