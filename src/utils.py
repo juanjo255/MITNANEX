@@ -1,7 +1,6 @@
 from Bio import SeqIO
 
-def convert_fq_to_fa (fastq:str, output:str) -> None:
-    output = "".join(output.split(".")) + '.fasta'
+def convert_fq_to_fa (fastq:str, output:str) -> str:
     with open(fastq) as handle:
         count_sequences = SeqIO.convert(handle, "fastq", output, 'fasta')
         print(f"{count_sequences} sequences converted to fasta")

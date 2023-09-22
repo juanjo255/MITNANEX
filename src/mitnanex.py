@@ -1,7 +1,7 @@
 from .hash_function import hash_table_ids, hash_table_clusters
 from .psa import psa
 from .assign_cluster import assign_cluster
-from .utils import get_sequences_by_id, convert_fq_to_fa, write_reads_file
+from .utils import get_sequences_by_id, convert_fq_to_fa, write_fasta
 from .kmer_cnt import count_kmer
 import pandas as pd
 from sklearn.decomposition import PCA
@@ -51,13 +51,13 @@ if __name__ == "__main__":
     reads_file = "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.sorted_reversed.fastq"
     reads_file= convert_fq_to_fa(
         fastq=reads_file,
-        output=reads_file,
+        output= "".join(reads_file.split(".")) + '.fasta',
     )
 
     # MAIN PROGRAM
     clusters_list = run()
 
-    # I need to plot the coverage of clusters
+    ## Gather clusters info
     clusters_info = pd.DataFrame(
         {
             "coverage": [i.coverage for i in clusters_list.clusters],
@@ -66,30 +66,25 @@ if __name__ == "__main__":
             "id_cluster": [i.id_cluster for i in clusters_list.clusters],
         }
     )
+    clusters_info.sort_values(by="id_longest_read", inplace=True)
 
-    clusters = clusters_info
-    clusters.sort_values(by="id_longest_read", inplace=True)
-
-    
-    repr_reads = [i for i in clusters["id_longest_read"]]
+    ## Get kmers from representative reads from each cluster
+    repr_reads = [i for i in clusters_info["id_longest_read"]]
     kmer_profiles = list()
     for i in get_sequences_by_id(reads_file, repr_reads):
         ids, seq = i
         kmer_profiles.append([*count_kmer(k=3, seq=seq).values(), ids])
-
     kmer_profiles_df = pd.DataFrame(kmer_profiles)
     kmer_profiles_df.rename(columns={kmer_profiles_df.iloc[:, -1].name: "ids"}, inplace=True)
-    kmer_profiles_df.head()
 
     ## Dimensionality reduction with PCA and clustering with k-means ##
     pca = PCA(n_components=2)
-    kmer_reduction = pca.fit_transform(kmer_profiles_df.iloc[:, :-2])
-    kmer_reduction = pd.DataFrame(kmer_reduction, columns=['comp1','comp2'])
+    kmer_reduction = pd.DataFrame(pca.fit_transform(kmer_profiles_df.iloc[:, :-2]), columns=['comp1','comp2'])
 
     ## Merging the dataframe with ids and other relevant information ##
     kmer_reduction['ids'] = kmer_profiles_df["ids"]
     kmer_reduction = kmer_reduction.merge(
-        clusters, how="left", left_on="ids", right_on="id_longest_read"
+        clusters_info, how="left", left_on="ids", right_on="id_longest_read"
     )
     kmer_reduction.drop(columns="id_longest_read", inplace=True)
 
@@ -126,6 +121,6 @@ if __name__ == "__main__":
     for i in selected_cluster["id_cluster"]:
         sequences_ids.update(clusters_list.get_cluster(i).id_sequences)
         
-    write_reads_file(
+    write_fasta(
         reads_file=reads_file, sequences_ids=sequences_ids, output="test/mt_reads_v1.reads_file"
     )
