@@ -1,5 +1,7 @@
 from collections import Counter
 from itertools import product
+import pandas as pd
+from .utils import get_sequences_by_id
 
 ##### KMER COUNTING #####
 ## Get complement  complement
@@ -53,3 +55,12 @@ def norm_kmers (kmer_counter:Counter, tot_kmer_expected:int) -> Counter:
 # print(len(possible_kmers_list))
 # count_kmer(3, "AAATTT", possible_kmers_list)
 # print(len(possible_kmers_list))
+
+def get_kmer_profiles (repr_reads:list, reads_file:str) -> pd.DataFrame:
+        kmer_profiles = list()
+        for i in get_sequences_by_id(reads_file, repr_reads):
+            ids, seq = i
+            kmer_profiles.append([*count_kmer(k=3, seq=seq).values(), ids])
+        kmer_profiles_df = pd.DataFrame(kmer_profiles)
+        kmer_profiles_df.rename(columns={kmer_profiles_df.iloc[:, -1].name: "ids"}, inplace=True)
+        return kmer_profiles_df
