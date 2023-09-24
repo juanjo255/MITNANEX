@@ -12,6 +12,7 @@ def get_sequences_by_id(fasta:str, ids:list) -> tuple:
             if record.id in ids:
                 yield (record.id, record.seq)
     return
+
 def write_fasta(fasta:str, sequences_ids:set, output:str):
     final_records = list()
     n=0
