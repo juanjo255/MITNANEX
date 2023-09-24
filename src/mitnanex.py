@@ -1,11 +1,11 @@
 from .hash_function import hash_table_ids, hash_table_clusters
 from .psa import psa
 from .assign_cluster import assign_cluster
-from .utils import get_sequences_by_id, convert_fq_to_fa, write_fasta
-from .kmer_cnt import count_kmer
+from .utils import convert_fq_to_fa, write_fasta
+from .kmer_cnt import get_kmer_profiles
+from .kmer_reduction_PCA import kmer_reduction
+from k_means import cluster_kmer_profiles
 import pandas as pd
-from sklearn.decomposition import PCA
-from sklearn.cluster import KMeans
 
 ## PAF FORMAT
 
@@ -70,38 +70,14 @@ if __name__ == "__main__":
 
     ## Get kmers from representative reads from each cluster
     repr_reads = [i for i in clusters_info["id_longest_read"]]
-    kmer_profiles = list()
-    for i in get_sequences_by_id(reads_file, repr_reads):
-        ids, seq = i
-        kmer_profiles.append([*count_kmer(k=3, seq=seq).values(), ids])
-    kmer_profiles_df = pd.DataFrame(kmer_profiles)
-    kmer_profiles_df.rename(columns={kmer_profiles_df.iloc[:, -1].name: "ids"}, inplace=True)
+    kmer_profiles_df = get_kmer_profiles (repr_reads, reads_file)
 
     ## Dimensionality reduction with PCA and clustering with k-means ##
-    pca = PCA(n_components=2)
-    kmer_reduction = pd.DataFrame(pca.fit_transform(kmer_profiles_df.iloc[:, :-2]), columns=['comp1','comp2'])
-
-    ## Merging the dataframe with ids and other relevant information ##
-    kmer_reduction['ids'] = kmer_profiles_df["ids"]
-    kmer_reduction = kmer_reduction.merge(
-        clusters_info, how="left", left_on="ids", right_on="id_longest_read"
-    )
-    kmer_reduction.drop(columns="id_longest_read", inplace=True)
-
-    ## Filter reads by coverage ##
-    kmer_reduction = kmer_reduction[kmer_reduction["coverage"] > 10]
+    kmer_reduction_df = kmer_reduction(kmer_profiles_df, clusters_info)
 
     ## Clustering reads using K-means expecting 2 clusters ##
-    kmeans = KMeans(
-        n_clusters=2,
-        max_iter=100,
-        init="k-means++",
-        random_state=0,
-        n_init=1,
-        verbose=1,
-    )
-    mt_prediction = kmeans.fit_predict(kmer_reduction[["comp1", "comp2"]])
-    kmer_reduction["cluster_prediction"] = mt_prediction
+    cluster_prediction = cluster_kmer_profiles(kmer_profiles_df)
+    kmer_reduction["cluster_prediction"] = cluster_prediction
 
     ## Get the cluster of interest ##
     # This step is a pain in the ass,
