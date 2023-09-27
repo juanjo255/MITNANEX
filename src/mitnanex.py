@@ -25,7 +25,7 @@ import pandas as pd
 
 # @profile # This is to measure memory consumption
 def run() -> hash_table_clusters:
-    file = open("test/all_talaro_porechop_18_07_2023_containments_sorted_reversed.paf", "r")
+    file = open("test/s_cervisae_CEN_PK113-7D_SRR5892449_reads_containments.paf", "r")
     alignment = file.readline().strip()
     clusters_list = hash_table_clusters()
     cluster_pointers = hash_table_ids(size_table=int(1e5))
