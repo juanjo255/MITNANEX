@@ -4,7 +4,7 @@ from .assign_cluster import assign_cluster
 from .utils import convert_fq_to_fa, write_fasta
 from .kmer_cnt import get_kmer_profiles
 from .kmer_reduction_PCA import kmer_reduction
-from k_means import cluster_kmer_profiles
+from .cluster_kmer_profiles import cluster_kmer_profiles
 import pandas as pd
 
 ## PAF FORMAT
@@ -25,7 +25,7 @@ import pandas as pd
 
 # @profile # This is to measure memory consumption
 def run() -> hash_table_clusters:
-    file = open("test/s_cervisae_CEN.PK113-7D_containments_sorted_reversed.paf", "r")
+    file = open("test/all_talaro_porechop_18_07_2023_containments_sorted_reversed.paf", "r")
     alignment = file.readline().strip()
     clusters_list = hash_table_clusters()
     cluster_pointers = hash_table_ids(size_table=int(1e5))
@@ -33,7 +33,7 @@ def run() -> hash_table_clusters:
     # Iterate through each alignment
     while alignment:
         alignment = psa(alignment.strip().split("\t"))
-        if alignment.map_identity >= 0.6:
+        if alignment.map_identity >= 0.5:
             assign_cluster(alignment, cluster_pointers, clusters_list)
         # New alignment
         alignment = file.readline().strip()
@@ -48,7 +48,7 @@ if __name__ == "__main__":
 
     # FIXME: Is this true?
     # Transform fastq to reads_file so it is faster to iterate 
-    reads_file = "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.sorted_reversed.fastq"
+    reads_file = "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.sorted.fastq"
     reads_file= convert_fq_to_fa(
         fastq=reads_file,
         output= "".join(reads_file.split(".")) + '.fasta',
