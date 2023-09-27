@@ -3,25 +3,28 @@
 ## default values
 proportion=0.4
 threads=4
+min_len=500
 
 ## Help message
 mitnanex_help() {
     echo "
-        MITNANEX
-        Version: 1.0
-        https://github.com/juanjo255/MITNANEX_PROJECT.git
+    MITNANEX
+    Version: 1.0
+    https://github.com/juanjo255/MITNANEX_PROJECT.git
 
-        Usage: $mitnanex [options] FASTQ
+    Usage: mitnanex.sh [options] FASTQ
 
-        Flags:
-        -t        Threads
-        -p        Proportion. for sampling with seqkit. for information read seqkit sample documentation
-        *         Help
+    Flags:
+        -i        Input file.
+        -t        Threads.
+        -p        Proportion. For sampling with seqkit. Read seqkit sample documentation.
+        -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation.
+        *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p' opt; do
+while getopts 'i:t:p:m' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -32,23 +35,32 @@ while getopts 'i:t:p' opt; do
         p)
         proportion=$OPTARG
         ;;
+        m)
+        min_len=$OPTARG
+        ;;
         *)
         mitnanex_help
         ;;
     esac 
+done
 
+# Check if required arguments are provided
+if [ -z "$input_file" ]; then
+  echo "Error: Input file is required."
+  mitnanex_help
+fi
 
 ## prefix name to use for the resulting files 
 prefix=${input_file%%.*}
 
-seqkit sample --proportion $proportion --threads $threads \
-    $input_file  \ 
-    -o $prefix"_sample.fastq" 
 
-# seqkit sort --threads $threads --by-length --reverse \ 
-#     s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.fastq \ 
-#     -o $prefix"_sample.sorted.fastq"
+## pipeline body
+seqkit seq -g --threads $threads --min-len $min_len \
+    $input_file  | \
+    seqkit sample --proportion $proportion --threads $threads | \
+    seqkit sort --threads $threads --by-length --reverse \
+    -o $prefix"_sample.sorted.fastq"
 
-# minimap2 -x ava-ont -t $threads --dual=yes --split-prefix \ 
-#     temp_name $prefix"_sample.sorted.fastq" $prefix"_sample.sorted.fastq" | \ 
-#     fpa keep --containment > $prefix"_containments.paf"
+minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
+    $prefix"_sample.sorted.fastq" $prefix"_sample.sorted.fastq" | \
+    fpa keep --containment > $prefix"_containments.paf"
