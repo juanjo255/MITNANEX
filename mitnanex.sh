@@ -4,6 +4,7 @@
 proportion=0.4
 threads=4
 min_len=500
+timestamp=$(date -u +"%Y-%m-%d %T")
 
 ## Help message
 mitnanex_help() {
@@ -14,7 +15,7 @@ mitnanex_help() {
 
     Usage: mitnanex.sh [options] FASTQ
 
-    Flags:
+    Options:
         -i        Input file.
         -t        Threads.
         -p        Proportion. For sampling with seqkit. Read seqkit sample documentation.
@@ -55,12 +56,17 @@ prefix=${input_file%%.*}
 
 
 ## pipeline body
+
+### SEQKIT
+echo $timestamp': Running seqkit')
 seqkit seq -g --threads $threads --min-len $min_len \
     $input_file  | \
     seqkit sample --proportion $proportion --threads $threads | \
     seqkit sort --threads $threads --by-length --reverse \
     -o $prefix"_sample.sorted.fastq"
 
+### MINIMAP2
+echo $timestamp': Running minimap2')
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $prefix"_sample.sorted.fastq" $prefix"_sample.sorted.fastq" | \
     fpa keep --containment > $prefix"_containments.paf"
