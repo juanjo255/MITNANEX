@@ -1,7 +1,0 @@
-#!/bin/bash
-
-cli_log() {
-  script_name=${0##*/}
-  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  echo "== $script_name $timestamp $1"
-}
