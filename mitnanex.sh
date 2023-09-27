@@ -57,8 +57,17 @@ prefix=${input_file%%.*}
 
 ## pipeline body
 
+echo '
+  __  __ ___ _____ _  _   _   _  _ _____  __
+ |  \/  |_ _|_   _| \| | /_\ | \| | __\ \/ /
+ | |\/| || |  | | | .` |/ _ \| .` | _| >  < 
+ |_|  |_|___| |_| |_|\_/_/ \_\_|\_|___/_/\_\
+                                            
+'
+                                                              
+
 ### SEQKIT
-echo $timestamp': Running seqkit')
+echo $timestamp': Running seqkit'
 seqkit seq -g --threads $threads --min-len $min_len \
     $input_file  | \
     seqkit sample --proportion $proportion --threads $threads | \
