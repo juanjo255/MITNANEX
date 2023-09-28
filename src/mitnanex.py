@@ -86,17 +86,18 @@ if __name__ == "__main__":
     selected_cluster_id = (
         kmer_reduction.loc[:, kmer_reduction.columns != "ids"]
         .groupby(by="cluster_prediction")["coverage"]
-        .mean()
+        .median()
         .idxmax()
     )
     selected_cluster = kmer_reduction[
         kmer_reduction["cluster_prediction"] == selected_cluster_id
     ]
 
+    ## Get sequences from selected clusters and write fasta
     sequences_ids = set()
     for i in selected_cluster["id_cluster"]:
         sequences_ids.update(clusters_list.get_cluster(i).id_sequences)
-        
+
     write_fasta(
         reads_file=reads_file, sequences_ids=sequences_ids, output="test/mt_reads_v1.reads_file"
     )
