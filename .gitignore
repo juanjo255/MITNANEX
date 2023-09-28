@@ -9,3 +9,6 @@ notes/Internship
 **/__pycache__
 *.tsv
 *.csv
+test/s_cervisae_CEN_PK113-7D/
+test/sara_reads/
+test/talaro_santan/
