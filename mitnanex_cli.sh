@@ -58,11 +58,14 @@ prefix=${input_file%%.*}
 ## pipeline body
 
 echo '
-  __  __ ___ _____ _  _   _   _  _ _____  __
- |  \/  |_ _|_   _| \| | /_\ | \| | __\ \/ /
- | |\/| || |  | | | .` |/ _ \| .` | _| >  < 
- |_|  |_|___| |_| |_|\_/_/ \_\_|\_|___/_/\_\
-                                            
+    
+  __  __ ___ _____ _   _    _    _   _ _______  __
+ |  \/  |_ _|_   _| \ | |  / \  | \ | | ____\ \/ /
+ | |\/| || |  | | |  \| | / _ \ |  \| |  _|  \  / 
+ | |  | || |  | | | |\  |/ ___ \| |\  | |___ /  \ 
+ |_|  |_|___| |_| |_| \_/_/   \_\_| \_|_____/_/\_\
+                                                  
+https://github.com/juanjo255/MITNANEX_PROJECT.git                                     
 '
                                                               
 
@@ -75,7 +78,8 @@ seqkit seq -g --threads $threads --min-len $min_len \
     -o $prefix"_sample.sorted.fastq"
 
 ### MINIMAP2
-echo $timestamp': Running minimap2')
+echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $prefix"_sample.sorted.fastq" $prefix"_sample.sorted.fastq" | \
     fpa keep --containment > $prefix"_containments.paf"
+
