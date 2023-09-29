@@ -3,7 +3,8 @@
 ## default values
 proportion=0.4
 threads=4
-min_len=500
+min_len=-1
+max_len=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
 
 ## Help message
@@ -25,7 +26,7 @@ mitnanex_help() {
     exit 1
 }
 
-while getopts 'i:t:p:m' opt; do
+while getopts 'i:t:p:m:M:' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -38,6 +39,9 @@ while getopts 'i:t:p:m' opt; do
         ;;
         m)
         min_len=$((OPTARG))
+        ;;
+        M)
+        max_len=$((OPTARG))
         ;;
         *)
         mitnanex_help
@@ -71,7 +75,7 @@ https://github.com/juanjo255/MITNANEX_PROJECT.git
 
 ### SEQKIT
 echo $timestamp': Running seqkit'
-seqkit seq -g --threads $threads --min-len $min_len \
+seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     $input_file  | \
     seqkit sample --proportion $proportion --threads $threads | \
     seqkit sort --threads $threads --by-length --reverse \
