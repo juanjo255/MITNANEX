@@ -37,7 +37,7 @@ while getopts 'i:t:p:m' opt; do
         proportion=$OPTARG
         ;;
         m)
-        min_len=$OPTARG
+        min_len=$((OPTARG))
         ;;
         *)
         mitnanex_help
