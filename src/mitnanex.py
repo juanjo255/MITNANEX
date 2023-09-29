@@ -49,10 +49,6 @@ if __name__ == "__main__":
     # FIXME: Is this true?
     # Transform fastq to reads_file so it is faster to iterate 
     reads_file = "test/sara_reads/jfdminion11_sara_reads_sample.sorted.fastq"
-    reads_file= convert_fq_to_fa(
-        fastq=reads_file,
-        output= "".join(reads_file.split(".")) + '.fasta',
-    )
 
     # MAIN PROGRAM
     clusters_list = run("test/sara_reads/jfdminion11_sara_reads_containments.paf")
