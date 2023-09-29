@@ -17,9 +17,9 @@ mitnanex_help() {
 
     Options:
         -i        Input file.
-        -t        Threads.
-        -p        Proportion. For sampling with seqkit. Read seqkit sample documentation.
-        -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation.
+        -t        Threads. [4].
+        -p        Proportion. For sampling with seqkit. Read seqkit sample documentation. [0.4].
+        -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [500].
         *         Help.
     "
     exit 1
