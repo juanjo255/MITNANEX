@@ -24,8 +24,8 @@ import pandas as pd
 
 
 # @profile # This is to measure memory consumption
-def run() -> hash_table_clusters:
-    file = open("test/s_cervisae_CEN_PK113-7D_SRR5892449_reads_containments.paf", "r")
+def run(paf:str) -> hash_table_clusters:
+    file = open(paf, "r")
     alignment = file.readline().strip()
     clusters_list = hash_table_clusters()
     cluster_pointers = hash_table_ids(size_table=int(1e5))
@@ -33,7 +33,7 @@ def run() -> hash_table_clusters:
     # Iterate through each alignment
     while alignment:
         alignment = psa(alignment.strip().split("\t"))
-        if alignment.map_identity >= 0.5:
+        if alignment.map_identity >= 0.6:
             assign_cluster(alignment, cluster_pointers, clusters_list)
         # New alignment
         alignment = file.readline().strip()
@@ -48,14 +48,14 @@ if __name__ == "__main__":
 
     # FIXME: Is this true?
     # Transform fastq to reads_file so it is faster to iterate 
-    reads_file = "test/s_cervisae_CEN.PK113-7D_SRR5892449_reads_sample.sorted.fastq"
+    reads_file = "test/sara_reads/jfdminion11_sara_reads_sample.sorted.fastq"
     reads_file= convert_fq_to_fa(
         fastq=reads_file,
         output= "".join(reads_file.split(".")) + '.fasta',
     )
 
     # MAIN PROGRAM
-    clusters_list = run()
+    clusters_list = run("test/sara_reads/jfdminion11_sara_reads_containments.paf")
 
     ## Gather clusters info
     clusters_info = pd.DataFrame(
@@ -99,5 +99,5 @@ if __name__ == "__main__":
         sequences_ids.update(clusters_list.get_cluster(i).id_sequences)
 
     write_fasta(
-        reads_file=reads_file, sequences_ids=sequences_ids, output="test/mt_reads_v1.reads_file"
+        reads_file=reads_file, sequences_ids=sequences_ids, output="test/sara_reads/mt_reads_v1.fasta"
     )
