@@ -4,7 +4,7 @@ import pandas as pd
 from .utils import get_sequences_by_id
 
 ##### KMER COUNTING #####
-## Get complement  complement
+## Get reverse complement
 base_for = "ACGT"
 base_rev = "TGCA"
 comp_tab = str.maketrans(base_for, base_rev)

@@ -86,4 +86,5 @@ echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $prefix"_sample.sorted.fastq" $prefix"_sample.sorted.fastq" | \
     fpa keep --containment > $prefix"_containments.paf"
+    # fpa drop --dovetail > $prefix"_containments.paf"
 
