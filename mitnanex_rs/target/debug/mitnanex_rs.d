@@ -1,0 +1,1 @@
+/Users/jjpc/Documents/TESIS/MITNANEX_PROJECT/mitnanex_rs/target/debug/mitnanex_rs: /Users/jjpc/Documents/TESIS/MITNANEX_PROJECT/mitnanex_rs/src/kmer_cnt.rs /Users/jjpc/Documents/TESIS/MITNANEX_PROJECT/mitnanex_rs/src/main.rs
