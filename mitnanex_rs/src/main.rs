@@ -4,5 +4,5 @@ pub mod kmer_cnt;
 
 fn main() {
     println!("Mitnanex");
-    possible_kmers(3, "ATCG")
+    possible_kmers(2, "ATCG");
 }
