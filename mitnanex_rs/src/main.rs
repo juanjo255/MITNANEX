@@ -1,8 +1,8 @@
-use crate::kmer_cnt::possible_kmers;
+use crate::kmer_cnt::count_kmer;
 
 pub mod kmer_cnt;
 
 fn main() {
     println!("Mitnanex");
-    possible_kmers(2, "ATCG");
+    count_kmer(3, "ACTTCA");
 }
