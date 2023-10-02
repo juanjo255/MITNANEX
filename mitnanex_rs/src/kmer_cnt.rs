@@ -54,6 +54,5 @@ pub fn count_kmer(k: usize, seq: &str) -> HashMap<String, f64> {
             *x = *x / len_seq as f64;
         };
     };
-    println!("{:?}",kmer_counter);
     return kmer_counter
 }
