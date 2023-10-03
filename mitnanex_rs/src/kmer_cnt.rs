@@ -56,3 +56,8 @@ pub fn count_kmer(k: usize, seq: &str) -> HashMap<String, f64> {
     };
     return kmer_counter
 }
+
+pub fn get_kmer_profiles (reads:&Vec<&str>, reads_file:&str) -> Vec<f64>{
+    
+    todo!()
+}
