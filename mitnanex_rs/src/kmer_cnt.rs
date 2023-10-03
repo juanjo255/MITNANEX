@@ -54,7 +54,7 @@ pub fn get_kmer_profiles (reads_ids:&Vec<&str>, reads_file:&str) -> Vec<Vec<f32>
     let mut reader = fastq::Reader::new(File::open(reads_file).expect("Ups! I could not open the file. Check the path and the file"));
     let mut record = fastq::Record::new();
     reader.read(&mut record).expect("Failed to parse record");
-    let mut kmer_profiles:Vec<f32>  = Vec::new();
+    let mut kmer_profiles:Vec<Vec<f32>>  = Vec::new();
     while !record.is_empty() {
         let check = record.check();
         if check.is_err() {
@@ -65,13 +65,12 @@ pub fn get_kmer_profiles (reads_ids:&Vec<&str>, reads_file:&str) -> Vec<Vec<f32>
             let seq = record.seq();
             let seq = str::from_utf8(&seq).unwrap();
             let kmer_profile = count_kmer(3, seq);
-            //kmer_profiles.push(&);
+            kmer_profiles.push(kmer_profile.into_values().collect_vec());
             println!("{}",record.id());
         }
-        // update record 
-        // equivalent to readlines in python
+        // Update record 
+        // Equivalent to readlines in python
         reader.read(&mut record).expect("Failed to parse record");
     }
-
-    todo!()
+    return kmer_profiles
 }
