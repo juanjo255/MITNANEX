@@ -5,6 +5,7 @@ from .utils import convert_fq_to_fa, write_fasta
 from .kmer_cnt import get_kmer_profiles
 from .kmer_reduction_PCA import kmer_reduction
 from .cluster_kmer_profiles import cluster_kmer_profiles
+import utils
 import pandas as pd
 
 ## PAF FORMAT
@@ -67,6 +68,10 @@ if __name__ == "__main__":
     ## Get kmers from representative reads from each cluster
     repr_reads = [i for i in clusters_info["id_longest_read"]]
     kmer_profiles_df = get_kmer_profiles (repr_reads, reads_file)
+    hist = utils.get_kmer_profiles(repr_reads, reads_file, 3)
+    hist_df = pd.DataFrame(hist[0])
+    hist_df[32] = hist[1]
+    hist_df.head()
 
     ## Dimensionality reduction with PCA and clustering with k-means ##
     kmer_reduction_df = kmer_reduction(kmer_profiles_df, clusters_info)
