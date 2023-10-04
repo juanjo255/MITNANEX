@@ -1,9 +1,10 @@
 use pyo3::prelude::*;
+use crate::kmer_cnt::get_kmer_profiles;
 
 /// Formats the sum of two numbers as string.
 #[pyfunction]
 fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
+    Ok(get_kmer_profiles())
 }
 
 /// A Python module implemented in Rust.
