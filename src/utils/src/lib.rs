@@ -60,7 +60,7 @@ pub fn count_kmer(k: usize, seq: &str) -> IndexMap<String, f32> {
 //reads_ids:&Vec<&str>,
 
 #[pyfunction]
-pub fn get_kmer_profiles(reads_ids: Vec<&str>, reads_file: &str, k: usize) -> Vec<Vec<f32>> {
+pub fn get_kmer_profiles(reads_ids: Vec<&str>, reads_file: &str, k: usize) -> (Vec<Vec<f32>>, Vec<String>) {
     let mut reader = fastq::Reader::new(
         File::open(reads_file)
             .expect("Ups! I could not open the file. Check the path and the file"),
@@ -68,6 +68,7 @@ pub fn get_kmer_profiles(reads_ids: Vec<&str>, reads_file: &str, k: usize) -> Ve
     let mut record = fastq::Record::new();
     reader.read(&mut record).expect("Failed to parse record");
     let mut kmer_profiles: Vec<Vec<f32>> = Vec::new();
+    let mut kmer_profiles_ids: Vec<String> = Vec::new();
 
     // Go through each record in the fastQ
     while !record.is_empty() {
@@ -79,14 +80,15 @@ pub fn get_kmer_profiles(reads_ids: Vec<&str>, reads_file: &str, k: usize) -> Ve
             // obtain sequence
             let seq = record.seq();
             let seq = str::from_utf8(&seq).unwrap();
-            let kmer_profile = count_kmer(k, seq);
-            kmer_profiles.push(kmer_profile.into_values().collect_vec());
+            let kmer_comp = count_kmer(k, seq);
+            kmer_profiles.push(kmer_comp.into_values().collect_vec());
+            kmer_profiles_ids.push(record.id().to_string());
         }
         // Update record
         // Equivalent to readlines in python
         reader.read(&mut record).expect("Failed to parse record");
     }
-    return kmer_profiles;
+    return (kmer_profiles, kmer_profiles_ids);
 }
 
 /// A Python module implemented in Rust.
