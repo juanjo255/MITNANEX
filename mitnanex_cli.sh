@@ -79,12 +79,18 @@ seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     $input_file  | \
     seqkit sample --proportion $proportion --threads $threads | \
     seqkit sort --threads $threads --by-length --reverse \
-    -o $prefix"_sample.sorted.fastq"
+    -o $prefix"_sample.sorted.fastq" &&
 
 ### MINIMAP2
 echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $prefix"_sample.sorted.fastq" $prefix"_sample.sorted.fastq" | \
-    fpa keep --containment > $prefix"_containments.paf"
+    fpa keep --containment > $prefix"_containments.paf" &&
     # fpa drop --dovetail > $prefix"_containments.paf"
+
+python3 mitnanex.py &&
+
+
+#flye --scaffold -t 5 --nano-raw $prefix"_putative_mt_reads.fasta" -o results_mitnanex/ 
+
 
