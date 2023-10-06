@@ -102,3 +102,5 @@ if __name__ == "__main__":
     write_fasta(
         reads_file=reads_file, sequences_ids=sequences_ids, output="test/sara_reads/mt_reads_v1.fasta"
     )
+
+    
