@@ -1,11 +1,15 @@
 #!/bin/bash
 
+## START TIMER
+start=$SECONDS
+
 ## default values
 proportion=0.4
 threads=4
 min_len=-1
 max_len=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
+wd="./mitnanex_results"
 
 ## Help message
 mitnanex_help() {
@@ -21,12 +25,13 @@ mitnanex_help() {
         -t        Threads. [4].
         -p        Proportion. For sampling with seqkit. Read seqkit sample documentation. [0.4].
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [500].
+        -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results]
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:' opt; do
+while getopts 'i:t:p:m:M:w:' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -42,6 +47,9 @@ while getopts 'i:t:p:m:M:' opt; do
         ;;
         M)
         max_len=$((OPTARG))
+        ;;
+        w)
+        wd=$OPTARG
         ;;
         *)
         mitnanex_help
@@ -61,7 +69,7 @@ prefix=${input_file%%.*}
 
 ## pipeline body
 
-echo '
+echo "
     
   __  __ ___ _____ _   _    _    _   _ _______  __
  |  \/  |_ _|_   _| \ | |  / \  | \ | | ____\ \/ /
@@ -70,8 +78,14 @@ echo '
  |_|  |_|___| |_| |_| \_/_/   \_\_| \_|_____/_/\_\
                                                   
 https://github.com/juanjo255/MITNANEX_PROJECT.git                                     
-'
-                                                              
+
+Prefix to name resulting files: $prefix
+Working directory: $wd
+"
+
+
+## CREATE WORKING DIRECTORY
+mkdir $wd &&
 
 ### SEQKIT
 echo $timestamp': Running seqkit'
@@ -79,18 +93,21 @@ seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     $input_file  | \
     seqkit sample --proportion $proportion --threads $threads | \
     seqkit sort --threads $threads --by-length --reverse \
-    -o $prefix"_sample.sorted.fastq" &&
+    -o $wd$prefix"_sample.sorted.fastq" &&
 
 ### MINIMAP2
 echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
-    $prefix"_sample.sorted.fastq" $prefix"_sample.sorted.fastq" | \
-    fpa keep --containment > $prefix"_containments.paf" &&
-    # fpa drop --dovetail > $prefix"_containments.paf"
+    $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
+    fpa keep --containment > $wd$prefix"_containments.paf" &&
+    # fpa drop --dovetail > $wd$prefix"_containments.paf"
 
 python3 mitnanex.py &&
 
+#flye --scaffold -t 5 --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd_flye 
 
-#flye --scaffold -t 5 --nano-raw $prefix"_putative_mt_reads.fasta" -o results_mitnanex/ 
 
+## END TIMER
+duration=$(( SECONDS - start ))
 
+echo "Elapsed time: $duration"
