@@ -3,7 +3,7 @@ from sourmash import MinHash
 
 
 def check_circularization(fasta: str, size_overlap: int = 1000, ksize=3):
-    """To check if the genome is circular I collect seeds between the start and the final part of the 
+    """To check if the genome is circular I collect seeds between the start and the final part of the
     genome and compared the jaccard similarity
 
     Args:
@@ -25,6 +25,7 @@ def check_circularization(fasta: str, size_overlap: int = 1000, ksize=3):
             end_signature.add_sequence(str(end))
 
             return start_signature, end_signature
+
 
 start_seq, end_seq = check_circularization(
     fasta="/Users/jjpc/flye_s_cervisae_CEN_PK113-7D/assembly.fasta",
