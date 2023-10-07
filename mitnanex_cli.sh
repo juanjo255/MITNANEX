@@ -102,12 +102,16 @@ minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     fpa keep --containment > $wd$prefix"_containments.paf" &&
     # fpa drop --dovetail > $wd$prefix"_containments.paf"
 
-python3 mitnanex.py &&
+## MITNANEX main
+python3 'src/mitnanex.py' &&
 
-#flye --scaffold -t 5 --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd_flye 
+## FIRST DARFT ASSEMBLY 
+flye --scaffold -t $threads --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd"_flye"
 
+## SELECT CONTIG AND SUMMON MORE READS
+python3 'src/select_contig.py'
 
 ## END TIMER
 duration=$(( SECONDS - start ))
 
-echo "Elapsed time: $duration"
+echo "Elapsed time: $(( duration / 60 )) min"
