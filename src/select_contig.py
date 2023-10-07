@@ -1,6 +1,6 @@
 import pandas as pd
 from Bio import SeqIO
-
+import sys
 
 def select_contig(flye_metadata: str, fasta: str = None) -> str:
     """Select the contig to use to use in minimap2 continue summoning reads for a better assembly.
@@ -22,10 +22,8 @@ def select_contig(flye_metadata: str, fasta: str = None) -> str:
         ].sort_values(by="length")
         return get_contig_sequence(flye_metadata_df["#seq_name"][0], fasta)
     else:
+        print("Selecting longest contig...")
         return get_contig_sequence(flye_metadata_df["#seq_name"][0], fasta)
-
-
-select_contig("/Users/jjpc/flye_s_cervisae_CEN_PK113-7D/assembly_info_2.txt")
 
 
 def get_contig_sequence(contig: str, fasta: str) -> str:
@@ -41,6 +39,7 @@ def get_contig_sequence(contig: str, fasta: str) -> str:
     with open(fasta) as fasta_handle:
         for record in SeqIO.parse(fasta_handle, "fasta"):
             if record.id == contig:
+                print(record.id, "found!")
                 return record.seq
             else:
                 raise (
@@ -48,3 +47,13 @@ def get_contig_sequence(contig: str, fasta: str) -> str:
                         "Something weird happend. I did not find the sequence of the contig."
                     )
                 )
+
+if __name__ == "__main__":
+    
+    args = sys.argv
+    try:
+        path_flye_fasta = args[1] + "assembly_info.txt"
+    except:
+        raise(ValueError("The path to the flye results is missing!"))
+    
+    select_contig(path_flye_fasta)
