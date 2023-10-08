@@ -7,7 +7,6 @@ from .cluster_kmer_profiles import cluster_kmer_profiles
 from .minimun_cov import set_minimun_cov
 import utils
 import pandas as pd
-import numpy as np
 import sys
 import math
 
