@@ -1,8 +1,5 @@
 #!/bin/bash
 
-## START TIMER
-start=$SECONDS
-
 ## default values
 proportion=0.4
 threads=4
@@ -28,6 +25,7 @@ mitnanex_help() {
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [500].
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results]
         -r        Prefix name add to every produced file. [input file name]
+        -c        Coverage. Minimum coverage per cluster accepted. [-1]
         *         Help.
     "
     exit 1
@@ -72,9 +70,58 @@ fi
 prefix=$(basename $input_file)
 prefix=${prefix%%.*}
 
+## WORKING DIRECTORY
+if [ ${wd: -1} = / ]; then 
+    wd=$wd'mitnanex_results/'
+else
+    wd=$wd'/mitnanex_results/'
+fi
 
-## pipeline body
+##### FUNCTIONS #####
+create_wd(){
+## CREATE WORKING DIRECTORY
+mkdir $wd
+}
 
+subsample(){
+### SEQKIT
+echo $timestamp': Running seqkit'
+seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
+    $input_file  | \
+    seqkit sample --proportion $proportion --threads $threads | \
+    seqkit sort --threads $threads --by-length --reverse \
+    -o $wd$prefix"_sample.sorted.fastq"
+}
+
+mapping(){
+### MINIMAP2
+echo $timestamp': Running minimap2'
+minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
+    $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
+    fpa keep --containment > $wd$prefix"_containments.paf"
+    # fpa drop --dovetail > $wd$prefix"_containments.paf"
+}
+
+mt_reads_filt(){
+## MITNANEX main
+python3 'src/mitnanex.py' $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage
+}
+
+first_assembly(){
+## FIRST DARFT ASSEMBLY 
+flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd"_flye/"
+}
+
+contig_selection(){
+## SELECT CONTIG AND SUMMON MORE READS
+python3 'src/select_contig.py' $wd"_flye/"
+}
+
+
+## START TIMER
+start=$SECONDS
+
+### VISAJE INICIAL ###
 echo "
     
   __  __ ___ _____ _   _    _    _   _ _______  __
@@ -90,48 +137,10 @@ $timestamp -> Prefix to name resulting files: $prefix
 $timestamp -> Working directory: $wd
 "
 
-## WORKING DIRECTORY
-if [ ${wd: -1} = / ]; then 
-    wd=$wd'mitnanex_results/'
-else
-    wd=$wd'/mitnanex_results/'
-fi
+#### PIPELINE ####
 
-##### FUNCTIONS #####
-create_wd(){
-## CREATE WORKING DIRECTORY
-mkdir $wd
-}
-subsample(){
-### SEQKIT
-echo $timestamp': Running seqkit'
-seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
-    $input_file  | \
-    seqkit sample --proportion $proportion --threads $threads | \
-    seqkit sort --threads $threads --by-length --reverse \
-    -o $wd$prefix"_sample.sorted.fastq" &&
-}
-mapping(){
-### MINIMAP2
-echo $timestamp': Running minimap2'
-minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
-    $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
-    fpa keep --containment > $wd$prefix"_containments.paf"
-    # fpa drop --dovetail > $wd$prefix"_containments.paf"
-}
-mt_reads_filt(){
-## MITNANEX main
-python3 'src/mitnanex.py' $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage
-}
-first_assembly(){
-## FIRST DARFT ASSEMBLY 
-flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd"_flye"
-}
-contig_selection(){
-## SELECT CONTIG AND SUMMON MORE READS
-python3 'src/select_contig.py'
-}
+create_wd && subsample && mapping && mt_reads_filt && first_assembly && contig_selection 
 
 ## END TIMER
 duration=$(( SECONDS - start ))
-echo "Elapsed time: $(( duration / 60 )) min"
+echo "Elapsed time: $duration secs."
