@@ -7,10 +7,7 @@ min_len=-1
 max_len=-1
 coverage=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
-
-# This is for avoiding creating directories
-suffix=$(date  "+%Y-%m-%d_%H:%M:%S")
-prefix=-1
+output_dir='mitnanex_results/'
 
 ## Help message
 mitnanex_help() {
@@ -25,16 +22,17 @@ mitnanex_help() {
         -i        Input file.
         -t        Threads. [4].
         -p        Proportion. For sampling with seqkit. Read seqkit sample documentation. [0.4].
-        -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [500].
+        -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [-1].
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results]
         -r        Prefix name add to every produced file. [input file name]
         -c        Coverage. Minimum coverage per cluster accepted. [-1]
+        -d        Different output directory. Create a different output directory every run (it uses the date and time).
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:r:' opt; do
+while getopts 'i:t:p:m:M:w:c:r:d:' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -60,6 +58,9 @@ while getopts 'i:t:p:m:M:w:c:r:' opt; do
         r)
         prefix=$OPTARG
         ;;
+        d)
+        diff_output_dir=$OPTARG
+        ;;
         *)
         mitnanex_help
         ;;
@@ -73,16 +74,19 @@ if [ -z "$input_file" ]; then
 fi
 
 ## PREFIX name to use for the resulting files
-if [ $prefix -ne -1 ]; then 
+if [ -z "$prefix" ]; then 
     prefix=$(basename $input_file)
     prefix=${prefix%%.*}
 fi
 
-## WORKING DIRECTORY
+## WORKING DIRECTORY 
+if [ -z "$diff_output_dir" ]; then 
+    output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
+fi
 if [ ${wd: -1} = / ]; then 
-    wd=$wd"mitnanex_results_"$suffix"/"
+    wd=$wd$output_dir
 else
-    wd=$wd"/mitnanex_results_"$suffix"/"
+    wd=$wd"/"$output_dir
 fi
 
 ##### FUNCTIONS #####
