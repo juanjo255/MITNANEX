@@ -1,12 +1,15 @@
 from .hash_function import hash_table_ids, hash_table_clusters
 from .psa import psa
 from .assign_cluster import assign_cluster
-from .utils import convert_fq_to_fa, write_fasta
-from .kmer_cnt import get_kmer_profiles
+from .utils import write_fasta
 from .kmer_reduction_PCA import kmer_reduction
 from .cluster_kmer_profiles import cluster_kmer_profiles
+from .minimun_cov import set_minimun_cov
 import utils
 import pandas as pd
+import numpy as np
+import sys
+import math
 
 ## PAF FORMAT
 
@@ -25,7 +28,7 @@ import pandas as pd
 
 
 # @profile # This is to measure memory consumption
-def run(paf:str) -> hash_table_clusters:
+def run(paf: str) -> hash_table_clusters:
     file = open(paf, "r")
     alignment = file.readline().strip()
     clusters_list = hash_table_clusters()
@@ -44,15 +47,17 @@ def run(paf:str) -> hash_table_clusters:
 
 
 if __name__ == "__main__":
-    # root_project_dir = os.path.dirname(os.path.abspath(__name__))
-    # sys.path.append(root_project_dir)
-
-    # FIXME: Is this true?
-    # Transform fastq to reads_file so it is faster to iterate 
-    reads_file = "test/sara_reads/jfdminion11_sara_reads_sample.sorted.fastq"
+    ## GET INPUTS
+    args = sys.argv
+    reads_file = args[
+        1
+    ]  # PAF "test/sara_reads/jfdminion11_sara_reads_sample.sorted.fastq"
+    paf_file = args[2]
 
     # MAIN PROGRAM
-    clusters_list = run("test/sara_reads/jfdminion11_sara_reads_containments.paf")
+    clusters_list = run(
+        paf_file
+    )  # "test/sara_reads/jfdminion11_sara_reads_containments.paf"
 
     ## Gather clusters info
     clusters_info = pd.DataFrame(
@@ -65,19 +70,24 @@ if __name__ == "__main__":
     )
     clusters_info.sort_values(by="id_longest_read", inplace=True)
 
+    ## Normalize coverage
+    clusters_info["transform"] = [math.log2(i) for i in clusters_info["coverage"]]
+    clusters_info.sort_values("coverage", ascending=False, inplace=True)
+
+    ## Get minimum coverage
+    min_coverage = set_minimun_cov(clusters_info, args)
+
     ## Get kmers from representative reads from each cluster
     repr_reads = [i for i in clusters_info["id_longest_read"]]
-    kmer_profiles_df = get_kmer_profiles (repr_reads, reads_file)
     hist = utils.get_kmer_profiles(repr_reads, reads_file, 3)
     hist_df = pd.DataFrame(hist[0])
     hist_df[32] = hist[1]
-    hist_df.head()
 
     ## Dimensionality reduction with PCA and clustering with k-means ##
-    kmer_reduction_df = kmer_reduction(kmer_profiles_df, clusters_info)
+    kmer_reduction_df = kmer_reduction(hist_df, clusters_info)
 
     ## Clustering reads using K-means expecting 2 clusters ##
-    cluster_prediction = cluster_kmer_profiles(kmer_profiles_df)
+    cluster_prediction = cluster_kmer_profiles(hist_df)
     kmer_reduction["cluster_prediction"] = cluster_prediction
 
     ## Get the cluster of interest ##
@@ -100,7 +110,7 @@ if __name__ == "__main__":
         sequences_ids.update(clusters_list.get_cluster(i).id_sequences)
 
     write_fasta(
-        reads_file=reads_file, sequences_ids=sequences_ids, output="test/sara_reads/mt_reads_v1.fasta"
+        reads_file=reads_file,
+        sequences_ids=sequences_ids,
+        output="test/sara_reads/mt_reads_v1.fasta",
     )
-
-    
