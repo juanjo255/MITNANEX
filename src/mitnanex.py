@@ -73,13 +73,18 @@ if __name__ == "__main__":
     ## Get minimum coverage
     min_coverage = set_minimun_cov(clusters_info, coverage)
 
-    ## Get kmers from representative reads from each cluster
+    ## Filter clusters by coverage
+    clusters_info = clusters_info[clusters_info['coverage'] >= min_coverage]
+    clusters_info['coverage_norm'] = clusters_info['coverage'] / clusters_info['repr_read_len']
+    
+    ## Get kmer composition from representative reads from all the cluster passed
     repr_reads = [i for i in clusters_info["id_longest_read"]]
     kmer_profiles, ids = utils.get_kmer_profiles(repr_reads, reads_file, 3)
     kmer_profiles_df = pd.DataFrame(kmer_profiles)
     kmer_profiles_df["ids"] = ids
 
-    ## Dimensionality reduction with PCA and clustering with k-means ##
+    ## Dimensionality reduction with PCA ##
+    ## Additionally we merge information from cluster_info
     kmer_reduction_df = kmer_reduction(
         kmer_profiles_df=kmer_profiles_df, clusters_info=clusters_info, n_comp=2
     )
