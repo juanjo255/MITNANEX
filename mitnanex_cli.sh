@@ -8,6 +8,9 @@ max_len=-1
 coverage=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
 output_dir='mitnanex_results/'
+diff_output_dir=" "
+prefix=" "
+input_file=" "
 
 ## Help message
 mitnanex_help() {
@@ -68,22 +71,27 @@ while getopts 'i:t:p:m:M:w:c:r:d:' opt; do
 done
 
 # Check if required arguments are provided
-if [ -z "$input_file" ]; then
+if [ -z "$input_file" ]
+then
   echo "Error: Input file is required."
   mitnanex_help
 fi
 
 ## PREFIX name to use for the resulting files
-if [ -z "$prefix" ]; then 
+if [ -z "$prefix" ]
+then 
     prefix=$(basename $input_file)
     prefix=${prefix%%.*}
 fi
 
 ## WORKING DIRECTORY 
-if [ -z "$diff_output_dir" ]; then 
+if [ -z "$diff_output_dir" ] 
+then 
     output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
 fi
-if [ ${wd: -1} = / ]; then 
+
+if [ ${wd: -1} = / ]
+then 
     wd=$wd$output_dir
 else
     wd=$wd"/"$output_dir
@@ -92,7 +100,12 @@ fi
 ##### FUNCTIONS #####
 create_wd(){
 ## CREATE WORKING DIRECTORY
-mkdir $wd
+if [ -d $wd ]
+then
+  echo "Rewriting directory..."
+else 
+    mkdir $wd
+fi
 }
 
 subsample(){
