@@ -48,10 +48,10 @@ def run(paf: str) -> hash_table_clusters:
 if __name__ == "__main__":
     ## GET INPUTS
     args = sys.argv
-    reads_file = args[
-        1
-    ]  # PAF "test/sara_reads/jfdminion11_sara_reads_sample.sorted.fastq"
-    paf_file = args[2]
+    reads_file = args[1]  # sample read file
+    paf_file = args[2]  # PAF
+    coverage = args[3]  # minimun coverage per cluster
+    output = args[4]  # file to write mt reads
 
     # MAIN PROGRAM
     clusters_list = run(
@@ -67,27 +67,27 @@ if __name__ == "__main__":
             "id_cluster": [i.id_cluster for i in clusters_list.clusters],
         }
     )
-    clusters_info.sort_values(by="id_longest_read", inplace=True)
 
     ## Normalize coverage
-    clusters_info["transform"] = [math.log2(i) for i in clusters_info["coverage"]]
-    clusters_info.sort_values("coverage", ascending=False, inplace=True)
 
     ## Get minimum coverage
-    min_coverage = set_minimun_cov(clusters_info, args)
+    min_coverage = set_minimun_cov(clusters_info, coverage)
 
     ## Get kmers from representative reads from each cluster
     repr_reads = [i for i in clusters_info["id_longest_read"]]
-    hist = utils.get_kmer_profiles(repr_reads, reads_file, 3)
-    hist_df = pd.DataFrame(hist[0])
-    hist_df[32] = hist[1]
+    kmer_profiles, ids = utils.get_kmer_profiles(repr_reads, reads_file, 3)
+    kmer_profiles_df = pd.DataFrame(kmer_profiles)
+    kmer_profiles_df["ids"] = ids
 
     ## Dimensionality reduction with PCA and clustering with k-means ##
-    kmer_reduction_df = kmer_reduction(hist_df, clusters_info)
+    kmer_reduction_df = kmer_reduction(
+        kmer_profiles_df=kmer_profiles_df, clusters_info=clusters_info, n_comp=2
+    )
 
     ## Clustering reads using K-means expecting 2 clusters ##
-    cluster_prediction = cluster_kmer_profiles(hist_df)
-    kmer_reduction["cluster_prediction"] = cluster_prediction
+    kmer_reduction_df["cluster_prediction"] = cluster_kmer_profiles(
+        kmer_reduction_df=kmer_profiles_df, n_clusters=2, max_iter=100
+    )
 
     ## Get the cluster of interest ##
     # This step is a pain in the ass,
@@ -111,5 +111,5 @@ if __name__ == "__main__":
     write_fasta(
         reads_file=reads_file,
         sequences_ids=sequences_ids,
-        output="test/sara_reads/mt_reads_v1.fasta",
+        output=output,
     )
