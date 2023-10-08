@@ -8,6 +8,7 @@ proportion=0.4
 threads=4
 min_len=-1
 max_len=-1
+coverage=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
 wd="./mitnanex_results"
 
@@ -26,12 +27,13 @@ mitnanex_help() {
         -p        Proportion. For sampling with seqkit. Read seqkit sample documentation. [0.4].
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [500].
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results]
+        -r        Prefix name add to every produced file. [input file name]
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:' opt; do
+while getopts 'i:t:p:m:M:w:c:' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -51,6 +53,9 @@ while getopts 'i:t:p:m:M:w:' opt; do
         w)
         wd=$OPTARG
         ;;
+        c)
+        coverage=$OPTARG
+        ;;
         *)
         mitnanex_help
         ;;
@@ -63,8 +68,9 @@ if [ -z "$input_file" ]; then
   mitnanex_help
 fi
 
-## prefix name to use for the resulting files 
-prefix=${input_file%%.*}
+## PREFIX name to use for the resulting files
+prefix=$(basename $input_file)
+prefix=${prefix%%.*}
 
 
 ## pipeline body
@@ -79,14 +85,24 @@ echo "
                                                   
 https://github.com/juanjo255/MITNANEX_PROJECT.git                                     
 
-Prefix to name resulting files: $prefix
-Working directory: $wd
+$timestamp -> Prefix to name resulting files: $prefix
+
+$timestamp -> Working directory: $wd
 "
 
+## WORKING DIRECTORY
+if [ ${wd: -1} = / ]; then 
+    wd=$wd'mitnanex_results/'
+else
+    wd=$wd'/mitnanex_results/'
+fi
 
+##### FUNCTIONS #####
+create_wd(){
 ## CREATE WORKING DIRECTORY
-mkdir $wd &&
-
+mkdir $wd
+}
+subsample(){
 ### SEQKIT
 echo $timestamp': Running seqkit'
 seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
@@ -94,24 +110,28 @@ seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     seqkit sample --proportion $proportion --threads $threads | \
     seqkit sort --threads $threads --by-length --reverse \
     -o $wd$prefix"_sample.sorted.fastq" &&
-
+}
+mapping(){
 ### MINIMAP2
 echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
-    fpa keep --containment > $wd$prefix"_containments.paf" &&
+    fpa keep --containment > $wd$prefix"_containments.paf"
     # fpa drop --dovetail > $wd$prefix"_containments.paf"
-
+}
+mt_reads_filt(){
 ## MITNANEX main
-python3 'src/mitnanex.py' &&
-
+python3 'src/mitnanex.py' $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage
+}
+first_assembly(){
 ## FIRST DARFT ASSEMBLY 
-flye --scaffold -t $threads --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd"_flye"
-
+flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd"_flye"
+}
+contig_selection(){
 ## SELECT CONTIG AND SUMMON MORE READS
 python3 'src/select_contig.py'
+}
 
 ## END TIMER
 duration=$(( SECONDS - start ))
-
 echo "Elapsed time: $(( duration / 60 )) min"
