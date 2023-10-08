@@ -46,6 +46,7 @@ def run(paf: str) -> hash_table_clusters:
 
 
 if __name__ == "__main__":
+    
     ## GET INPUTS
     args = sys.argv
     reads_file = args[1]  # sample read file
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     # I will select the cluster with the highest average coverage.
     selected_cluster_id = (
         kmer_reduction.loc[:, kmer_reduction.columns != "ids"]
-        .groupby(by="cluster_prediction")["coverage"]
+        .groupby(by="cluster_prediction")["coverage_norm"]
         .median()
         .idxmax()
     )
