@@ -3,6 +3,16 @@ import pandas as pd
 
 
 def kmer_reduction(kmer_profiles_df:pd.DataFrame, clusters_info:pd.DataFrame, n_comp:int) -> pd.DataFrame:
+    """Reduce dimensionaly using PCA
+
+    Args:
+        kmer_profiles_df (pd.DataFrame): Contains the kmer composition from the clusters
+        clusters_info (pd.DataFrame): Contains the clusters
+        n_comp (int): number of components
+
+    Returns:
+        pd.DataFrame: cluster_info columns plus the new dimensions
+    """
     pca = PCA(n_components=n_comp)
     kmer_reduction_df = pd.DataFrame(
         pca.fit_transform(kmer_profiles_df.iloc[:, :-2]), columns=["comp1", "comp2"]

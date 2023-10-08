@@ -7,7 +7,10 @@ min_len=-1
 max_len=-1
 coverage=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
-wd="./mitnanex_results"
+
+# This is for avoiding creating directories
+suffix=$(date  "+%Y-%m-%d_%H:%M:%S")
+prefix=-1
 
 ## Help message
 mitnanex_help() {
@@ -31,7 +34,7 @@ mitnanex_help() {
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:' opt; do
+while getopts 'i:t:p:m:M:w:c:r:' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -54,6 +57,9 @@ while getopts 'i:t:p:m:M:w:c:' opt; do
         c)
         coverage=$OPTARG
         ;;
+        r)
+        prefix=$OPTARG
+        ;;
         *)
         mitnanex_help
         ;;
@@ -67,14 +73,16 @@ if [ -z "$input_file" ]; then
 fi
 
 ## PREFIX name to use for the resulting files
-prefix=$(basename $input_file)
-prefix=${prefix%%.*}
+if [ $prefix -ne -1 ]; then 
+    prefix=$(basename $input_file)
+    prefix=${prefix%%.*}
+fi
 
 ## WORKING DIRECTORY
 if [ ${wd: -1} = / ]; then 
-    wd=$wd'mitnanex_results/'
+    wd=$wd"mitnanex_results_"$suffix"/"
 else
-    wd=$wd'/mitnanex_results/'
+    wd=$wd"/mitnanex_results_"$suffix"/"
 fi
 
 ##### FUNCTIONS #####
@@ -139,7 +147,7 @@ $timestamp -> Working directory: $wd
 
 #### PIPELINE ####
 
-create_wd && subsample && mapping && mt_reads_filt && first_assembly && contig_selection 
+create_wd && subsample && mapping #&& mt_reads_filt && first_assembly && contig_selection 
 
 ## END TIMER
 duration=$(( SECONDS - start ))
