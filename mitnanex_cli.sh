@@ -1,5 +1,4 @@
 #!/bin/bash
-
 ## default values
 proportion=0.4
 threads=4
@@ -7,10 +6,8 @@ min_len=-1
 max_len=-1
 coverage=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
+wd="./"
 output_dir='mitnanex_results/'
-diff_output_dir=" "
-prefix=" "
-input_file=" "
 
 ## Help message
 mitnanex_help() {
@@ -35,7 +32,7 @@ mitnanex_help() {
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:r:d:' opt; do
+while getopts 'i:t:p:m:M:w:c:r:d' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -62,7 +59,8 @@ while getopts 'i:t:p:m:M:w:c:r:d:' opt; do
         prefix=$OPTARG
         ;;
         d)
-        diff_output_dir=$OPTARG
+        ## OUTPUT DIRECTORY 
+        output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
         ;;
         *)
         mitnanex_help
@@ -71,26 +69,20 @@ while getopts 'i:t:p:m:M:w:c:r:d:' opt; do
 done
 
 # Check if required arguments are provided
-if [ -z "$input_file" ]
+if [ -z "$input_file" ];
 then
   echo "Error: Input file is required."
   mitnanex_help
 fi
 
 ## PREFIX name to use for the resulting files
-if [ -z "$prefix" ]
+if [ -z $prefix ];
 then 
     prefix=$(basename $input_file)
     prefix=${prefix%%.*}
 fi
 
-## WORKING DIRECTORY 
-if [ -z "$diff_output_dir" ] 
-then 
-    output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
-fi
-
-if [ ${wd: -1} = / ]
+if [ ${wd: -1} = / ];
 then 
     wd=$wd$output_dir
 else
@@ -134,12 +126,12 @@ python3 'src/mitnanex.py' $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containme
 
 first_assembly(){
 ## FIRST DARFT ASSEMBLY 
-flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd"_flye/"
+flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd$prefix"_flye/"
 }
 
 contig_selection(){
 ## SELECT CONTIG AND SUMMON MORE READS
-python3 'src/select_contig.py' $wd"_flye/"
+python3 main.py $wd$prefix"_flye/"
 }
 
 
@@ -164,7 +156,7 @@ $timestamp -> Working directory: $wd
 
 #### PIPELINE ####
 
-create_wd && subsample && mapping #&& mt_reads_filt && first_assembly && contig_selection 
+create_wd && subsample && mapping && mt_reads_filt && first_assembly #&& contig_selection 
 
 ## END TIMER
 duration=$(( SECONDS - start ))
