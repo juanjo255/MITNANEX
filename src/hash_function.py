@@ -1,4 +1,3 @@
-import numpy as np
 from .cluster import cluster
 from .psa import psa
 from collections import Counter
