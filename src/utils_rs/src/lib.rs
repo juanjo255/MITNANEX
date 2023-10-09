@@ -93,7 +93,7 @@ pub fn get_kmer_profiles(reads_ids: Vec<&str>, reads_file: &str, k: usize) -> (V
 
 /// A Python module implemented in Rust.
 #[pymodule]
-fn utils(_py: Python, m: &PyModule) -> PyResult<()> {
+fn utils_rs(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_kmer_profiles, m)?)?;
     Ok(())
 }
