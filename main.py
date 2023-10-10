@@ -65,7 +65,7 @@ if __name__ == "__main__":
     selected_cluster_id = (
         kmer_reduction_df.loc[:, kmer_reduction_df.columns != "ids"]
         .groupby(by="cluster_prediction")["coverage_norm"]
-        .median()
+        .sum()
         .idxmax()
     )
     selected_cluster = kmer_reduction_df[
