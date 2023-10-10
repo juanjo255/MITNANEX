@@ -13,7 +13,7 @@ def set_minimun_cov(clusters_info: pd.DataFrame, coverage: str) -> int:
     local_min = argrelextrema(cov_fdp, np.less)[0]
 
     ## Check if the user set a coverage
-    if int(coverage) > -1:
+    if int(coverage) == -1:
         if len(local_min) < 1:
             min_coverage = 2
         else:
