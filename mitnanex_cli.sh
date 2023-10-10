@@ -6,6 +6,7 @@ min_len=-1
 max_len=-1
 coverage=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
+map_identity=0.6
 wd="./"
 output_dir='mitnanex_results/'
 
@@ -27,6 +28,7 @@ mitnanex_help() {
         -r        Prefix name add to every produced file. [input file name]
         -c        Coverage. Minimum coverage per cluster accepted. [-1]
         -d        Different output directory. Create a different output directory every run (it uses the date and time).
+        -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6]
         *         Help.
     "
     exit 1
@@ -59,7 +61,6 @@ while getopts 'i:t:p:m:M:w:c:r:d' opt; do
         prefix=$OPTARG
         ;;
         d)
-        ## OUTPUT DIRECTORY 
         output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
         ;;
         *)
@@ -110,7 +111,7 @@ seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     -o $wd$prefix"_sample.sorted.fastq"
 }
 
-mapping(){
+reads_overlap(){
 ### MINIMAP2
 echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
@@ -122,23 +123,23 @@ minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
 mt_reads_filt(){
 ## MITNANEX main
 echo $timestamp': Running MITNANEX'
-python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage $wd$prefix"_putative_mt_reads.fasta"
+python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta"
 }
 
 first_assembly(){
 ## FIRST DARFT ASSEMBLY 
-echo $timestamp': Producing first draft assembly'
+echo $timestamp': Running Flye'
 flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd$prefix"_flye/"
 }
 
 contig_selection(){
 ## SELECT CONTIG AND SUMMON MORE READS
-python3 'select_contig.py' $wd$prefix"_flye/"
+echo $timestamp': Selecting putative contig'
+python3 src/select_contig.py $wd$prefix"_flye/" $wd$prefix"_first_draft_mt_assembly.fasta"
 }
 
 
-## START TIMER
-start=$SECONDS
+
 
 ### VISAJE INICIAL ###
 echo "
@@ -156,10 +157,12 @@ $timestamp -> Prefix to name resulting files: $prefix
 $timestamp -> Working directory: $wd
 "
 
-#### PIPELINE ####
+## START TIMER
+start=$SECONDS
 
-#create_wd && subsample && mapping && mt_reads_filt #&& first_assembly #&& contig_selection 
-mt_reads_filt
+#### PIPELINE ####
+create_wd && subsample && reads_overlap && mt_reads_filt && first_assembly && contig_selection 
+
 ## END TIMER
 duration=$(( SECONDS - start ))
 echo "$timestamp -> Elapsed time: $duration secs."
