@@ -13,11 +13,12 @@ if __name__ == "__main__":
     args = sys.argv
     reads_file = args[1]  # sample read file
     paf_file = args[2]  # PAF
-    coverage = args[3]  # minimun coverage per cluster
-    output = args[4]  # file to write mt reads
+    coverage = int(args[3])  # minimun coverage per cluster
+    map_identity = float(args[4])  # minimun coverage per cluster
+    output = args[5]  # file to write mt reads
 
     # MAIN PROGRAM
-    clusters_list = run(paf_file)
+    clusters_list = run(paf_file, map_identity)
 
     ## Gather clusters info
     clusters_info = pd.DataFrame(
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     min_coverage = set_minimun_cov(clusters_info, coverage)
 
     ## Filter clusters by coverage
-    clusters_info = clusters_info[clusters_info["coverage"] >= int(min_coverage)]
+    clusters_info = clusters_info[clusters_info["coverage"] >= min_coverage]
     clusters_info["coverage_norm"] = (
         clusters_info["coverage"] / clusters_info["repr_read_len"]
     )
