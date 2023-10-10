@@ -24,6 +24,7 @@ mitnanex_help() {
         -t        Threads. [4].
         -p        Proportion. For sampling with seqkit. Read seqkit sample documentation. [0.4].
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [-1].
+        -M        Max-len. Filter reads by maximun length. Read seqkit seq documentation. [-1].
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results]
         -r        Prefix name add to every produced file. [input file name]
         -c        Coverage. Minimum coverage per cluster accepted. [-1]
