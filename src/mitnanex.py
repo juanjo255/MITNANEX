@@ -19,7 +19,7 @@ from .assign_cluster import assign_cluster
 
 
 # @profile # This is to measure memory consumption
-def run(paf: str) -> hash_table_clusters:
+def run(paf: str, map_identity:float) -> hash_table_clusters:
     file = open(paf, "r")
     alignment = file.readline().strip()
     clusters_list = hash_table_clusters()
@@ -28,7 +28,7 @@ def run(paf: str) -> hash_table_clusters:
     # Iterate through each alignment
     while alignment:
         alignment = psa(alignment.strip().split("\t"))
-        if alignment.map_identity >= 0.6:
+        if alignment.map_identity >= map_identity:
             assign_cluster(alignment, cluster_pointers, clusters_list)
         # New alignment
         alignment = file.readline().strip()
