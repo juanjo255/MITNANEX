@@ -35,7 +35,7 @@ if __name__ == "__main__":
     min_coverage = set_minimun_cov(clusters_info, coverage)
 
     ## Filter clusters by coverage
-    clusters_info = clusters_info[clusters_info["coverage"] >= min_coverage]
+    clusters_info = clusters_info[clusters_info["coverage"] >= int(min_coverage)]
     clusters_info["coverage_norm"] = (
         clusters_info["coverage"] / clusters_info["repr_read_len"]
     )
@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     ## Clustering reads using K-means expecting 2 clusters ##
     kmer_reduction_df["cluster_prediction"] = cluster_kmer_profiles(
-        kmer_reduction_df=kmer_profiles_df, n_clusters=2, max_iter=100
+        kmer_reduction_df=kmer_reduction_df, n_clusters=2, max_iter=100
     )
 
     ## Get the cluster of interest ##
@@ -62,13 +62,13 @@ if __name__ == "__main__":
     # but since I am looking to keep the free-reference,
     # I will select the cluster with the highest average coverage.
     selected_cluster_id = (
-        kmer_reduction.loc[:, kmer_reduction.columns != "ids"]
+        kmer_reduction_df.loc[:, kmer_reduction_df.columns != "ids"]
         .groupby(by="cluster_prediction")["coverage_norm"]
         .median()
         .idxmax()
     )
-    selected_cluster = kmer_reduction[
-        kmer_reduction["cluster_prediction"] == selected_cluster_id
+    selected_cluster = kmer_reduction_df[
+        kmer_reduction_df["cluster_prediction"] == selected_cluster_id
     ]
 
     ## Get sequences from selected clusters and write fasta

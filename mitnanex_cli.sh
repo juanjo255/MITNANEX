@@ -121,17 +121,19 @@ minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
 
 mt_reads_filt(){
 ## MITNANEX main
-python3 'src/mitnanex.py' $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage
+echo $timestamp': Running MITNANEX'
+python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage $wd$prefix"_putative_mt_reads.fasta"
 }
 
 first_assembly(){
 ## FIRST DARFT ASSEMBLY 
+echo $timestamp': Producing first draft assembly'
 flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd$prefix"_flye/"
 }
 
 contig_selection(){
 ## SELECT CONTIG AND SUMMON MORE READS
-python3 main.py $wd$prefix"_flye/"
+python3 'select_contig.py' $wd$prefix"_flye/"
 }
 
 
@@ -156,8 +158,8 @@ $timestamp -> Working directory: $wd
 
 #### PIPELINE ####
 
-create_wd && subsample && mapping && mt_reads_filt && first_assembly #&& contig_selection 
-
+#create_wd && subsample && mapping && mt_reads_filt #&& first_assembly #&& contig_selection 
+mt_reads_filt
 ## END TIMER
 duration=$(( SECONDS - start ))
-echo "Elapsed time: $duration secs."
+echo "$timestamp -> Elapsed time: $duration secs."
