@@ -126,9 +126,10 @@ reads_overlap(){
 ### MINIMAP2
 echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
-    $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" >  $wd$prefix"_containments.paf" # | \
+    $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
+    #> $wd$prefix"_containments.paf" 
     #fpa keep --containment > $wd$prefix"_containments.paf"
-    # fpa drop --dovetail > $wd$prefix"_containments.paf"
+    fpa drop --internalmatch --length-lower $min_len > $wd$prefix"_containments.paf"
 }
 
 mt_reads_filt(){
@@ -172,8 +173,8 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-create_wd && subsample && trim_adapters && sort_file && reads_overlap #&& mt_reads_filt && first_assembly && contig_selection 
-
+#create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt #&& first_assembly && contig_selection 
+mt_reads_filt
 ## END TIMER
 duration=$(( SECONDS - start ))
 echo "$timestamp -> Elapsed time: $duration secs."
