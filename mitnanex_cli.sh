@@ -108,8 +108,7 @@ echo $timestamp': Running seqkit'
 seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     $input_file  | \
     seqkit sample --proportion $proportion --threads $threads | \
-    seqkit sort --threads $threads --by-length --reverse | \
-    -o $wd$prefix"_sample.sorted.fastq"
+    seqkit sort --threads $threads --by-length --reverse -o $wd$prefix"_sample.sorted.fastq"
 }
 
 trim_adapters(){
