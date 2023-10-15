@@ -5,7 +5,9 @@ import pandas as pd
 
 
 def set_minimun_cov(clusters_info: pd.DataFrame, coverage: str) -> int:
+
     ## Get minimum coverage
+    clusters_info=clusters_info.sort_values(by='coverage', ascending=False)
     kde = KernelDensity(kernel="gaussian", bandwidth=0.5).fit(
         clusters_info["coverage"].array.reshape(-1, 1)
     )
@@ -14,8 +16,10 @@ def set_minimun_cov(clusters_info: pd.DataFrame, coverage: str) -> int:
 
     ## Check if the user set a coverage
     if int(coverage) == -1:
+        print("no user coverage")
+        print(local_min)
         if len(local_min) < 1:
-            min_coverage = 2
+            min_coverage = 5
         else:
             min_coverage = clusters_info.iloc[max(local_min), :]["coverage"]
     else:
