@@ -65,12 +65,18 @@ if __name__ == "__main__":
     selected_cluster_id = (
         kmer_reduction_df.loc[:, kmer_reduction_df.columns != "ids"]
         .groupby(by="cluster_prediction")["coverage_norm"]
-        .sum()
+        .median()
         .idxmax()
     )
     selected_cluster = kmer_reduction_df[
         kmer_reduction_df["cluster_prediction"] == selected_cluster_id
     ]
+    print(selected_cluster)
+    import matplotlib.pyplot as plt
+    plt.scatter(x=kmer_reduction_df['comp1'], y=kmer_reduction_df['comp2'], c=kmer_reduction_df['cluster_prediction'])
+    plt.xlabel('comp1')
+    plt.ylabel('comp2')
+    plt.show()
 
     ## Get sequences from selected clusters and write fasta
     sequences_ids = set()
