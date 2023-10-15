@@ -7,7 +7,6 @@ import pandas as pd
 def set_minimun_cov(clusters_info: pd.DataFrame, coverage: str) -> int:
 
     ## Get minimum coverage
-    clusters_info=clusters_info.sort_values(by='coverage', ascending=False)
     kde = KernelDensity(kernel="gaussian", bandwidth=0.5).fit(
         clusters_info["coverage"].array.reshape(-1, 1)
     )
