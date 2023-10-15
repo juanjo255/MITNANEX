@@ -112,12 +112,14 @@ seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
 }
 
 trim_adapters(){
+    echo $timestamp': Trimming adapters with porechop'
     porechop --verbosity 1 -t $threads -o $wd$prefix"_sample.sorted.fastq" -i $wd$prefix"_sample.sorted.fastq"
     
 }
 
 sort_file(){
-    seqkit sort --threads $threads --by-length --reverse -o $wd$prefix"_sample.sorted.fastq"
+    echo $timestamp': Sorting file with seqkit'
+    seqkit sort --threads $threads --by-length --reverse -i $wd$prefix"_sample.sorted.fastq" -o $wd$prefix"_sample.sorted.fastq"
 }
 
 reads_overlap(){
