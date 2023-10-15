@@ -16,8 +16,6 @@ def set_minimun_cov(clusters_info: pd.DataFrame, coverage: str) -> int:
 
     ## Check if the user set a coverage
     if int(coverage) == -1:
-        print("no user coverage")
-        print(local_min)
         if len(local_min) < 1:
             min_coverage = 5
         else:

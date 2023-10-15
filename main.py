@@ -29,12 +29,9 @@ if __name__ == "__main__":
             "id_cluster": [i.id_cluster for i in clusters_list.clusters],
         }
     )
-
-
     
     ## Get minimum coverage
     min_coverage = set_minimun_cov(clusters_info, coverage)
-    print(clusters_info.head())
 
     ## Filter clusters by coverage
     clusters_info = clusters_info[clusters_info["coverage"] >= min_coverage]
