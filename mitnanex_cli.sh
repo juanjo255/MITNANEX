@@ -110,6 +110,9 @@ seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     seqkit sample --proportion $proportion --threads $threads | \
     seqkit sort --threads $threads --by-length --reverse | \
     -o $wd$prefix"_sample.sorted.fastq"
+}
+
+trim_adapters(){
     porechop --verbosity 1 -t $threads -o $wd$prefix"_sample.sorted.fastq" -i $wd$prefix"_sample.sorted.fastq"
 }
 
@@ -163,8 +166,8 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-#create_wd && subsample && reads_overlap && mt_reads_filt && first_assembly && contig_selection 
-mt_reads_filt
+create_wd && subsample && trim_adapters && reads_overlap && mt_reads_filt #&& first_assembly && contig_selection 
+#mt_reads_filt
 ## END TIMER
 duration=$(( SECONDS - start ))
 echo "$timestamp -> Elapsed time: $duration secs."
