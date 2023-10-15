@@ -168,8 +168,8 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-#create_wd && subsample && trim_adapters && reads_overlap && mt_reads_filt #&& first_assembly && contig_selection 
-mt_reads_filt
+create_wd && subsample && trim_adapters && reads_overlap && mt_reads_filt && first_assembly && contig_selection 
+#mt_reads_filt
 ## END TIMER
 duration=$(( SECONDS - start ))
 echo "$timestamp -> Elapsed time: $duration secs."
