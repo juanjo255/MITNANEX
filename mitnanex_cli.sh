@@ -62,7 +62,7 @@ while getopts 'i:t:p:m:M:w:c:r:s:d' opt; do
         prefix=$OPTARG
         ;;
         s)
-        map_identity=$((OPTARG))
+        map_identity=$OPTARG
         ;;
         d)
         output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
@@ -130,8 +130,6 @@ reads_overlap(){
 echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
-    #> $wd$prefix"_containments.paf" 
-    #fpa keep --containment > $wd$prefix"_containments.paf"
     fpa drop --internalmatch --length-lower $min_len > $wd$prefix"_containments.paf"
 }
 
@@ -143,8 +141,14 @@ python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $
 
 first_assembly(){
 ## FIRST DARFT ASSEMBLY 
-echo $timestamp': Running Flye'
-flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd$prefix"_flye/"
+# echo $timestamp': Running Flye'
+# flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd$prefix"_flye/"
+
+echo $timestamp': Running Miniasm'
+minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
+    $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
+    miniasm -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
+
 }
 
 contig_selection(){
@@ -176,7 +180,7 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt #&& first_assembly && contig_selection 
+create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt && first_assembly && contig_selection 
 #mt_reads_filt
 ## END TIMER
 duration=$(( SECONDS - start ))
