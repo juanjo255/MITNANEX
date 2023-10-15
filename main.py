@@ -29,6 +29,9 @@ if __name__ == "__main__":
             "id_cluster": [i.id_cluster for i in clusters_list.clusters],
         }
     )
+
+    ## Sort by coverage
+    clusters_info=clusters_info.sort_values(by='coverage', ascending=False)
     
     ## Get minimum coverage
     min_coverage = set_minimun_cov(clusters_info, coverage)
@@ -70,11 +73,11 @@ if __name__ == "__main__":
         kmer_reduction_df["cluster_prediction"] == selected_cluster_id
     ]
     # print(selected_cluster)
-    # import matplotlib.pyplot as plt
-    # plt.scatter(x=kmer_reduction_df['comp1'], y=kmer_reduction_df['comp2'], c=kmer_reduction_df['cluster_prediction'])
-    # plt.xlabel('comp1')
-    # plt.ylabel('comp2')
-    # plt.show()
+    import matplotlib.pyplot as plt
+    plt.scatter(x=kmer_reduction_df['comp1'], y=kmer_reduction_df['comp2'], c=kmer_reduction_df['cluster_prediction'])
+    plt.xlabel('comp1')
+    plt.ylabel('comp2')
+    plt.show()
 
     ## Get sequences from selected clusters and write fasta
     sequences_ids = set()
