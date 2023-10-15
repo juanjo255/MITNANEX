@@ -30,8 +30,9 @@ if __name__ == "__main__":
         }
     )
 
-    ## Normalize coverage
-
+    ## Sort by coverage
+    clusters_info=clusters_info.sort_values(by='coverage', ascending=False)
+    
     ## Get minimum coverage
     min_coverage = set_minimun_cov(clusters_info, coverage)
 
@@ -65,7 +66,7 @@ if __name__ == "__main__":
     selected_cluster_id = (
         kmer_reduction_df.loc[:, kmer_reduction_df.columns != "ids"]
         .groupby(by="cluster_prediction")["coverage_norm"]
-        .sum()
+        .median()
         .idxmax()
     )
     selected_cluster = kmer_reduction_df[
