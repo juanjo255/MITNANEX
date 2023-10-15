@@ -35,7 +35,7 @@ mitnanex_help() {
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:r:d' opt; do
+while getopts 'i:t:p:m:M:w:c:r:s:d' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -60,6 +60,9 @@ while getopts 'i:t:p:m:M:w:c:r:d' opt; do
         ;;
         r)
         prefix=$OPTARG
+        ;;
+        s)
+        map_identity=$((OPTARG))
         ;;
         d)
         output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
@@ -173,8 +176,8 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-#create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt #&& first_assembly && contig_selection 
-mt_reads_filt
+create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt #&& first_assembly && contig_selection 
+#mt_reads_filt
 ## END TIMER
 duration=$(( SECONDS - start ))
 echo "$timestamp -> Elapsed time: $duration secs."
