@@ -29,7 +29,7 @@ if __name__ == "__main__":
             "id_cluster": [i.id_cluster for i in clusters_list.clusters],
         }
     )
-
+    
     ## Sort by coverage
     clusters_info=clusters_info.sort_values(by='coverage', ascending=False)
     
