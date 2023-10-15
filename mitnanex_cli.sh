@@ -107,9 +107,17 @@ subsample(){
 echo $timestamp': Running seqkit'
 seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     $input_file  | \
-    seqkit sample --proportion $proportion --threads $threads | \
-    seqkit sort --threads $threads --by-length --reverse -o $wd$prefix"_sample.sorted.fastq" | \
+    seqkit sample --proportion $proportion --threads $threads -o $wd$prefix"_sample.sorted.fastq"
+    
+}
+
+trim_adapters(){
     porechop --verbosity 1 -t $threads -o $wd$prefix"_sample.sorted.fastq" -i $wd$prefix"_sample.sorted.fastq"
+    
+}
+
+sort_file(){
+    seqkit sort --threads $threads --by-length --reverse -o $wd$prefix"_sample.sorted.fastq"
 }
 
 reads_overlap(){
@@ -162,7 +170,7 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-create_wd && subsample && reads_overlap #&& mt_reads_filt && first_assembly && contig_selection 
+create_wd && subsample && trim_adapters && sort_file && reads_overlap #&& mt_reads_filt && first_assembly && contig_selection 
 
 ## END TIMER
 duration=$(( SECONDS - start ))
