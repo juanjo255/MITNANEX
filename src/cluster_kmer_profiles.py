@@ -16,5 +16,5 @@ def cluster_kmer_profiles (kmer_reduction_df:pd.DataFrame, n_clusters:int, max_i
         n_init=1,
         verbose=0,
     )
-    mt_prediction = kmeans.fit_predict(kmer_reduction_df[["comp1", "comp2"]])
+    mt_prediction = kmeans.fit_predict(kmer_reduction_df[["comp1", "comp2"]], sample_weight=kmer_reduction_df['coverage_norm'])
     return mt_prediction
