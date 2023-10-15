@@ -23,5 +23,5 @@ def kmer_reduction(kmer_profiles_df:pd.DataFrame, clusters_info:pd.DataFrame, n_
     kmer_reduction_df = kmer_reduction_df.merge(
         clusters_info, how="left", left_on="ids", right_on="id_longest_read"
     )
-    kmer_reduction_df.drop(columns="id_longest_read", inplace=True)
+    kmer_profiles_df=kmer_reduction_df.drop(columns="id_longest_read")
     return kmer_reduction_df
