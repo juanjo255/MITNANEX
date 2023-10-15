@@ -29,9 +29,17 @@ def run(paf: str, map_identity:float) -> hash_table_clusters:
     while alignment:
         alignment = psa(alignment.strip().split("\t"))
         if alignment.map_identity >= map_identity:
-            assign_cluster(alignment, cluster_pointers, clusters_list)
+            ## filter only hits that where one read contains the other one equal or greater to threshold
+            ## NOTE: So far I do not take into account the difference between internal matches and containments
+            ## Here containment is just the read aligned to other read at least threshold_contaiment
+            threshold_containment = 0.8
+            if alignment.align_length >= min(alignment.query_length, alignment.reference_length) * threshold_containment:
+                assign_cluster(alignment, cluster_pointers, clusters_list)
+                
         # New alignment
         alignment = file.readline().strip()
+
+    
 
     file.close()
     return clusters_list

@@ -109,15 +109,15 @@ seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     $input_file  | \
     seqkit sample --proportion $proportion --threads $threads | \
     seqkit sort --threads $threads --by-length --reverse -o $wd$prefix"_sample.sorted.fastq" | \
-    porechop --verbosity 1 -t $threads -o $wd$prefix"_sample.sorted.fastq"
+    porechop --verbosity 1 -t $threads -o $wd$prefix"_sample.sorted.fastq" -i $wd$prefix"_sample.sorted.fastq"
 }
 
 reads_overlap(){
 ### MINIMAP2
 echo $timestamp': Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
-    $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
-    fpa keep --containment > $wd$prefix"_containments.paf"
+    $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" >  $wd$prefix"_containments.paf" # | \
+    #fpa keep --containment > $wd$prefix"_containments.paf"
     # fpa drop --dovetail > $wd$prefix"_containments.paf"
 }
 
@@ -162,7 +162,7 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-create_wd && subsample #&& reads_overlap && mt_reads_filt && first_assembly && contig_selection 
+create_wd && subsample && reads_overlap #&& mt_reads_filt && first_assembly && contig_selection 
 
 ## END TIMER
 duration=$(( SECONDS - start ))
