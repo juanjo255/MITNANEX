@@ -108,8 +108,9 @@ echo $timestamp': Running seqkit'
 seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
     $input_file  | \
     seqkit sample --proportion $proportion --threads $threads | \
-    seqkit sort --threads $threads --by-length --reverse \
+    seqkit sort --threads $threads --by-length --reverse | \
     -o $wd$prefix"_sample.sorted.fastq"
+    porechop --verbosity 1 -t $threads -o $wd$prefix"_sample.sorted.fastq" -i $wd$prefix"_sample.sorted.fastq"
 }
 
 reads_overlap(){
