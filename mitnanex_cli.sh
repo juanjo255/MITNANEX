@@ -109,7 +109,7 @@ subsample(){
 ### SEQKIT
 echo $timestamp': Running seqkit'
 seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
-    $input_file  | \
+    $input_file | \
     seqkit sample --proportion $proportion --threads $threads -o $wd$prefix"_sample.sorted.fastq"
     
 }
