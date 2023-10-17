@@ -15,10 +15,18 @@ def set_minimun_cov(clusters_info: pd.DataFrame, coverage: str) -> int:
     ## Check if the user set a coverage
     if int(coverage) == -1:
         if len(local_min) < 1:
-            min_coverage = 5
+            min_coverage=3
         else:
             min_coverage = clusters_info.iloc[max(local_min), :]["coverage"]
     else:
         min_coverage = coverage
     print("Covertura minima admitida: ", min_coverage)
     return min_coverage
+
+def filt_by_cov_gap (clusters_info: pd.DataFrame) -> pd.DataFrame:
+    cov_gaps = clusters_info.loc[:,'coverage'].diff(periods=-1).sort_values(ascending=False)
+    for k in cov_gaps.index:
+        clusters_filt_cov = clusters_info['coverage'] >= clusters_info.loc[k, 'coverage']
+        if sum(clusters_filt_cov) > 1 :
+            print("Minimum coverage: ", )
+            return clusters_filt_cov
