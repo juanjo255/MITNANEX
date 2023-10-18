@@ -4,7 +4,7 @@ from ncbi.datasets.openapi import ApiClient as DatasetsApiClient
 from pysradb.sraweb import SRAweb
 from tqdm import trange
 
-
+# GET DATA FROM EVERY BIOPROJECT
 def get_metadata_genome_api(bioprojects) -> list:
     result = list()
     # CONNECT WITH GENOME API
@@ -38,7 +38,6 @@ def get_metadata_genome_api(bioprojects) -> list:
                         )
     return result
 
-
 # PARSE CSV FILE DOWNLOADED FROM NCBI
 def parse_data(file) -> list:
     data = pd.read_csv(file, delimiter=",")
@@ -49,7 +48,6 @@ def parse_data(file) -> list:
     #             bioprojects.append(data.loc[i,'BioProject'])
     bioprojects = data["bioproject_s"].to_list()
     return bioprojects
-
 
 # ASSOCIATE GENOME ACCESSION TO A RECORD IN THE INITIAL DATASET
 def get_more_info_filtered_mito(created_file, original_file):
@@ -64,8 +62,6 @@ def get_more_info_filtered_mito(created_file, original_file):
     new_data.to_excel("mito_ncbi_final.xlsx")
     return new_data.head()
 
-
-# %%
 # GO THROUGH EVERY RECORD AND FILTER MITOCONDRIAL GENOMES BY SRA
 def filt_mito(csv: str, output_file: str):
     print("FILTERING MITOCHONDRIAS BY SRA")
@@ -88,6 +84,7 @@ def filt_mito(csv: str, output_file: str):
         inplace=True,
     )
     dataframe.to_excel(output_file)
+    return dataframe.head()
 
 
 # GET SRA METADATA OF FILTERED MITOCHONDRIAL GENOMES
@@ -130,13 +127,13 @@ def analyse_dataset(file):
         .assign(percentage=lambda x: x.instrument / x.instrument.sum() * 100)
     )
     # df.to_excel("sra_metadata_analysis_results.xlsx")
-    return df.head(15)
+    return df.head()
 
 
 if __name__ == "__main__":
-    filt_mito("datasets_metadata/wgs_selector.csv", "datasets_metadata/mito_ncbi.xlsx")
+    filt_mito("datasets_metadata/wgs_selector.csv", "datasets_metadata/sra_per_bioproject.xlsx")
     # get_more_info_filtered_mito("mito_ncbi.xlsx", 'datasets_metadata/wgs_selector.csv')
     get_sra_info_filtered_mito(
-        "datasets_metadata/mito_ncbi.xlsx", "datasets_metadata/sra_metadata.xlsx"
+        "datasets_metadata/sra_per_bioproject.xlsx", "datasets_metadata/sra_metadata.xlsx"
     )
     # analyse_dataset('sra_metadata.xlsx')
