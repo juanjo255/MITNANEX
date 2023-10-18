@@ -50,7 +50,7 @@ def parse_data(file) -> list:
     return bioprojects
 
 # ASSOCIATE GENOME ACCESSION TO A RECORD IN THE INITIAL DATASET
-def get_more_info_filtered_mito(created_file, original_file):
+def extend_info_filt_data(created_file, original_file):
     my_data = pd.read_excel(created_file, index_col=0)
     data_original = pd.read_csv(original_file, delimiter=",")
     data_original = data_original[data_original["Assembly"].notna()]
@@ -72,7 +72,8 @@ def filt_mito(csv: str, output_file: str):
     for span in trange(0, len(data), 500):
         bioprojects = [i for i in data[span : span + 500] if isinstance(i, str)]
         # bioprojects = ["PRJNA48091"]
-        result = result + get_metadata_genome_api(bioprojects)
+        result = result + [(*v, bioprojects[k])for k,v in enumerate(get_metadata_genome_api(bioprojects))]
+        #print(result)
     dataframe = pd.DataFrame(result)
     dataframe.rename(
         columns={
@@ -80,6 +81,7 @@ def filt_mito(csv: str, output_file: str):
             1: "bioprojects",
             2: "SRA_accession",
             3: "organism_name",
+            4: "bioproject"
         },
         inplace=True,
     )
@@ -115,6 +117,7 @@ def get_sra_info_filtered_mito(input_excel_file: str, output_file: str):
         & (df["total_size"].astype(int) > 0)
     ]
     df.to_excel(output_file)
+    print(df)
     return df
 
 
@@ -133,7 +136,5 @@ def analyse_dataset(file):
 if __name__ == "__main__":
     filt_mito("datasets_metadata/wgs_selector.csv", "datasets_metadata/sra_per_bioproject.xlsx")
     # get_more_info_filtered_mito("mito_ncbi.xlsx", 'datasets_metadata/wgs_selector.csv')
-    get_sra_info_filtered_mito(
-        "datasets_metadata/sra_per_bioproject.xlsx", "datasets_metadata/sra_metadata.xlsx"
-    )
+    #get_sra_info_filtered_mito("datasets_metadata/sra_per_bioproject.xlsx", "datasets_metadata/sra_metadata.xlsx")
     # analyse_dataset('sra_metadata.xlsx')
