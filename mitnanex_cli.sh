@@ -100,6 +100,7 @@ create_wd(){
 if [ -d $wd ]
 then
   echo "Rewriting directory..."
+  echo " "
 else 
     mkdir $wd
 fi
@@ -108,8 +109,7 @@ fi
 subsample(){
 ### SEQKIT
 echo $timestamp': Running seqkit'
-seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len \
-    $input_file | \
+seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
     seqkit sample --proportion $proportion --threads $threads -o $wd$prefix"_sample.sorted.fastq"
     
 }
@@ -141,8 +141,8 @@ python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $
 
 first_assembly(){
 ## FIRST DARFT ASSEMBLY 
-# echo $timestamp': Running Flye'
-# flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd$prefix"_flye/"
+#echo $timestamp': Running Flye'
+#flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd$prefix"_flye/"
 
 echo $timestamp': Running Miniasm'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
@@ -180,8 +180,8 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt && first_assembly #&& contig_selection 
-#mt_reads_filt
+create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt && first_assembly
+
 ## END TIMER
 duration=$(( SECONDS - start ))
 echo "$timestamp -> Elapsed time: $duration secs."
