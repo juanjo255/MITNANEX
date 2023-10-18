@@ -8,8 +8,9 @@ Status: In development
 
 Steps achieved: 
 + Retrieve mitochondrial reads
++ Assemble a draft genome using retrieved data
++ Given the draft assembly collect more reads
 
 Next Step: 
- + Assemble a draft genome using retrieved data
- + Given the draft assembly collect more reads
+ + Correct reads
  + Retrieve final assembly and reads
