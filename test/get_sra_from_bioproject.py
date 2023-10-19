@@ -50,16 +50,15 @@ def parse_data(file) -> list:
     return bioprojects
 
 # ASSOCIATE GENOME ACCESSION TO A RECORD IN THE INITIAL DATASET
-def extend_info_filt_data(created_file, original_file):
+def extend_info_filt_data(created_file, original_file, output):
     my_data = pd.read_excel(created_file, index_col=0)
     data_original = pd.read_csv(original_file, delimiter=",")
-    data_original = data_original[data_original["Assembly"].notna()]
-    new_data = my_data.set_index(0).join(data_original.set_index("Assembly"))
-    new_data.rename(
-        columns={1: "bioprojects", 2: "SRA_accession", 3: "organism_name_bioproject"},
-        inplace=True,
-    )
-    new_data.to_excel("mito_ncbi_final.xlsx")
+    #data_original = data_original[data_original["Assembly"].notna()]
+    #new_data = my_data.set_index(0).join(data_original.set_index("Assembly"))
+    new_data = my_data.merge(data_original[['bioproject_s','create_date_dt']], right_on='bioproject_s', left_on='bioproject')
+    new_data.dropna(subset='SRA_accession', inplace=True)
+    new_data.drop_duplicates(subset='bioproject', inplace=True)
+    new_data.to_excel(output)
     return new_data.head()
 
 # GO THROUGH EVERY RECORD AND FILTER MITOCONDRIAL GENOMES BY SRA
@@ -88,19 +87,29 @@ def filt_mito(csv: str, output_file: str):
     dataframe.to_excel(output_file)
     return dataframe.head()
 
-
 # GET SRA METADATA OF FILTERED MITOCHONDRIAL GENOMES
 def get_sra_info_filtered_mito(input_excel_file: str, output_file: str):
     db = SRAweb()
     sra = pd.read_excel(input_excel_file, index_col=0)
     sra_list = list()
-    for sras in sra["SRA_accession"]:
-        sras = sras.strip("][").split(", ")
+    # for sras in sra["SRA_accession"]:
+    #     sras = sras.strip("][").split(", ")
+    #     ## get the sra value
+    #     for index in range(0, len(sras)):
+    #         if "SRA" in sras[index]:
+    #             sra_list.append(sras[index + 1].split("'")[3])
+    #             break
+    date_sra_list = list()
+    for i in range(0, len(sra)):
+        sras = (sra.loc[i, "SRA_accession"]).strip("][").split(", ")
+        print(sras)
         ## get the sra value
         for index in range(0, len(sras)):
             if "SRA" in sras[index]:
-                sra_list.append(sras[index + 1].split("'")[3])
+                sra_list.append((sras[index + 1].split("'")[3]).strip())
+                date_sra_list.append(str(sra.loc[i,'create_date_dt']))
                 break
+    print("out")
     df = db.sra_metadata(sra_list)
     # print(df.columns)
     df = df[
@@ -135,6 +144,7 @@ def analyse_dataset(file):
 
 if __name__ == "__main__":
     filt_mito("datasets_metadata/wgs_selector.csv", "datasets_metadata/sra_per_bioproject.xlsx")
-    # get_more_info_filtered_mito("mito_ncbi.xlsx", 'datasets_metadata/wgs_selector.csv')
-    #get_sra_info_filtered_mito("datasets_metadata/sra_per_bioproject.xlsx", "datasets_metadata/sra_metadata.xlsx")
+    extend_info_filt_data("datasets_metadata/sra_per_bioproject.xlsx", "datasets_metadata/wgs_selector.csv", "datasets_metadata/sra_per_bioproject.xlsx")
+    df=get_sra_info_filtered_mito("datasets_metadata/sra_per_bioproject.xlsx", "datasets_metadata/sra_metadata.xlsx")
+    print(df)
     # analyse_dataset('sra_metadata.xlsx')
