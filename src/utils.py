@@ -22,5 +22,7 @@ def write_fasta(reads_file:str, sequences_ids:set, output:str):
                 n+=1
                 final_records.append(record)
                 sequences_ids.remove(record.id)
-    print(f"-> {n} reads retrieved")
+    print("\n")
+    print(f" --- Mitnanex retrieved {n} reads ---")
+    print("\n")
     SeqIO.write(sequences=final_records, handle=output, format='fasta')

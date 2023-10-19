@@ -66,7 +66,7 @@ while getopts 'i:t:p:m:M:w:c:r:s:q:d' opt; do
         s)
         map_identity=$OPTARG
         ;;
-        s)
+        q)
         min_qual=$OPTARG
         ;;
         d)
@@ -113,7 +113,7 @@ fi
 
 subsample(){
 ### SEQKIT
-echo $timestamp': Step 1: Running seqkit'
+echo $timestamp': Step 1: Sampling with seqkit'
 seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
     seqkit sample --proportion $proportion --threads $threads -o $wd$prefix"_sample.sorted.fastq"
     
@@ -135,7 +135,7 @@ reads_overlap(){
 echo $timestamp': Step 4:  Running minimap2'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
-    fpa drop --internalmatch --length-lower $min_len -o $wd$prefix"_containments.paf"
+    fpa drop --internalmatch --length-lower $min_len > $wd$prefix"_containments.paf"
 }
 
 mt_reads_filt(){
@@ -146,8 +146,6 @@ python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $
 
 first_assembly(){
 ## FIRST DARFT ASSEMBLY 
-#echo $timestamp': Running Flye'
-#flye --scaffold -t $threads --no-alt-contigs --nano-raw $wd$prefix"_putative_mt_reads.fasta" -o $wd$prefix"_flye/"
 
 echo $timestamp': Step 7: Running Miniasm'
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
@@ -157,21 +155,35 @@ minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
 }
 
 statistics(){
+    ## STATISTICS OF FIRST DRAFT ASSEMBLY
+    echo " "  
+    echo "#### DESCRIPTION OF CONTIGS FOUND #### "
+    echo $timestamp': Step 8: Computing statistics with gfastats'
     gfastats  --seq-report --discover-paths $wd$prefix"_first_draft_asm.gfa"
+    echo " "
 }
 
 contig_selection(){
 ## SELECT CONTIG AND SUMMON MORE READS
     ## python3 src/select_contig.py $wd$prefix"_flye/" $wd$prefix"_first_draft_mt_assembly.fasta"
-    echo $timestamp': Selecting putative mitochondrial contig'
+    echo $timestamp': Step 9: Converting gfa to fasta'
     ### convert form gfa to fasta
     gfastats --verbose 0 --discover-paths $wd$prefix"_first_draft_asm.gfa" -o $wd$prefix"_first_draft_asm.fasta" 
+    
+}
+
+collecting_mt_reads (){
+## USING MINIASM ASSEMBLY COLLECT MORE READS
     ### Map reads to the unitig formed by miniasm
     minimap2 -ax map-ont --split-prefix $prefix  $wd$prefix"_first_draft_asm.fasta" $input_file -o $wd$prefix"_align.sam"
     ### Get correctly mapped reads
-    samtools fastq --min-MQ $min_qual -F 4 $wd$prefix"_align.sam" > $wd$prefix"_collected_reads.fastq"
+    samtools view --min-MQ $min_qual -F 4 --bam $wd$prefix"_align.sam" | samtools fastq > $wd$prefix"_collected_reads.fastq"
 }
 
+final_assembly (){
+    echo $timestamp': Step 10: Running final assembly with Flye'
+    flye --scaffold -t $threads --iterations 5 --no-alt-contigs --nano-raw $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
+}
 
 
 
@@ -195,8 +207,8 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-#create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt && first_assembly
-contig_selection
+create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt \
+&& first_assembly && statistics && contig_selection && collecting_mt_reads && final_assembly
 
 ## END TIMER
 duration=$(( SECONDS - start ))
