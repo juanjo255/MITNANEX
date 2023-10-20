@@ -34,10 +34,10 @@ Give examples
 
 #### Conda/mamba
 
-The best way to use the program is throught the beautiful conda enviroment 
-Note this has been only tested on MacOS M1
+The best way to use the program is throught a beautiful conda enviroment.
 
-First clone the repository
+**Note** this has only been tested on MacOS M1
+
 ```
 git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX && mamba env create --name mitnanex --file environment.yml
 ```
