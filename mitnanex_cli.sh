@@ -155,7 +155,7 @@ minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
 }
 
 statistics(){
-    ## STATISTICS OF FIRST DRAFT ASSEMBLY
+## STATISTICS OF FIRST DRAFT ASSEMBLY
     echo " "  
     echo "#### DESCRIPTION OF CONTIGS FOUND #### "
     echo $timestamp': Step 8: Computing statistics with gfastats'
@@ -163,16 +163,16 @@ statistics(){
     echo " "
 }
 
-contig_selection(){
+gfa2fasta(){
 ## SELECT CONTIG AND SUMMON MORE READS
     ## python3 src/select_contig.py $wd$prefix"_flye/" $wd$prefix"_first_draft_mt_assembly.fasta"
     echo $timestamp': Step 9: Converting gfa to fasta'
     ### convert form gfa to fasta
-    gfastats --verbose 0 --discover-paths $wd$prefix"_first_draft_asm.gfa" -o $wd$prefix"_first_draft_asm.fasta" 
+    gfastats --discover-paths $wd$prefix"_first_draft_asm.gfa" -o $wd$prefix"_first_draft_asm.fasta" > /dev/null
     
 }
 
-collecting_mt_reads (){
+collecting_mt_reads(){
 ## USING MINIASM ASSEMBLY COLLECT MORE READS
     ### Map reads to the unitig formed by miniasm
     minimap2 -ax map-ont --split-prefix $prefix  $wd$prefix"_first_draft_asm.fasta" $input_file -o $wd$prefix"_align.sam"
@@ -180,7 +180,7 @@ collecting_mt_reads (){
     samtools view --min-MQ $min_qual -F 4 --bam $wd$prefix"_align.sam" | samtools fastq > $wd$prefix"_collected_reads.fastq"
 }
 
-final_assembly (){
+final_assembly(){
     echo $timestamp': Step 10: Running final assembly with Flye'
     flye --scaffold -t $threads --iterations 5 --no-alt-contigs --nano-raw $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
 }
@@ -208,7 +208,7 @@ start=$SECONDS
 
 #### PIPELINE ####
 create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt \
-&& first_assembly && statistics && contig_selection && collecting_mt_reads && final_assembly
+&& first_assembly && statistics && gfa2fasta && collecting_mt_reads && final_assembly
 
 ## END TIMER
 duration=$(( SECONDS - start ))
