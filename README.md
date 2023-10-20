@@ -39,10 +39,7 @@ Note this has been only tested on MacOS M1
 
 First clone the repository
 ```
-git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
-```
-```
-mamba create --name mitnanex --file enviroment.yml
+git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX && mamba env create --name mitnanex --file environment.yml
 ```
 
 ## 🎈 Usage <a name="usage"></a>
