@@ -1,6 +1,6 @@
 <p align="center"><img src="images/MITNANEX.png" alt="MITNANEX"></p>
 
-<h1 align="center">MITochondrial NANopore reads EXtratore</h3>
+<h1 align="center">MITochondrial NANopore reads EXtractor</h3>
 
 <div align="center">
 
