@@ -19,11 +19,6 @@
 + [Usage](#usage)
 + [Contributing](../CONTRIBUTING.md)
 
-
-Next Step: 
- + Correct reads
- + Retrieve final assembly and reads
-
 ## 🧐 About <a name = "about"></a>
 This is intended to be a extractor for mitocondrial nanopore reads from the whole genome sequencing, in order to be able to assembly mitogenome or do any other proccess where researchers think mitocrondrial reads could be useful.
 
