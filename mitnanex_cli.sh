@@ -7,7 +7,7 @@ max_len=-1
 coverage=-1
 timestamp=$(date -u +"%Y-%m-%d %T")
 map_identity=0.6
-min_qual=""
+min_qual=-1
 wd="./"
 output_dir='mitnanex_results/'
 
@@ -31,7 +31,7 @@ mitnanex_help() {
         -c        Coverage. Minimum coverage per cluster accepted. [-1].
         -d        Different output directory. Create a different output directory every run (it uses the date and time).
         -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6]
-        -q        Min mapping quality (>=). This is for samtools. [all mapped reads].
+        -q        Min mapping quality (>=). This is for samtools. [-1].
         *         Help.
     "
     exit 1
@@ -196,7 +196,7 @@ collecting_mt_reads(){
     ### Get correctly mapped reads
     echo " "
     echo $timestamp" : Reads collected for final assembly"
-    samtools view --min-MQ $min_qual -F 4 --bam $wd$prefix"_align.sam" | samtools fastq > $wd$prefix"_collected_reads.fastq"
+    samtools view --min-MQ $min_qual -F4 --bam $wd$prefix"_align.sam" | samtools fastq > $wd$prefix"_collected_reads.fastq"
     echo " "
 }
 
