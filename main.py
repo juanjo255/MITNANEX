@@ -2,7 +2,7 @@ from src.mitnanex import run
 from src.utils import write_fasta
 from src.kmer_reduction_PCA import kmer_reduction
 from src.cluster_kmer_profiles import cluster_kmer_profiles
-from src.minimun_cov import set_minimun_cov
+from src.minimun_cov import set_minimun_cov, filt_by_cov_gap
 import utils_rs
 import pandas as pd
 import sys
@@ -34,7 +34,8 @@ if __name__ == "__main__":
     clusters_info=clusters_info.sort_values(by='coverage', ascending=False)
     
     ## Get minimum coverage
-    min_coverage = set_minimun_cov(clusters_info, coverage)
+    #min_coverage = set_minimun_cov(clusters_info, coverage)
+    min_coverage = filt_by_cov_gap(clusters_info)
 
     ## Filter clusters by coverage
     clusters_info = clusters_info[clusters_info["coverage"] >= min_coverage]
