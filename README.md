@@ -23,7 +23,6 @@
 This is intended to be a extractor for mitocondrial nanopore reads from the whole genome sequencing, in order to be able to assembly mitogenome or do any other proccess where researchers think mitocrondrial reads could be useful.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See [deployment](#deployment) for notes on how to deploy the project on a live system.
 
 ### Prerequisites
 The tool has a module written in Rust. I have to find out if it is necessary to download rust and/or run masturin
@@ -37,9 +36,17 @@ Give examples
 
 The best way to use the program is throught the beautiful conda enviroment 
 Note this has been only tested on MacOS M1
+
+First clone the repository
+```
+git clone https://github.com/juanjo255/MITNANEX_PROJECT.git && cd &_
+```
 ```
 mamba create --name mitnanex --file enviroment.yml
 ```
 
 ## 🎈 Usage <a name="usage"></a>
-Add notes about how to use the system.
+
+```
+./mitnanex_cli.sh -i path/to/readsFile -p 0.4 -m 300 -t 4 -s 0.7 -q 40 -w path/to/output
+```
