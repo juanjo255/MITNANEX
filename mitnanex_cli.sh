@@ -117,18 +117,19 @@ fi
 }
 
 subsample(){
-### SEQKIT
-echo " "
-echo $timestamp': Step 1: Sampling with seqkit'
-echo " "
-seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
-    seqkit sample --proportion $proportion --threads $threads -o $wd$prefix"_sample.sorted.fastq"
+## SUBSAMPLE
+    echo " "
+    echo $timestamp': Step 1: Sampling with seqkit'
+    echo " "
+    seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
+        seqkit sample --proportion $proportion --threads $threads -o $wd$prefix"_sample.sorted.fastq"
     
 }
 
 trim_adapters(){
 ## $1 input
 ## $2 output
+## TRIM ADAPTERS
     echo " "
     echo $timestamp': Step 2: Trimming adapters with porechop'
     echo " "
@@ -136,6 +137,7 @@ trim_adapters(){
 }
 
 sort_file(){
+## SORT FILE
     echo " "
     echo $timestamp': Step 3: Sorting file with seqkit'
     echo " "
@@ -143,31 +145,31 @@ sort_file(){
 }
 
 reads_overlap(){
-### MINIMAP2
-echo " "
-echo $timestamp': Step 4:  Running minimap2'
-echo " "
-minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
+## FIND OVERLAP BETWEEN READS
+    echo " "
+    echo $timestamp': Step 4:  Running minimap2'
+    echo " "
+    minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
-    fpa drop --internalmatch --length-lower $min_len > $wd$prefix"_containments.paf"
+        fpa drop --internalmatch --length-lower $min_len > $wd$prefix"_containments.paf"
 }
 
 mt_reads_filt(){
-## MITNANEX main
-echo " "
-echo $timestamp': Step 5: Running MITNANEX'
-echo " "
-python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta"
+## MITNANEX
+    echo " "
+    echo $timestamp': Step 5: Running MITNANEX'
+    echo " "
+    python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta"
 }
 
 first_assembly(){
-## FIRST DARFT ASSEMBLY 
-echo " "
-echo $timestamp': Step 7: Running Miniasm'
-echo " "
-minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
+## ASSEMBLE WITH MINIASM 
+    echo " "
+    echo $timestamp': Step 7: Running Miniasm'
+    echo " "
+    minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
-    miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
+        miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
 }
 
 statistics(){
@@ -195,7 +197,6 @@ collecting_mt_reads(){
 ## $2 input file minimap
 ## $3 output minimap
 ## $4 output samtools
-
 ## USING MINIASM ASSEMBLY COLLECT MORE READS
     echo " "
     echo $timestamp': Step 10: Collecting more reads using the draft assembly with minimap2'
@@ -210,6 +211,7 @@ collecting_mt_reads(){
 }
 
 final_assembly(){
+## ASSEMBLE WITH FLYE
     echo $timestamp': Step 11: Running final assembly with Flye'
     flye --scaffold -t $threads --iterations 5 --no-alt-contigs $flye_mode $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
 }
