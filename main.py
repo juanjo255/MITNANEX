@@ -78,7 +78,7 @@ if __name__ == "__main__":
     sequences_ids = set()
     for i in selected_cluster["id_cluster"]:
         sequences_ids.update(clusters_list.get_cluster(i).id_sequences)
-
+        
     write_fasta(
         reads_file=reads_file,
         sequences_ids=sequences_ids,

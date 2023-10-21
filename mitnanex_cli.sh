@@ -122,11 +122,12 @@ seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_fi
 }
 
 trim_adapters(){
+## $1 input
+## $2 output
     echo " "
     echo $timestamp': Step 2: Trimming adapters with porechop'
     echo " "
-    porechop --verbosity 0 -t $threads -o $wd$prefix"_sample.sorted.fastq" -i $wd$prefix"_sample.sorted.fastq"
-    
+    porechop --verbosity 0 -t $threads -i $1 -o $2 
 }
 
 sort_file(){
@@ -162,7 +163,6 @@ echo " "
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
     miniasm -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
-
 }
 
 statistics(){
@@ -183,20 +183,24 @@ gfa2fasta(){
     echo " "
     ### convert form gfa to fasta
     gfastats --discover-paths $wd$prefix"_first_draft_asm.gfa" -o $wd$prefix"_first_draft_asm.fasta" > /dev/null
-    
 }
 
 collecting_mt_reads(){
+## $1 reference minimap
+## $2 input file minimap
+## $3 output minimap
+## $4 output samtools
+
 ## USING MINIASM ASSEMBLY COLLECT MORE READS
     echo " "
     echo $timestamp': Step 10: Collecting more reads using the draft assembly with minimap2'
     echo " "
     ### Map reads to the unitig formed by miniasm
-    minimap2 -ax map-ont --split-prefix $prefix  $wd$prefix"_first_draft_asm.fasta" $input_file -o $wd$prefix"_align.sam"
+    minimap2 -ax map-ont --split-prefix $prefix  $1 $2 -o $3
     ### Get correctly mapped reads
     echo " "
     echo $timestamp" : Reads collected for final assembly"
-    samtools view --min-MQ $min_qual -F4 --bam $wd$prefix"_align.sam" | samtools fastq > $wd$prefix"_collected_reads.fastq"
+    samtools view --min-MQ $min_qual -F4 --bam $3 | samtools fastq > $4
     echo " "
 }
 
@@ -227,8 +231,14 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-create_wd && subsample && trim_adapters && sort_file && reads_overlap && mt_reads_filt \
-&& first_assembly && statistics && gfa2fasta && collecting_mt_reads && final_assembly
+create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
+&& sort_file && reads_overlap && mt_reads_filt && first_assembly && statistics && gfa2fasta \
+#&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
+#&& final_assembly
+
+#mt_reads_filt && first_assembly && statistics && gfa2fasta \ 
+#&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
+#&& final_assembly
 
 echo ""
 echo "### MITNANEX finished ###"
