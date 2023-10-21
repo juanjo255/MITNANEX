@@ -9,6 +9,7 @@ timestamp=$(date -u +"%Y-%m-%d %T")
 map_identity=0.6
 min_qual=-1
 wd="./"
+flye_mode='--nano-hq'
 output_dir='mitnanex_results/'
 
 ## Help message
@@ -32,12 +33,13 @@ mitnanex_help() {
         -d        Different output directory. Create a different output directory every run (it uses the date and time).
         -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6]
         -q        Min mapping quality (>=). This is for samtools. [-1].
+        -f        Flye mode. [--nano-hq]
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:r:s:q:d' opt; do
+while getopts 'i:t:p:m:M:w:c:r:s:q:f:d' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -68,6 +70,9 @@ while getopts 'i:t:p:m:M:w:c:r:s:q:d' opt; do
         ;;
         q)
         min_qual=$OPTARG
+        ;;
+        f)
+        flye_mode=$OPTARG
         ;;
         d)
         output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
@@ -162,7 +167,7 @@ echo $timestamp': Step 7: Running Miniasm'
 echo " "
 minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
-    miniasm -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
+    miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
 }
 
 statistics(){
@@ -206,7 +211,7 @@ collecting_mt_reads(){
 
 final_assembly(){
     echo $timestamp': Step 11: Running final assembly with Flye'
-    flye --scaffold -t $threads --iterations 5 --no-alt-contigs --nano-raw $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
+    flye --scaffold -t $threads --iterations 5 --no-alt-contigs $flye_mode $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
 }
 
 
@@ -233,8 +238,8 @@ start=$SECONDS
 #### PIPELINE ####
 create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
 && sort_file && reads_overlap && mt_reads_filt && first_assembly && statistics && gfa2fasta \
-#&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
-#&& final_assembly
+&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
+&& final_assembly
 
 #mt_reads_filt && first_assembly && statistics && gfa2fasta \ 
 #&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
