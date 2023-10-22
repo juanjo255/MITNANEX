@@ -9,7 +9,7 @@ def select_contig(flye_metadata: str, fasta: str) -> str:
         str: Sequence of the selected contig.
     """
     flye_metadata_df = pd.read_csv(flye_metadata, delimiter="\t", header=0)
-    flye_metadata_df.sort_values(by=["length", "cov."], inplace=True)
+    flye_metadata_df.sort_values(by=["cov.", "length"], inplace=True)
 
     ## Check if there is a circular genome. If so and there are more than one, select the longest
     if flye_metadata_df.empty:
