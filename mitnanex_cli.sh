@@ -15,9 +15,12 @@ output_dir='mitnanex_results/'
 ## Help message
 mitnanex_help() {
     echo "
-    MITNANEX
-    Version: 1.0
-    https://github.com/juanjo255/MITNANEX_PROJECT.git
+    MITNANEX - MITochondrial NANopore reads EXtractor
+
+    Author:
+    Juan Picon Cossio
+
+    Version: 0.1
 
     Usage: mitnanex.sh [options] FASTQ
 
@@ -107,16 +110,15 @@ fi
 ##### FUNCTIONS #####
 create_wd(){
 ## CREATE WORKING DIRECTORY
-if [ -d $wd ]
-then
-  echo $timestamp": Rewriting directory..."
-  echo " "
-else 
-    echo $timestamp": Creating directory..."
+    if [ -d $wd ]
+    then
+    echo $timestamp": Rewriting directory..."
     echo " "
-    mkdir $wd
-
-fi
+    else 
+        echo $timestamp": Creating directory..."
+        echo " "
+        mkdir $wd
+    fi
 }
 
 subsample(){
@@ -149,12 +151,13 @@ sort_file(){
 
 reads_overlap(){
 ## FIND OVERLAP BETWEEN READS
+## --split-prefix $prefix
     echo " "
     echo $timestamp': Step 4:  Running minimap2'
     echo " "
-    minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
+    minimap2 -x ava-ont -t $threads --dual=yes \
     $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
-        fpa drop --internalmatch --length-lower $min_len > $wd$prefix"_containments.paf"
+        fpa drop --internalmatch --length-lower $min_len > $wd$prefix".paf"
 }
 
 mt_reads_filt(){
@@ -162,34 +165,31 @@ mt_reads_filt(){
     echo " "
     echo $timestamp': Step 5: Running MITNANEX'
     echo " "
-    python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix"_containments.paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta"
+    python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix".paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta"
 }
 
 first_assembly(){
-## ASSEMBLE WITH MINIASM 
+## ASSEMBLE WITH MINIASM
+## --split-prefix $prefix
     echo " "
     echo $timestamp': Step 7: Running Miniasm'
     echo " "
-    minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
+    minimap2 -x ava-ont -t $threads --dual=yes \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
-        miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.pfa"
+        miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
+    #> $wd$prefix"_miniasm.paf"
+    #miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_miniasm.paf" > $wd$prefix"_first_draft_asm.gfa"
 }
 
-statistics(){
-## STATISTICS OF FIRST DRAFT ASSEMBLY
+
+gfa2fasta(){
+## Convert from gfa and fasta and compute descriptive statistics
+    ## STATISTICS OF FIRST DRAFT ASSEMBLY
     echo " "  
-    echo $timestamp': Step 8: Computing statistics with gfastats'
+    echo $timestamp': Step 8: Computing statistics with gfastats and generating fasta'
     echo " "
     echo "#### DESCRIPTION OF CONTIGS FOUND #### "
     gfastats  --seq-report --discover-paths $wd$prefix"_first_draft_asm.gfa"
-    echo " "
-}
-
-gfa2fasta(){
-## SELECT CONTIG AND SUMMON MORE READS
-    ## python3 src/select_contig.py $wd$prefix"_flye/" $wd$prefix"_first_draft_mt_assembly.fasta"
-    echo " "
-    echo $timestamp': Step 9: Converting gfa to fasta'
     echo " "
     ### convert form gfa to fasta
     gfastats --discover-paths $wd$prefix"_first_draft_asm.gfa" -o $wd$prefix"_first_draft_asm.fasta" > /dev/null
@@ -202,21 +202,27 @@ collecting_mt_reads(){
 ## $4 output samtools
 ## USING MINIASM ASSEMBLY COLLECT MORE READS
     echo " "
-    echo $timestamp': Step 10: Collecting more reads using the draft assembly with minimap2'
+    echo $timestamp': Step 9: Collecting more reads using the draft assembly with minimap2'
     echo " "
     ### Map reads to the unitig formed by miniasm
-    minimap2 -ax map-ont --split-prefix $prefix  $1 $2 -o $3
+    minimap2 -ax map-ont --split-prefix $prefix --secondary=no  $1 $2 -o $3
     ### Get correctly mapped reads
     echo " "
     echo $timestamp" : Reads collected for final assembly"
-    samtools view --min-MQ $min_qual -F4 --bam $3 | samtools fastq > $4
+    samtools view --min-MQ $min_qual -F4 --bam $3 | samtools fastq - > $4
     echo " "
 }
 
 final_assembly(){
 ## ASSEMBLE WITH FLYE
-    echo $timestamp': Step 11: Running final assembly with Flye'
-    flye --scaffold -t $threads --iterations 5 --no-alt-contigs $flye_mode $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
+    echo $timestamp': Step 10: Running final assembly with Flye'
+    flye --scaffold -t $threads --iterations 5 --no-alt-contigs --meta \
+        $flye_mode $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
+}
+
+select_contig{
+    echo $timestamp': Step 11: Selecting contig with greatest coverage and length'
+    python3 src/select_contig.py $wd$prefix"_flye/" $wd$prefix"_first_draft_mt_assembly.fasta"
 }
 
 
@@ -229,9 +235,7 @@ echo "
  | |\/| || |  | | |  \| | / _ \ |  \| |  _|  \  / 
  | |  | || |  | | | |\  |/ ___ \| |\  | |___ /  \ 
  |_|  |_|___| |_| |_| \_/_/   \_\_| \_|_____/_/\_\
-
-
-https://github.com/juanjo255/MITNANEX_PROJECT.git                                     
+                  
 
 $timestamp -> Prefix to name resulting files: $prefix
 
@@ -243,12 +247,19 @@ start=$SECONDS
 
 #### PIPELINE ####
 # create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
-# && sort_file && reads_overlap && mt_reads_filt && first_assembly && statistics && gfa2fasta \
+# && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
 # && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
-# && final_assembly
+# trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly
 
-create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
-&& sort_file && reads_overlap && mt_reads_filt && first_assembly && statistics
+#create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
+#&& sort_file && reads_overlap && mt_reads_filt && first_assembly
+
+# mt_reads_filt && first_assembly && gfa2fasta && \
+# collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq"
+
+trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly
+
+
 
 echo ""
 echo "### MITNANEX finished ###"
