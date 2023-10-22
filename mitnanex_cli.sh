@@ -222,7 +222,7 @@ final_assembly(){
 
 select_contig{
     echo $timestamp': Step 11: Selecting contig with greatest coverage and length'
-    python3 src/select_contig.py $wd$prefix"_flye/" $wd$prefix"_first_draft_mt_assembly.fasta"
+    python3 src/select_contig.py $wd$prefix"_flye/" $wd$prefix"_final_mt_asm.fasta"
 }
 
 
@@ -264,7 +264,7 @@ trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fas
 echo ""
 echo "### MITNANEX finished ###"
 echo ""
-echo "Final assembly is in" $wd$prefix"_flye""/assembly.fasta"
+echo "Final assembly is in" $wd$prefix"_final_mt_asm.fasta"
 echo "Putative mitochondrial reads are in "$wd$prefix"_collected_reads.fastq"
 
 ## END TIMER
