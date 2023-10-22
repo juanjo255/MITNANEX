@@ -2,7 +2,7 @@ import pandas as pd
 from Bio import SeqIO
 import sys
 
-def select_contig(flye_metadata: str, fasta: str) -> str:
+def select_contig(flye_metadata: str, flye_asm_file: str) -> str:
     """Select the contig to use to use in minimap2 continue summoning reads for a better assembly.
 
     Returns:
@@ -20,25 +20,25 @@ def select_contig(flye_metadata: str, fasta: str) -> str:
         print("A circular genome found!!")
         flye_metadata_df = flye_metadata_df[
             flye_metadata_df["circ."] == "Y"
-        ].sort_values(by="length")
-        return get_contig_sequence(flye_metadata_df["#seq_name"][0], fasta)
+        ].sort_values(by=["cov.", "length"])
+        return get_contig_sequence(flye_metadata_df["#seq_name"][0], flye_asm_file)
     
     else:
-        print("Selecting longest contig...")
-        return get_contig_sequence(flye_metadata_df["#seq_name"][0], fasta)
+        print("No circular genome found")
+        return get_contig_sequence(flye_metadata_df["#seq_name"][0], flye_asm_file)
 
 
-def get_contig_sequence(contig: str, fasta: str) -> str:
+def get_contig_sequence(contig: str, flye_asm_file: str) -> str:
     """look for the sequence of the selected contig
 
     Args:
         contig (str): selected contig.
-        fasta (str): file returned by flye.
+        flye_asm_file (str): file returned by flye.
 
     Returns:
         str: Selected contig sequence.
     """
-    with open(fasta) as fasta_handle:
+    with open(flye_asm_file) as fasta_handle:
         for record in SeqIO.parse(fasta_handle, "fasta"):
             if record.id == contig:
                 print("Contig found: ",record.id)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     args = sys.argv
     try:
         path_flye_fasta = args[1] + "assembly_info.txt"
-        assembly_file = args[1] + "assembly.fasta"
+        assembly_file = args[1] + "assembly.flye_asm_file"
         output_file = args[2]
     except:
         raise(ValueError("The path to the flye results is missing!"))
