@@ -109,10 +109,13 @@ create_wd(){
 ## CREATE WORKING DIRECTORY
 if [ -d $wd ]
 then
-  echo "Rewriting directory..."
+  echo $timestamp": Rewriting directory..."
   echo " "
 else 
+    echo $timestamp": Creating directory..."
+    echo " "
     mkdir $wd
+
 fi
 }
 
@@ -169,7 +172,7 @@ first_assembly(){
     echo " "
     minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
-        miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
+        miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.pfa"
 }
 
 statistics(){
@@ -226,7 +229,8 @@ echo "
  | |\/| || |  | | |  \| | / _ \ |  \| |  _|  \  / 
  | |  | || |  | | | |\  |/ ___ \| |\  | |___ /  \ 
  |_|  |_|___| |_| |_| \_/_/   \_\_| \_|_____/_/\_\
-                                                  
+
+
 https://github.com/juanjo255/MITNANEX_PROJECT.git                                     
 
 $timestamp -> Prefix to name resulting files: $prefix
@@ -238,14 +242,13 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
-&& sort_file && reads_overlap && mt_reads_filt && first_assembly && statistics && gfa2fasta \
-&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
-&& final_assembly
+# create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
+# && sort_file && reads_overlap && mt_reads_filt && first_assembly && statistics && gfa2fasta \
+# && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
+# && final_assembly
 
-#mt_reads_filt && first_assembly && statistics && gfa2fasta \ 
-#&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
-#&& final_assembly
+create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
+&& sort_file && reads_overlap && mt_reads_filt && first_assembly && statistics
 
 echo ""
 echo "### MITNANEX finished ###"
