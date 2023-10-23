@@ -246,12 +246,10 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-# create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
-# && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
-# && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
-# trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly && select_contig
-
-select_contig
+create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
+&& sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
+&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
+trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly && select_contig
 
 
 echo ""
