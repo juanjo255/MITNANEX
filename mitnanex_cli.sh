@@ -220,7 +220,7 @@ final_assembly(){
         $flye_mode $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
 }
 
-select_contig{
+select_contig(){
     echo $timestamp': Step 11: Selecting contig with greatest coverage and length'
     python3 src/select_contig.py $wd$prefix"_flye/" $wd$prefix"_final_mt_asm.fasta"
 }
@@ -249,16 +249,9 @@ start=$SECONDS
 # create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
 # && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
 # && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
-# trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly
+# trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly && select_contig
 
-#create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
-#&& sort_file && reads_overlap && mt_reads_filt && first_assembly
-
-# mt_reads_filt && first_assembly && gfa2fasta && \
-# collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq"
-
-trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly
-
+select_contig
 
 
 echo ""
