@@ -216,7 +216,7 @@ collecting_mt_reads(){
 final_assembly(){
 ## ASSEMBLE WITH FLYE
     echo $timestamp': Step 10: Running final assembly with Flye'
-    flye --scaffold -t $threads --iterations 5 --no-alt-contigs --meta \
+    flye --scaffold -t $threads --iterations 5 --meta \
         $flye_mode $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
 }
 
@@ -249,7 +249,7 @@ start=$SECONDS
 create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
 && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
 && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
-trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly && select_contig
+&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && final_assembly && select_contig
 
 
 echo ""
