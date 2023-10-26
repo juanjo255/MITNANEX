@@ -20,7 +20,7 @@
 + [Contributing](../CONTRIBUTING.md)
 
 ## 🧐 About <a name = "about"></a>
-This is intended to be a extractor for mitocondrial nanopore reads from the whole genome sequencing, in order to be able to assembly mitogenome or do any other proccess where researchers think mitocrondrial reads could be useful.
+The main purpose of this tool is to extract mitocondrial nanopore reads from the WGS de novo. However, it also assembly a draft mitogenome.
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
