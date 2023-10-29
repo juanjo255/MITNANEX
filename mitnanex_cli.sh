@@ -208,7 +208,7 @@ collecting_mt_reads(){
     minimap2 -ax map-ont --split-prefix $prefix --secondary=no  $1 $2 -o $3
     ### Get correctly mapped reads
     echo " "
-    echo $timestamp" : Reads collected for final assembly"
+    echo $timestamp" : Reads collected"
     samtools view --min-MQ $min_qual -F4 --bam $3 | samtools fastq - > $4
     echo " "
 }
@@ -216,7 +216,7 @@ collecting_mt_reads(){
 second_assembly(){
 ## ASSEMBLE WITH FLYE
     echo $timestamp': Step 8: Running final assembly with Flye'
-    flye -t $threads --iterations 3 --meta \
+    flye -t $threads --meta \
         $flye_mode $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye/"
 }
 
@@ -251,7 +251,10 @@ create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$pre
 && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
 && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
 && trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && second_assembly && select_contig \
-&& collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq"
+&& collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
+&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq"
+
+# second_assembly && select_contig
 
 
 echo ""
