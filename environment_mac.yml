@@ -41,6 +41,7 @@ dependencies:
   - frozenlist=1.4.0=py310h6729b98_1
   - gast=0.4.0=pyh9f0ad1d_0
   - gettext=0.21.1=h8a4c099_0
+  - gfastats=1.3.6=hdf58011_3
   - giflib=5.2.1=hb7f2c08_3
   - glib=2.78.0=h7d26f99_0
   - glib-tools=2.78.0=h7d26f99_0
