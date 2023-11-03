@@ -205,11 +205,11 @@ collecting_mt_reads(){
     echo $timestamp': Step 7: Recruiting more reads with minimap2'
     echo " "
     ### Map reads to the unitig formed by miniasm
-    minimap2 -ax map-ont --split-prefix $prefix --secondary=no  $1 $2 -o $3
+    minimap2 -ax map-ont --split-prefix $prefix --secondary=no  $1 $2 | samtools view -b --min-MQ $min_qual -F4 -T $1 -o $3
     ### Get correctly mapped reads
     echo " "
     echo $timestamp" : Reads collected"
-    samtools view --min-MQ $min_qual -F4 --bam $3 | samtools fastq - > $4
+    samtools fastq $3 > $4
     echo " "
 }
 
@@ -249,9 +249,9 @@ start=$SECONDS
 #### PIPELINE ####
 create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
 && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
-&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
+&& collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
 && trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && second_assembly && select_contig \
-&& collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.sam" $wd$prefix"_collected_reads.fastq" \
+&& collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
 && trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq"
 
 # second_assembly && select_contig
