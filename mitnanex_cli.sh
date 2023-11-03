@@ -11,7 +11,7 @@ min_qual=-1
 wd="./"
 flye_mode='--nano-hq'
 output_dir='mitnanex_results/'
-genomeSize='35k'
+genomeSize='32k'
 
 ## Help message
 mitnanex_help() {
@@ -38,12 +38,13 @@ mitnanex_help() {
         -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6]
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
+        -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu. [32k]
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:r:s:q:f:d' opt; do
+while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:d' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -77,6 +78,9 @@ while getopts 'i:t:p:m:M:w:c:r:s:q:f:d' opt; do
         ;;
         f)
         flye_mode=$OPTARG
+        ;;
+        g)
+        genomeSize=$OPTARG
         ;;
         d)
         output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
