@@ -234,11 +234,19 @@ select_contig(){
 correct_reads(){
 ## CORRECT COLLECTED READS WITH CANU
     echo $timestamp': Correcting reads with Canu'
-    canu -correct -p 'canu_correct' genomeSize=$genomeSize \
+    canu -correct -p $wd$prefix"_collected_reads" genomeSize=$genomeSize \
         -nanopore $wd$prefix"_collected_reads.fastq"
+    gunzip $wd$prefix"_collected_reads.correctedReads.fasta.gz"
 }
 
+polish_asm(){
+## Polished the asm returned by flye using flye polishing obtion
+flye -t $threads $flye_mode $wd$prefix"_collected_reads.correctedReads.fasta"  \
+    --polish-target $wd$prefix"_second_draft_asm.fasta"  \
+    --iterations 3 -o $wd$prefix"flyeasm_polish_canuCorrected"
 
+mv $wd$prefix"flyeasm_polish_canuCorrected/polished_3.fasta" $wd$prefix"_final_draft_asm.fasta"
+}
 
 ### VISAJE INICIAL ###
 echo "
@@ -264,7 +272,7 @@ create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$pre
 && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
 && trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && second_assembly && select_contig \
 && collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
-&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq"
+&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && correct_reads && polish_asm
 
 # second_assembly && select_contig
 
@@ -272,7 +280,7 @@ create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$pre
 echo ""
 echo "### MITNANEX finished ###"
 echo ""
-echo "Final assembly is in" $wd$prefix"_second_draft_asm.fasta"
+echo "Final assembly is in" $wd$prefix"_final_draft_asm.fasta"
 echo "Putative mitochondrial reads are in "$wd$prefix"_collected_reads.fastq"
 
 ## END TIMER
