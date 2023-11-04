@@ -151,7 +151,8 @@ sort_file(){
     echo " "
     echo $timestamp': Step 2: Sorting file with seqkit'
     echo " "
-    seqkit sort --threads $threads --by-length --reverse -o $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq"
+    seqkit sort --threads $threads --by-length --reverse \
+    -o $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq"
 }
 
 reads_overlap(){
@@ -233,19 +234,22 @@ select_contig(){
 
 correct_reads(){
 ## CORRECT COLLECTED READS WITH CANU
+    echo ""
     echo $timestamp': Correcting reads with Canu'
-    canu -correct -p $wd$prefix"_collected_reads" genomeSize=$genomeSize \
-        -nanopore $wd$prefix"_collected_reads.fastq"
+    canu -correct -d $wd -p $prefix"_collected_reads" genomeSize=$genomeSize \
+        -nanopore $wd$prefix"_collected_reads.fastq" 2> /dev/null
     gunzip $wd$prefix"_collected_reads.correctedReads.fasta.gz"
 }
 
 polish_asm(){
 ## Polished the asm returned by flye using flye polishing obtion
-flye -t $threads $flye_mode $wd$prefix"_collected_reads.correctedReads.fasta"  \
-    --polish-target $wd$prefix"_second_draft_asm.fasta"  \
-    --iterations 3 -o $wd$prefix"flyeasm_polish_canuCorrected"
+    echo ""
+    echo $timestamp': Polishing assembly with Canu corrected reads'
+    flye -t $threads $flye_mode $wd$prefix"_collected_reads.correctedReads.fasta"  \
+        --polish-target $wd$prefix"_second_draft_asm.fasta"  \
+        --iterations 3 -o $wd$prefix"flyeasm_polish_canuCorrected"
 
-mv $wd$prefix"flyeasm_polish_canuCorrected/polished_3.fasta" $wd$prefix"_final_draft_asm.fasta"
+    mv $wd$prefix"flyeasm_polish_canuCorrected/polished_3.fasta" $wd$prefix"_final_draft_asm.fasta"
 }
 
 ### VISAJE INICIAL ###
@@ -274,7 +278,6 @@ create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$pre
 && collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
 && trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && correct_reads && polish_asm
 
-# second_assembly && select_contig
 
 
 echo ""
