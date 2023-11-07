@@ -36,11 +36,8 @@ The best way to use the program is throught a beautiful conda enviroment.
 **Note** This has only been tested on MacOS M1
 
 ```
-git clone https://github.com/juanjo255/MITNANEX.git
-cd MITNANEX
-mamba env create --name mitnanex --file environment_mac.yml
-mamba activate mitnanex
-pip install -r requirements_macOS.txt
+git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
+mamba env create --name mitnanex --file environment_mac.yml && mamba activate mitnanex && pip install -r requirements_macOS.txt
 ```
 
 ## 🎈 Usage <a name="usage"></a>
