@@ -27,7 +27,7 @@ mitnanex_help() {
     Options:
         -i        Input file. [required]
         -t        Threads. [4].
-        -p        Proportion. For sampling with seqkit. Read seqkit sample documentation. [0.4].
+        -p        Proportion. For sampling. It can be a proportion or a number of reads (0.3|10000). [0.3].
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [-1].
         -M        Max-len. Filter reads by maximun length. Read seqkit seq documentation. [-1].
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results].
@@ -138,8 +138,8 @@ subsample(){
     echo $timestamp': Step 1: Sampling with seqkit'
     echo " "
     seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
-        seqkit sample --proportion $proportion --threads $threads -o $wd$prefix"_sample.sorted.fastq"
-    
+        seqtk sample $input_file $proportion > $wd$prefix"_sample.sorted.fastq"
+    echo $timestamp": $(samtools view -c $wd$prefix"_sample.sorted.fastq") reads outputted"
 }
 
 trim_adapters(){
