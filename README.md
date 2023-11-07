@@ -46,7 +46,7 @@ git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX && mamba env 
 
 * Quick start
   ```
-  ./mitnanex_cli.sh -i path/to/readsFile  -p 15000 -m 1000 -t 8 -s 0.7 -g 22k -w path/to/output
+  ./mitnanex_cli.sh -i path/to/fastQ  -p 15000 -m 1000 -t 8 -s 0.7 -g 22k -w path/to/output
   ```
 * For help message
   ```
