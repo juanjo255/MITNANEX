@@ -187,7 +187,7 @@ first_assembly(){
     echo " "
     minimap2 -x ava-ont -t $threads --dual=yes \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
-        miniasm -S7 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
+        miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
 }
 
 gfa2fasta(){
