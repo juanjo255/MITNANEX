@@ -11,7 +11,6 @@ min_qual=-1
 wd="./"
 flye_mode='--nano-hq'
 output_dir='mitnanex_results/'
-genomeSize='32k'
 
 ## Help message
 mitnanex_help() {
@@ -95,6 +94,13 @@ done
 if [ -z "$input_file" ];
 then
   echo "Error: Input file is required."
+  mitnanex_help
+fi
+
+# Check if required arguments are provided
+if [ -z "$genomeSize" ];
+then
+  echo "Error: genome size is required."
   mitnanex_help
 fi
 
@@ -257,7 +263,7 @@ quality_control(){
 ## QUALITY CONTROL USING FILTLONG
     echo ""
     echo $timestamp': Tossing up bad reads with filtlong'
-    filtlong --min_length $min_len --keep_percent 80 $wd$prefix"_collected_reads.fastq" > $wd$prefix"_collected_reads.filtlong.fastq"
+    filtlong --min_length $min_len --keep_percent 90 $wd$prefix"_collected_reads.fastq" > $wd$prefix"_collected_reads.filtlong.fastq"
 }
 
 ### VISAJE INICIAL ###
