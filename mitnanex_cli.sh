@@ -186,7 +186,6 @@ first_assembly(){
     #miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_miniasm.paf" > $wd$prefix"_first_draft_asm.gfa"
 }
 
-
 gfa2fasta(){
 ## Convert from gfa and fasta and compute descriptive statistics
     ## STATISTICS OF FIRST DRAFT ASSEMBLY
@@ -222,7 +221,7 @@ second_assembly(){
 ## ASSEMBLE WITH FLYE
     echo $timestamp': Generating a draft assembly with Flye'
     flye -t $threads --meta \
-        $flye_mode $wd$prefix"_collected_reads.fastq" -o $wd$prefix"_flye_asm/"
+        $flye_mode $wd$prefix"_collected_reads.filtlong.fastq" -o $wd$prefix"_flye_asm/"
 }
 
 select_contig(){
@@ -235,9 +234,11 @@ correct_reads(){
 ## CORRECT COLLECTED READS WITH CANU
     echo ""
     echo $timestamp': Correcting reads with Canu'
-    canu -correct -d $wd -p $prefix"_collected_reads" genomeSize=$genomeSize \
-        -nanopore $wd$prefix"_collected_reads.fastq" 2> /dev/null
-    gunzip $wd$prefix"_collected_reads.correctedReads.fasta.gz"
+    mkdir $wd"canu_correction/"
+    canu -correct -d $wd"canu_correction/" -p $prefix"_collected_reads" genomeSize=$genomeSize \
+        -nanopore $wd$prefix"_collected_reads.filtlong.fastq" 2> /dev/null \
+        && mv $wd"canu_correction/"$prefix"_collected_reads.correctedReads.fasta.gz" $wd$prefix"_collected_reads.correctedReads.fasta.gz" \
+        && gunzip $wd$prefix"_collected_reads.correctedReads.fasta"
 }
 
 polish_asm(){
@@ -247,16 +248,16 @@ polish_asm(){
     echo $timestamp': Polishing assembly with Canu corrected reads'
     flye -t $threads $flye_mode $wd$prefix"_collected_reads.correctedReads.fasta"  \
         --polish-target $wd$prefix"_second_draft_asm.fasta"  \
-        --iterations 3 -o $wd$prefix"flyeasm_polish_canuCorrected"
+        --iterations 3 -o $wd$prefix"flye_asm_polish_canuCorrected"
 
-    mv $wd$prefix"flyeasm_polish_canuCorrected/polished_3.fasta" $wd$prefix"_final_draft_asm.fasta"
+    mv $wd$prefix"flye_asm_polish_canuCorrected/polished_3.fasta" $wd$prefix"_final_draft_asm.fasta"
 }
 
 quality_control(){
 ## QUALITY CONTROL USING FILTLONG
     echo ""
     echo $timestamp': Tossing up bad reads with filtlong'
-
+    filtlong --min_length $min_len --keep_percent 80 $wd$prefix"_collected_reads.fastq" > $wd$prefix"_collected_reads.filtlong.fastq"
 }
 
 ### VISAJE INICIAL ###
@@ -281,10 +282,13 @@ start=$SECONDS
 create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
 && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
 && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
-&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && second_assembly && select_contig \
+&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && quality_control \
+&& second_assembly && select_contig \
 && collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
-&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && correct_reads && polish_asm
+&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" \
+&& quality_control && correct_reads && polish_asm
 
+#correct_reads
 
 echo ""
 echo "### MITNANEX finished ###"
