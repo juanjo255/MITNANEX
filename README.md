@@ -31,7 +31,7 @@ The tool has a module written in Rust. I have to find out if it is necessary to 
 
 #### Conda/mamba
 
-The best way to use the program is throught a beautiful conda enviroment.
+The best way to use the program is throught a beautiful conda/mamba enviroment.
 
 **Note** This has only been tested on MacOS M1
 
