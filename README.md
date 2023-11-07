@@ -26,9 +26,6 @@ This tool's main purpose is to extract mitocondrial nanopore reads from the WGS 
 
 ### Prerequisites
 The tool has a module written in Rust. I have to find out if it is necessary to download rust and/or run masturin
-```
-Give examples
-```
 
 ### Installing
 
