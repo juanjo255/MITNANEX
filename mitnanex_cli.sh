@@ -25,7 +25,7 @@ mitnanex_help() {
     Usage: mitnanex.sh [options] FASTQ
 
     Options:
-        -i        Input file.
+        -i        Input file. [required]
         -t        Threads. [4].
         -p        Proportion. For sampling with seqkit. Read seqkit sample documentation. [0.4].
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [-1].
@@ -37,7 +37,7 @@ mitnanex_help() {
         -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6]
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
-        -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu. [32k]
+        -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu. [required]
         *         Help.
     "
     exit 1
