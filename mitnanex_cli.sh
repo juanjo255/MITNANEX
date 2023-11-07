@@ -187,9 +187,7 @@ first_assembly(){
     echo " "
     minimap2 -x ava-ont -t $threads --dual=yes \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
-        miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
-    #> $wd$prefix"_miniasm.paf"
-    #miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_miniasm.paf" > $wd$prefix"_first_draft_asm.gfa"
+        miniasm -S7 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
 }
 
 gfa2fasta(){
@@ -249,14 +247,12 @@ correct_reads(){
 
 polish_asm(){
 ## POLISHED THE FLYE ASM USING FLYE POLISHING TOOL
-
     echo ""
     echo $timestamp': Polishing assembly with Canu corrected reads'
     flye -t $threads $flye_mode $wd$prefix"_collected_reads.correctedReads.fasta"  \
         --polish-target $wd$prefix"_second_draft_asm.fasta"  \
-        --iterations 3 -o $wd$prefix"flye_asm_polish_canuCorrected"
-
-    mv $wd$prefix"flye_asm_polish_canuCorrected/polished_3.fasta" $wd$prefix"_final_draft_asm.fasta"
+        --iterations 3 -o $wd$prefix"flye_asm_polish_canuCorrected" \
+    && mv $wd$prefix"flye_asm_polish_canuCorrected/polished_3.fasta" $wd$prefix"_final_draft_asm.fasta"
 }
 
 quality_control(){
@@ -300,7 +296,7 @@ echo ""
 echo "### MITNANEX finished ###"
 echo ""
 echo "Final assembly is in" $wd$prefix"_final_draft_asm.fasta"
-echo "Putative mitochondrial reads are in "$wd$prefix"_collected_reads.fastq"
+echo "Putative mitochondrial reads are in " $wd$prefix"_collected_reads.fastq"
 
 ## END TIMER
 duration=$(( SECONDS - start ))
