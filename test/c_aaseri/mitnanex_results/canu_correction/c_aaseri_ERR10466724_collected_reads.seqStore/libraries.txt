@@ -1,0 +1,3 @@
+ID         technology  name
+---- ----------------  ------------------------------
+1            Nanopore  c_aaseri_ERR10466724_collected_reads.filtlong

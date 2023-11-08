@@ -1,0 +1,58 @@
+
+Found 1 command tree.
+
+Counting 7814 (estimated) thousand canonical 16-mers from 1 input file:
+    canu-seqStore: ../../c_aaseri_ERR10466724_collected_reads.seqStore
+
+
+SIMPLE MODE
+-----------
+
+  16-mers
+    -> 4294967296 entries for counts up to 65535.
+    -> 64 Gbits memory used
+
+  8002344 input bases
+    -> expected max count of 32009, needing 0 extra bits.
+    -> no memory used
+
+  8192 MB memory needed
+
+
+COMPLEX MODE
+------------
+
+prefix     # of   struct   kmers/    segs/      min     data    total
+  bits   prefix   memory   prefix   prefix   memory   memory   memory
+------  -------  -------  -------  -------  -------  -------  -------
+     1     2  P    35 kB  1953 kM  1893  S  8192  B    14 MB    14 MB
+     2     4  P    41 kB   976 kM   917  S    16 kB    14 MB    14 MB
+     3     8  P    53 kB   488 kM   444  S    32 kB    13 MB    13 MB
+     4    16  P    77 kB   244 kM   214  S    64 kB    13 MB    13 MB
+     5    32  P   127 kB   122 kM   104  S   128 kB    13 MB    13 MB
+     6    64  P   227 kB    61 kM    50  S   256 kB    12 MB    12 MB
+     7   128  P   428 kB    30 kM    24  S   512 kB    12 MB    12 MB
+     8   256  P   832 kB    15 kM    12  S  1024 kB    12 MB    12 MB
+     9   512  P  1640 kB  7815  M     6  S  2048 kB    12 MB    13 MB
+    10  1024  P  3256 kB  3908  M     3  S  4096 kB    12 MB    15 MB  Best Value!
+    11  2048  P  6496 kB  1954  M     2  S  8192 kB    16 MB    22 MB
+    12  4096  P    12 MB   977  M     1  S    16 MB    16 MB    28 MB
+    13  8192  P    25 MB   489  M     1  S    32 MB    32 MB    57 MB
+    14    16 kP    50 MB   245  M     1  S    64 MB    64 MB   114 MB
+    15    32 kP   101 MB   123  M     1  S   128 MB   128 MB   229 MB
+    16    64 kP   202 MB    62  M     1  S   256 MB   256 MB   458 MB
+
+
+FINAL CONFIGURATION
+-------------------
+
+Estimated to require 27 MB memory out of 4096 MB allowed.
+Estimated to require 2 batches.
+
+Configured complex mode for 0.027 GB memory per batch, and up to 2 batches.
+
+Start counting with THREADED method.
+
+Cleaning up.
+
+Bye.
