@@ -1,0 +1,24 @@
+Edge	20	1	11	0	0	0	5	-1
+	Sequence	+edge_11_0_-disjointig_2_9367_11522 2155 -11 19761 9367 11522
+Edge	21	6	2	0	0	0	5	-1
+	Sequence	-edge_11_0_-disjointig_2_9367_11522 2155 11 19761 8238 10393
+Edge	60	10	13	0	0	0	3	-1
+	Sequence	+edge_31_0_+disjointig_5_0_7115 7115 23 7116 0 7115
+Edge	61	3	18	0	0	0	3	-1
+	Sequence	-edge_31_0_+disjointig_5_0_7115 7115 -23 7116 0 7115
+Edge	68	17	17	0	0	0	487	-1
+	Sequence	+edge_35_0_+disjointig_1_18973_52376 33403 1 79716 18973 52376
+Edge	69	9	9	0	0	0	487	-1
+	Sequence	-edge_35_0_+disjointig_1_18973_52376 33403 -1 79716 27339 60742
+Edge	70	19	19	0	0	0	4	-1
+	Sequence	+edge_36_0_+disjointig_12_7897_32668 24771 3 34656 7897 32668
+Edge	71	14	14	0	0	0	4	-1
+	Sequence	-edge_36_0_+disjointig_12_7897_32668 24771 -3 34656 1987 26758
+Edge	72	5	1	0	0	0	8	-1
+	Sequence	+edge_37_0_-disjointig_2_0_9367 9367 -11 19761 0 9367
+Edge	73	2	16	0	0	0	8	-1
+	Sequence	-edge_37_0_-disjointig_2_0_9367 9367 11 19761 10393 19760
+Edge	74	11	12	0	0	0	4	-1
+	Sequence	+edge_38_0_+disjointig_13_3614_17809 14195 4 17810 3614 17809
+Edge	75	7	6	0	0	0	4	-1
+	Sequence	-edge_38_0_+disjointig_13_3614_17809 14195 -4 17810 0 14195

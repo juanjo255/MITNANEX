@@ -1,0 +1,35 @@
+
+Found perl:
+   /Users/jjpc/miniforge3/envs/mitnanex/bin/perl
+   This is perl 5, version 32, subversion 1 (v5.32.1) built for darwin-thread-multi-2level
+
+Found java:
+   /Users/jjpc/miniforge3/envs/mitnanex/lib/jvm/bin/java
+   openjdk version "21.0.1" 2023-10-17 LTS
+
+Found canu:
+   /Users/jjpc/miniforge3/envs/mitnanex/bin/canu
+   canu 2.2
+
+Running job 1 based on command line options.
+
+Attempting to increase maximum allowed processes and open files.
+  Changed max processes per user from 1333 to 1333 (max 2000).
+./scripts/2-sort.sh: line 78: [: unlimited: integer expression expected
+  Max open files limited to 2560, no increase possible.
+
+
+Finding overlaps.
+  found    1101260 overlaps in './c_aaseri_ERR10466724_collected_reads.ovlStore.BUILDING/bucket0001/sliceSizes'.
+
+Loading    1101260 overlaps using 0.02 GB of allowed (-M) 1 GB memory.
+  loading    1101260 overlaps from './c_aaseri_ERR10466724_collected_reads.ovlStore.BUILDING/bucket0001/slice0001'.
+
+Sorting.
+
+Writing sorted overlaps.
+  created './c_aaseri_ERR10466724_collected_reads.ovlStore.BUILDING/0001' with 1101260 overlaps for reads 3 to 8208.
+
+Removing bucketized overlaps.
+
+Success!

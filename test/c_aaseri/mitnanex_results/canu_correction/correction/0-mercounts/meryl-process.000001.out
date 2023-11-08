@@ -1,0 +1,45 @@
+
+Found perl:
+   /Users/jjpc/miniforge3/envs/mitnanex/bin/perl
+   This is perl 5, version 32, subversion 1 (v5.32.1) built for darwin-thread-multi-2level
+
+Found java:
+   /Users/jjpc/miniforge3/envs/mitnanex/lib/jvm/bin/java
+   openjdk version "21.0.1" 2023-10-17 LTS
+
+Found canu:
+   /Users/jjpc/miniforge3/envs/mitnanex/bin/canu
+   canu 2.2
+
+Running job 1 based on command line options.
+
+Found 1 command tree.
+
+PROCESSING TREE #1 using 4 threads.
+  opGreaterThan
+    threshold=1
+    opUnionSum
+      ./c_aaseri_ERR10466724_collected_reads.01.meryl
+    output to c_aaseri_ERR10466724_collected_reads.ms16.WORKING
+
+Cleaning up.
+
+Bye.
+
+Found 1 command tree.
+
+Found 1 command tree.
+
+PROCESSING TREE #1 using 4 threads.
+  opAtLeast
+    threshold=1000
+    opAtLeast
+      word-frequenct=0.000000
+      ./c_aaseri_ERR10466724_collected_reads.ms16
+    print to ./c_aaseri_ERR10466724_collected_reads.ms16.##.dump
+
+Cleaning up.
+
+Bye.
+
+Found 1 command tree.

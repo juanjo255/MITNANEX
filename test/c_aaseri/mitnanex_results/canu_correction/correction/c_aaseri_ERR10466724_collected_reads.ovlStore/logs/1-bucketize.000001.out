@@ -1,0 +1,28 @@
+
+Found perl:
+   /Users/jjpc/miniforge3/envs/mitnanex/bin/perl
+   This is perl 5, version 32, subversion 1 (v5.32.1) built for darwin-thread-multi-2level
+
+Found java:
+   /Users/jjpc/miniforge3/envs/mitnanex/lib/jvm/bin/java
+   openjdk version "21.0.1" 2023-10-17 LTS
+
+Found canu:
+   /Users/jjpc/miniforge3/envs/mitnanex/bin/canu
+   canu 2.2
+
+Running job 1 based on command line options.
+
+Attempting to increase maximum allowed processes and open files.
+  Changed max processes per user from 1333 to 1333 (max 2000).
+./scripts/1-bucketize.sh: line 78: [: unlimited: integer expression expected
+  Max open files limited to 2560, no increase possible.
+
+
+Opened '../c_aaseri_ERR10466724_collected_reads.seqStore' with 8231 reads.
+
+Constructing slice 1 for store './c_aaseri_ERR10466724_collected_reads.ovlStore.BUILDING'.
+ - Filtering overlaps over 1.0000 fraction error.
+
+Bucketizing input    1 out of    1 - '1-overlapper/results/000001.ovb'
+Success!
