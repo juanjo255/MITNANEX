@@ -41,7 +41,7 @@ bash setup.sh
 
 + This has only been tested on MacOS M1.
   
-+ ```setup.sh``` will create a **mamba** enviroment will all the requirements in the  ```.yml``` file.
++ ```setup.sh``` will create a **mamba** enviroment with all the dependencies in the  ```.yml``` file.
 
 ## 🎈 Usage <a name="usage"></a>
 
@@ -49,6 +49,9 @@ bash setup.sh
   ```
   ./mitnanex_cli.sh -i path/to/fastQ  -p 15000 -m 1000 -t 8 -s 0.6 -g GenomeSize(g|m|k) -w path/to/output
   ```
+**Notes:** 
++ It only receives fastQ files.
+
 * For help message
   ```
   ./mitnanex_cli.sh -h
