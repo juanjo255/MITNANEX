@@ -40,8 +40,8 @@ bash setup.sh
 **Notes:** 
 
 + This has only been tested on MacOS M1.
-+ 
-+```setup.sh``` will create a **mamba** enviroment will all the requirements in the  ```.yml``` file.
+  
++ ```setup.sh``` will create a **mamba** enviroment will all the requirements in the  ```.yml``` file.
 
 ## 🎈 Usage <a name="usage"></a>
 
