@@ -24,9 +24,6 @@ MITNANEX's main purpose is to extract mitocondrial Nanopore reads from the **WGS
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
-### Prerequisites
-The tool has a module written in Rust. I have to find out if it is necessary to download rust and/or run masturin
-
 ### Installing
 
 #### Conda/mamba
