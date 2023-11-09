@@ -25,7 +25,7 @@ mitnanex_help() {
     Usage: mitnanex.sh [options] FASTQ
 
     Options:
-        -i        Input file. [required]
+        -i        Input file. [required].
         -t        Threads. [4].
         -p        Proportion. For sampling. It can be a proportion or a number of reads (0.3|10000). [0.3].
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [-1].
@@ -33,11 +33,11 @@ mitnanex_help() {
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results].
         -r        Prefix name add to every produced file. [input file name].
         -c        Coverage. Minimum coverage per cluster accepted. [-1].
-        -d        Different output directory. Create a different output directory every run (it uses the date and time).
-        -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6]
+        -d        Different output directory. Create a different output directory every run (it uses the date and time). [False].
+        -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6].
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
-        -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu. [required]
+        -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu. [required].
         *         Help.
     "
     exit 1
@@ -290,7 +290,6 @@ create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$pre
 && trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" \
 && quality_control && correct_reads && polish_asm
 
-#correct_reads
 
 echo ""
 echo "### MITNANEX finished ###"
