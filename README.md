@@ -33,12 +33,15 @@ The tool has a module written in Rust. I have to find out if it is necessary to 
 
 The best way to use the program is throught a beautiful conda/mamba enviroment.
 
-**Note** This has only been tested on MacOS M1
-
 ```
 git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
-mamba env create --name mitnanex --file environment_mac.yml && mamba activate mitnanex && pip install -r requirements_macOS.txt
+bash setup.sh
 ```
+**Notes:** 
+
++ This has only been tested on MacOS M1.
++ 
++```setup.sh``` will create a **mamba** enviroment will all the requirements in the  ```.yml``` file.
 
 ## 🎈 Usage <a name="usage"></a>
 
