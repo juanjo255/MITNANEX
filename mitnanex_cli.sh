@@ -295,7 +295,7 @@ echo ""
 echo "### MITNANEX finished ###"
 echo ""
 echo "Final assembly is in" $wd$prefix"_final_draft_asm.fasta"
-echo "Putative mitochondrial reads are in " $wd$prefix"_collected_reads.fastq"
+echo "Putative mitochondrial reads are in" $wd$prefix"_collected_reads.fastq"
 
 ## END TIMER
 duration=$(( SECONDS - start ))
