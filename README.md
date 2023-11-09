@@ -20,7 +20,7 @@
 + [Contributing](../CONTRIBUTING.md)
 
 ## 🧐 About <a name = "about"></a>
-This tool's main purpose is to extract mitocondrial nanopore reads from the WGS _De novo_. However, it will also assembly a draft mitogenome using [Flye](https://github.com/fenderglass/Flye.git).
+MITNANEX's main purpose is to extract mitocondrial nanopore reads from the WGS _De novo_. However, it will also returned a draft assembly of the mitogenome using [Flye](https://github.com/fenderglass/Flye.git).
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
