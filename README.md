@@ -47,7 +47,7 @@ bash setup.sh
 
 * Quick start
   ```
-  ./mitnanex_cli.sh -i path/to/fastQ  -p 15000 -m 1000 -t 8 -s 0.7 -g 22k -w path/to/output
+  ./mitnanex_cli.sh -i path/to/fastQ  -p 15000 -m 1000 -t 8 -s 0.6 -g GenomeSize(g|m|k) -w path/to/output
   ```
 * For help message
   ```
@@ -63,7 +63,7 @@ bash setup.sh
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results].
         -r        Prefix name add to every produced file. [input file name].
         -c        Coverage. Minimum coverage per cluster accepted. [-1].
-        -d        Different output directory. Create a different output directory every run (it uses the date and time).
+        -d        Different output directory. Create a different output directory every run (it uses the date and time). [False]
         -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6]
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
