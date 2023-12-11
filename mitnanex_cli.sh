@@ -10,6 +10,8 @@ map_identity=0.6
 min_qual=-1
 wd="./"
 flye_mode='--nano-hq'
+genomeCoverage=50
+keepPercent=80
 output_dir='mitnanex_results/'
 
 ## Help message
@@ -37,13 +39,15 @@ mitnanex_help() {
         -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6].
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
-        -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu. [required].
+        -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu and for flye. [required].
+        -e        GenomeCoverage. This is for flye, limit the coverage for initial disjointig assembly. [50].
+        -k        keepPercent. Percentage of reads to keep during filter with filtlong. [80]. 
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:d' opt; do
+while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:e:k:d' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -80,6 +84,12 @@ while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:d' opt; do
         ;;
         g)
         genomeSize=$OPTARG
+        ;;
+        e)
+        genomeCoverage=$OPTARG
+        ;;
+        k)
+        keepPercent=$OPTARG
         ;;
         d)
         output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
@@ -135,7 +145,7 @@ create_wd(){
 subsample(){
 ## SUBSAMPLE
     echo " "
-    echo $timestamp': Step 1: Sampling with seqkit'
+    echo $timestamp': Step 1: Sampling with seqtk'
     echo " "
     seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
         seqtk sample $input_file $proportion > $wd$prefix"_sample.sorted.fastq"
@@ -187,7 +197,7 @@ first_assembly(){
     echo " "
     minimap2 -x ava-ont -t $threads --dual=yes \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
-        miniasm -S6 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
+        miniasm -S7 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
 }
 
 gfa2fasta(){
@@ -224,7 +234,7 @@ collecting_mt_reads(){
 second_assembly(){
 ## ASSEMBLE WITH FLYE
     echo $timestamp': Generating a draft assembly with Flye'
-    flye -t $threads --meta \
+    flye -t $threads --meta --no-alt-contigs --asm-coverage $genomeCoverage --genome-size $genomeSize \
         $flye_mode $wd$prefix"_collected_reads.filtlong.fastq" -o $wd$prefix"_flye_asm/"
 }
 
@@ -259,7 +269,7 @@ quality_control(){
 ## QUALITY CONTROL USING FILTLONG
     echo ""
     echo $timestamp': Tossing up bad reads with filtlong'
-    filtlong --min_length $min_len --keep_percent 90 $wd$prefix"_collected_reads.fastq" > $wd$prefix"_collected_reads.filtlong.fastq"
+    filtlong --min_length $min_len --keep_percent $keepPercent $wd$prefix"_collected_reads.fastq" > $wd$prefix"_collected_reads.filtlong.fastq"
 }
 
 ### VISAJE INICIAL ###
@@ -289,7 +299,6 @@ create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$pre
 && collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
 && trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" \
 && quality_control && correct_reads && polish_asm
-
 
 echo ""
 echo "### MITNANEX finished ###"
