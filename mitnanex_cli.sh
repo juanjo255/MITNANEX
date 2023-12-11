@@ -10,7 +10,6 @@ map_identity=0.6
 min_qual=-1
 wd="./"
 flye_mode='--nano-hq'
-genomeCoverage=50
 keepPercent=80
 output_dir='mitnanex_results/'
 
@@ -40,14 +39,13 @@ mitnanex_help() {
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
         -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu and for flye. [required].
-        -e        GenomeCoverage. This is for flye, limit the coverage for initial disjointig assembly. [50].
         -k        keepPercent. Percentage of reads to keep during filter with filtlong. [80]. 
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:e:k:d' opt; do
+while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:k:d' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -84,9 +82,6 @@ while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:e:k:d' opt; do
         ;;
         g)
         genomeSize=$OPTARG
-        ;;
-        e)
-        genomeCoverage=$OPTARG
         ;;
         k)
         keepPercent=$OPTARG
@@ -234,7 +229,7 @@ collecting_mt_reads(){
 second_assembly(){
 ## ASSEMBLE WITH FLYE
     echo $timestamp': Generating a draft assembly with Flye'
-    flye -t $threads --meta --no-alt-contigs --asm-coverage $genomeCoverage --genome-size $genomeSize \
+    flye -t $threads --meta --no-alt-contigs \
         $flye_mode $wd$prefix"_collected_reads.filtlong.fastq" -o $wd$prefix"_flye_asm/"
 }
 
