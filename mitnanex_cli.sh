@@ -286,13 +286,19 @@ $timestamp -> Working directory: $wd
 start=$SECONDS
 
 #### PIPELINE ####
-create_wd && subsample && trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
+
+### Trimming adapter with porechop. There in the order of how they were extracted. 
+### It's slow, so I will comfort the dorado feature to remove adapters
+
+##&& trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
+##&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && quality_control \
+##&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" \
+
+create_wd && subsample \
 && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
 && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
-&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && quality_control \
 && second_assembly && select_contig \
 && collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
-&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" \
 && quality_control && correct_reads && polish_asm
 
 echo ""
