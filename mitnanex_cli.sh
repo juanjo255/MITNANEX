@@ -10,7 +10,7 @@ map_identity=0.6
 min_qual=-1
 wd="./"
 flye_mode='--nano-hq'
-keepPercent=80
+keepPercent=90
 output_dir='mitnanex_results/'
 
 ## Help message
@@ -245,9 +245,10 @@ correct_reads(){
     echo $timestamp': Correcting reads with Canu'
     mkdir $wd"canu_correction/"
     canu -correct -d $wd"canu_correction/" -p $prefix"_collected_reads" genomeSize=$genomeSize \
-        -nanopore $wd$prefix"_collected_reads.filtlong.fastq" 2> /dev/null \
-        && mv $wd"canu_correction/"$prefix"_collected_reads.correctedReads.fasta.gz" $wd$prefix"_collected_reads.correctedReads.fasta.gz" \
-        && gunzip $wd$prefix"_collected_reads.correctedReads.fasta"
+    -nanopore $wd$prefix"_collected_reads.filtlong.fastq"
+        # 2> /dev/null \
+        #&& mv $wd"canu_correction/"$prefix"_collected_reads.correctedReads.fasta.gz" $wd$prefix"_collected_reads.correctedReads.fasta.gz" \
+        #&& gunzip $wd$prefix"_collected_reads.correctedReads.fasta.gz"
 }
 
 polish_asm(){
@@ -264,7 +265,7 @@ quality_control(){
 ## QUALITY CONTROL USING FILTLONG
     echo ""
     echo $timestamp': Tossing up bad reads with filtlong'
-    filtlong --min_length $min_len --keep_percent $keepPercent $wd$prefix"_collected_reads.fastq" > $wd$prefix"_collected_reads.filtlong.fastq"
+    filtlong --length_weight 10 --keep_percent $keepPercent $wd$prefix"_collected_reads.fastq" > $wd$prefix"_collected_reads.filtlong.fastq"
 }
 
 ### VISAJE INICIAL ###
@@ -291,21 +292,23 @@ start=$SECONDS
 ### It's slow, so I will comfort the dorado feature to remove adapters
 
 ##&& trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
-##&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" && quality_control \
+##&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq"  \
 ##&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" \
 
 create_wd && subsample \
 && sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
 && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
-&& second_assembly && select_contig \
+&& quality_control && second_assembly && select_contig \
 && collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
-&& quality_control && correct_reads && polish_asm
+&& quality_control && correct_reads #&& polish_asm
+
+#correct_reads
 
 echo ""
 echo "### MITNANEX finished ###"
 echo ""
 echo "Final assembly is in" $wd$prefix"_final_draft_asm.fasta"
-echo "Putative mitochondrial reads are in" $wd$prefix"_collected_reads.fastq"
+echo "Putative mitochondrial reads are in" $wd$prefix"_collected_reads.filtlong.fastq"
 
 ## END TIMER
 duration=$(( SECONDS - start ))

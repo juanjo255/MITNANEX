@@ -25,7 +25,7 @@ def select_contig(flye_metadata: str, flye_asm_file: str) -> str:
         flye_metadata_df = flye_metadata_df[
             flye_metadata_df["circ."] == "Y"
         ].sort_values(by=["cov.", "length"])
-        return get_contig_sequence(flye_metadata_df["#seq_name"][0], flye_asm_file)
+        return get_contig_sequence(flye_metadata_df["#seq_name"].iloc[0], flye_asm_file)
 
     else:
         print("No circular genome found")

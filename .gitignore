@@ -11,11 +11,5 @@ notes/Internship
 *.tsv
 *.csv
 *.tmp
-test/s_cervisae_CEN_PK113-7D/
-test/sara_reads/
-test/talaro_santan/
-test/a_gifuensis/
-test/homo_sapiens/
-test/a_fumigatus/
-test/a_aaseri/
+test/reads/
 mitnanex_rs/target/
