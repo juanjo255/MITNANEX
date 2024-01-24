@@ -34,6 +34,18 @@ The best way to use the program is throught a beautiful conda/mamba enviroment.
 git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
 bash setup.sh
 ```
+### Dependencies
+MITNANEX need the following tools:
+1. Seqkit
+2. Seqtk
+3. Minimap2
+4. Miniasm
+5. Flye
+6. Pandas
+7. gfastats
+8. Canu
+9. Samtools
+
 **Notes:** 
 
 + This has only been tested on MacOS M1.
@@ -71,3 +83,16 @@ bash setup.sh
         *         Help.
   
   ```
+
+  ## Algorithm overview
+  + **How does MITNANEX work?**
+  + MITNANEX is a pipeline that depends on other open source tools (see [dependencies](#getting_started)).
+  + First, it will use seqkit and seqkt to subsample the reads, after that  MITNANEX starts with minimap2 finding overlaps between reads. MITNANEX will group reads that have at least certain level of identity (tweakable parameter), each read will be counted for the "coverage" of the group and each cluster will be represented only by its largest member.
+  + Once we got the clusters, we will only keep at least 3 groups with the highest coverage, given the short length of the mitchondrial genome and its high coverage during WGS, we expect to have most of it in these clusters.  
+ 
+
+
+
+
+
+
