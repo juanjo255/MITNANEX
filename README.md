@@ -35,7 +35,7 @@ git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
 bash setup.sh
 ```
 ### Dependencies
-MITNANEX need the following tools:
+MITNANEX needs the following tools:
 1. Seqkit
 2. Seqtk
 3. Minimap2
@@ -88,7 +88,12 @@ MITNANEX need the following tools:
   + **How does MITNANEX work?**
   + MITNANEX is a pipeline that depends on other open source tools (see [dependencies](#getting_started)).
   + First, it will use seqkit and seqkt to subsample the reads, after that  MITNANEX starts with minimap2 finding overlaps between reads. MITNANEX will group reads that have at least certain level of identity (tweakable parameter), each read will be counted for the "coverage" of the group and each cluster will be represented only by its largest member.
-  + Once we got the clusters, we will only keep at least 3 groups with the highest coverage, given the short length of the mitchondrial genome and its high coverage during WGS, we expect to have most of it in these clusters.  
+  + Once we got the clusters, we will only keep at least 3 groups with the highest coverage (tweakable parameter), given the short length of the mitchondrial genome and its high coverage during WGS, we expect to have most of it in these clusters.
+   <p align="center"><img src="images/Cluster_filter_by_cov.png" alt="Cluster_filter_by_cov"></p>
+  + Now with the selected clusters MITNANEX will use the representative read of each cluster and get its trinucleotidic composition (codon) which will be reduce is normalized by the read length, and reduce its dimensionality to 2 with a PCA such as the classic strategy during metagenomic binning. Here, given the difference between mitochondrial and the nuclear genome, we expect the mitochondrial reads to have an oligocomposition different enough to be separated from the nuclear. The known weakness of Kmean for outliers made the selection of this clustering algortihm attractive. Thus, using the clustering algorithm Kmeans, with a k set to 2, is selected the cluster with the highest coverage.
+   <p align="center"><img src="images/Kmeans_on_pca.png" alt="Kmeans_on_pca"></p>
+  + Above the cluster in yellow was selected. 
+     
  
 
 
