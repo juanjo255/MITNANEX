@@ -23,11 +23,11 @@ def set_minimun_cov(clusters_info: pd.DataFrame, coverage: str) -> int:
     print("Minimum coverage: ", min_coverage)
     return min_coverage
 
-def filt_by_cov_gap (clusters_info: pd.DataFrame) -> pd.DataFrame:
+def filt_by_cov_gap (clusters_info: pd.DataFrame, min_num_clusters:int) -> pd.DataFrame:
     cov_gaps = clusters_info.loc[:,'coverage'].diff(periods=-1).sort_values(ascending=False)
     for k in cov_gaps.index:
         clusters_filt_cov = clusters_info['coverage'] >= clusters_info.loc[k, 'coverage']
-        if sum(clusters_filt_cov) > 3 :
+        if sum(clusters_filt_cov) > min_num_clusters :
             min_coverage=clusters_info.loc[k, 'coverage']
             print(" ")
             print("Minimum coverage: ", min_coverage)

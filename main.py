@@ -16,6 +16,7 @@ if __name__ == "__main__":
     coverage = int(args[3])  # minimun coverage per cluster
     map_identity = float(args[4])  # minimun coverage per cluster
     output = args[5]  # file to write mt reads
+    min_num_clusters = int(args[6]) ## Minimum number of clusters to keep with the highest coverage
 
     # MAIN PROGRAM
     clusters_list = run(paf_file, map_identity)
@@ -35,7 +36,7 @@ if __name__ == "__main__":
     
     ## Get minimum coverage
     #min_coverage = set_minimun_cov(clusters_info, coverage)
-    min_coverage = filt_by_cov_gap(clusters_info)
+    min_coverage = filt_by_cov_gap(clusters_info, min_num_clusters)
 
     ## Filter clusters by coverage
     clusters_info = clusters_info[clusters_info["coverage"] >= min_coverage]

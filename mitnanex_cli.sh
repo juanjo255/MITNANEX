@@ -5,6 +5,7 @@ threads=4
 min_len=-1
 max_len=-1
 coverage=-1
+min_num_clusters=3
 timestamp=$(date -u +"%Y-%m-%d %T")
 map_identity=0.6
 min_qual=-1
@@ -34,6 +35,7 @@ mitnanex_help() {
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results].
         -r        Prefix name add to every produced file. [input file name].
         -c        Coverage. Minimum coverage per cluster accepted. [-1].
+        -x        Minimum number of cluster to keep with the highest coverage. [3].
         -d        Different output directory. Create a different output directory every run (it uses the date and time). [False].
         -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6].
         -q        Min mapping quality (>=). This is for samtools. [-1].
@@ -45,7 +47,7 @@ mitnanex_help() {
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:k:d' opt; do
+while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:g:k:d' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -67,6 +69,10 @@ while getopts 'i:t:p:m:M:w:c:r:s:q:f:g:k:d' opt; do
         ;;
         c)
         coverage=$OPTARG
+        ;;
+        ;;
+        x)
+        min_num_clusters=$OPTARG
         ;;
         r)
         prefix=$OPTARG
@@ -182,7 +188,7 @@ mt_reads_filt(){
     echo " "
     echo $timestamp': Clustering and discriminating potential mt reads with MITNANEX'
     echo " "
-    python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix".paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta"
+    python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix".paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta" $min_num_clusters
 }
 
 first_assembly(){
