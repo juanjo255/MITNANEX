@@ -17,7 +17,7 @@
 + [About](#about)
 + [Getting Started](#getting_started)
 + [Usage](#usage)
-+ [Algortihm overview](#algortihm_overview)
++ [Algortihm overview](#algorithm_overview)
 + [Contributing](../CONTRIBUTING.md)
 
 ## 🧐 About <a name = "about"></a>
@@ -85,7 +85,7 @@ MITNANEX needs the following tools:
   
   ```
 
-  ## Algorithm overview
+  ## Algorithm overview <a name = "algorithm_overview"></a>
   ### **How does MITNANEX work?**
   + MITNANEX is a pipeline that depends on other open source tools (see [dependencies](#getting_started)).
   + Through this I will show the results that belong to the assemble of Talaromyces santanderensis mitogenome using MITNANEX from a Nanopore run performed at EAFIT university.
