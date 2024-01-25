@@ -90,11 +90,15 @@ MITNANEX needs the following tools:
   + MITNANEX is a pipeline that depends on other open source tools (see [dependencies](#getting_started)).
   + Through this I will show the results that belong to the assemble of Talaromyces santanderensis mitogenome using MITNANEX from a Nanopore run performed at EAFIT university.
   + First, it will use seqkit and seqkt to subsample the reads, after that  MITNANEX starts with minimap2 finding overlaps between reads. MITNANEX will group reads that have at least certain level of identity (tweakable parameter), each read will be counted for the "coverage" of the group and each cluster will be represented only by its largest read.
-  + Once we got the clusters, we will only keep at least 3 groups with the highest coverage (tweakable parameter), given the short length of the mitchondrial genome and its high coverage during WGS, we expect to have most of it in these clusters.
+  + Once all reads are grouped, MITNANEX will only keep at least 3 groups with the highest coverage (tweakable parameter). Given the short length of the mitchondrial genome and its high coverage during WGS, we expect to have most of it in these clusters.
   + <p align="center"><img src="images/Cluster_filter_by_cov.png" alt="Cluster_filter_by_cov"></p>
   + Now with the selected clusters MITNANEX will use the representative read of each cluster and get its trinucleotidic composition (codon) which will be reduce is normalized by the read length, and reduce its dimensionality to 2 with a PCA such as the classic strategy during metagenomic binning. Here, given the difference between mitochondrial and the nuclear genome, we expect the mitochondrial reads to have an oligocomposition different enough to be separated from the nuclear. The known weakness of Kmean for outliers made the selection of this clustering algortihm attractive. Thus, using the clustering algorithm Kmeans, with a k set to 2, is selected the cluster with the highest coverage. Below the cluster in yellow was selected.
   + <p align="center"><img src="images/Kmeans_on_pca.png" alt="Kmeans_on_pca"></p>
-  + With the reads collected in the cluster selected, miniasm will assemble unitigs 
+  + With the reads collected in the cluster selected, miniasm will assemble unitigs, where we expect to assemble most of the mitogenome (or even longer given the problems that miniasm has). Miniasm is useful in this steps for 2 main reasons:
+    1. It can work with low coverage.
+    2. It's extremely fast and the unitigs produced are enough for the next step.
+  + The unitigs then are used to collect more reads in the total reads for a final assembly with Flye.
+  + Flye is almost the assembler par excellence for Nanopore reads and it's among the best at circularizing genomes. An important characteristic for mitochondrial genomes. 
      
  
 
