@@ -94,7 +94,7 @@ MITNANEX needs the following tools:
   + <p align="center"><img src="images/Cluster_filter_by_cov.png" alt="Cluster_filter_by_cov"></p>
   + Now with the selected clusters MITNANEX will use the representative read of each cluster and get its trinucleotidic composition (codon) which will be reduce is normalized by the read length, and reduce its dimensionality to 2 with a PCA such as the classic strategy during metagenomic binning. Here, given the difference between mitochondrial and the nuclear genome, we expect the mitochondrial reads to have an oligocomposition different enough to be separated from the nuclear. The known weakness of Kmean for outliers made the selection of this clustering algortihm attractive. Thus, using the clustering algorithm Kmeans, with a k set to 2, is selected the cluster with the highest coverage. Below the cluster in yellow was selected.
   + <p align="center"><img src="images/Kmeans_on_pca.png" alt="Kmeans_on_pca"></p>
-  + With the reads collected in the cluster selected, miniasm will assemble unitigs, where we expect to assemble most of the mitogenome (or even longer given the problems that miniasm has). Miniasm is useful in this steps for 2 main reasons:
+  + With the reads collected from the selected clusters, miniasm will assemble unitigs, where we expect to assemble most of the mitogenome (or even longer given the problems that miniasm has). Miniasm is useful in this steps for 2 main reasons:
     1. It can work with low coverage.
     2. It's extremely fast and the unitigs produced are enough for the next step.
   + The unitigs then are used to collect more reads in the total reads for a final assembly with Flye.
