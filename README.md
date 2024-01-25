@@ -42,7 +42,7 @@ MITNANEX needs the following tools:
 4. Miniasm
 5. Flye
 6. Pandas
-7. gfastats
+7. Gfastats
 8. Canu
 9. Samtools
 
