@@ -97,7 +97,7 @@ MITNANEX needs the following tools:
   + With the reads collected from the selected clusters, miniasm will assemble unitigs, where we expect to assemble most of the mitogenome (or even longer given the problems that miniasm has). Miniasm is useful in this steps for 2 main reasons:
     1. It can work with low coverage.
     2. It's extremely fast and the unitigs produced are enough for the next step.
-  + The unitigs then are used to collect more reads in the total reads for a final assembly with Flye.
+  + The unitigs are used to collect more reads from the total of reads to perform a final assembly with Flye.
   + Flye is almost the assembler par excellence for Nanopore reads and it's among the best at circularizing genomes. An important characteristic for mitochondrial genomes. 
      
  
