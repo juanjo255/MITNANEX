@@ -17,6 +17,7 @@
 + [About](#about)
 + [Getting Started](#getting_started)
 + [Usage](#usage)
++ [Algortihm overview](#algortihm_overview)
 + [Contributing](../CONTRIBUTING.md)
 
 ## 🧐 About <a name = "about"></a>
@@ -85,7 +86,7 @@ MITNANEX needs the following tools:
   ```
 
   ## Algorithm overview
-  + **How does MITNANEX work?**
+  ### **How does MITNANEX work?**
   + MITNANEX is a pipeline that depends on other open source tools (see [dependencies](#getting_started)).
   + Through this I will show the results that belong to the assemble of Talaromyces santanderensis mitogenome using MITNANEX from a Nanopore run performed at EAFIT university.
   + First, it will use seqkit and seqkt to subsample the reads, after that  MITNANEX starts with minimap2 finding overlaps between reads. MITNANEX will group reads that have at least certain level of identity (tweakable parameter), each read will be counted for the "coverage" of the group and each cluster will be represented only by its largest read.
