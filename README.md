@@ -42,7 +42,8 @@ For Mac M1 using mamba (you can change it for conda):
 CONDA_SUBDIR=osx-64; mamba create -n mitnanex -c conda-forge -c bioconda seqkit seqtk fpa minimap2 miniasm flye gfastats samtools
 mamba activate mitnanex
 pip install pandas maturin biopython scikit-learn
-maturin develop
+git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX/src/utils_rs
+maturin build
 
 ```
 ### Dependencies
