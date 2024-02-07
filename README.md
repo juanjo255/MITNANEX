@@ -35,6 +35,8 @@ The best way to use the program is throught a beautiful conda/mamba enviroment.
 git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
 bash setup.sh
 ```
+if it does not work, you still can try to download each dependecy through conda. check dependencies below.
+
 ### Dependencies
 MITNANEX needs the following tools:
 1. Seqkit
