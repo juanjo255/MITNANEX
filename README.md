@@ -17,7 +17,7 @@
 + [About](#about)
 + [Getting Started](#getting_started)
 + [Usage](#usage)
-+ [Algortihm overview](#algorithm_overview)
++ [Algorithm overview](#algorithm_overview)
 + [Contributing](../CONTRIBUTING.md)
 
 ## 🧐 About <a name = "about"></a>
