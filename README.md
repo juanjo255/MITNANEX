@@ -61,10 +61,11 @@ MITNANEX needs the following tools:
 7. Pandas
 8. Gfastats
 9. Samtools
-10. Maturin
-11. Biopython
-12. scikit-learn
-13. utils-mitnanex 
+10. Filtlong
+11. Maturin
+12. Biopython
+13. scikit-learn
+14. utils-mitnanex 
 
 **Notes:** 
 
