@@ -45,7 +45,7 @@ The best way to use the program is throught a beautiful conda/mamba enviroment, 
   ```
 * For Linux
   ```
-  conda create -n mitnanex -c conda-forge -c bioconda Seqkit Seqtk fpa Minimap2 Miniasm Flye Pandas Gfastats Samtools
+  conda create -n mitnanex -c conda-forge -c bioconda Seqkit Seqtk fpa Minimap2 Miniasm Flye Gfastats Samtools
   pip install pandas maturin biopython scikit-learn utils-mitnanex
   ```
    
