@@ -30,19 +30,25 @@ MITNANEX's main purpose is to extract mitocondrial Nanopore reads **_De novo_** 
 #### Conda/mamba
 
 The best way to use the program is throught a beautiful conda/mamba enviroment, additionally you need to have Rust installed (https://www.rust-lang.org/tools/install).
-
-```
-git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
-bash setup.sh
-```
-if it does not work, you still can try to download each dependecy through conda. check dependencies below.
-
-For Mac M1 using mamba (you can change it for conda):
-```
-CONDA_SUBDIR=osx-64; mamba create -n mitnanex -c conda-forge -c bioconda seqkit seqtk fpa minimap2 miniasm flye gfastats samtools
-mamba activate mitnanex
-pip install pandas maturin biopython scikit-learn utils-mitnanex
-```
+* For Mac
+  ```
+  git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
+  bash setup.sh
+  ```
+  if it does not work, you still can try to download each dependecy through conda. check dependencies below.
+  
+  For Mac M1 using mamba (you can change it for conda):
+  ```
+  CONDA_SUBDIR=osx-64; mamba create -n mitnanex -c conda-forge -c bioconda seqkit seqtk fpa minimap2 miniasm flye gfastats samtools
+  mamba activate mitnanex
+  pip install pandas maturin biopython scikit-learn utils-mitnanex
+  ```
+* For Linux
+  ```
+  conda create -n mitnanex -c conda-forge -c bioconda Seqkit Seqtk fpa Minimap2 Miniasm Flye Pandas Gfastats Samtools
+  pip install pandas maturin biopython scikit-learn utils-mitnanex
+  ```
+   
 ### Dependencies
 MITNANEX needs the following tools:
 1. Seqkit
@@ -53,8 +59,11 @@ MITNANEX needs the following tools:
 6. Flye
 7. Pandas
 8. Gfastats
-9. Canu
-10. Samtools
+9. Samtools
+10. Maturin
+11. Biopython
+12. scikit-learn
+13. utils-mitnanex 
 
 **Notes:** 
 
