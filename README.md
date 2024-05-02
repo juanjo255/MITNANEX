@@ -35,7 +35,7 @@ MITNANEX's main purpose is to extract mitocondrial Nanopore reads **_De novo_** 
 
 The best way to install MITNANEX's dependencies is throught a beautiful conda/mamba enviroment, additionally you need to have Rust installed (https://www.rust-lang.org/tools/install).
 
-  For Mac M1 using mamba (you can change it for conda):
+* For Mac M1 using mamba (you can change it for conda):
   ```
   CONDA_SUBDIR=osx-64; mamba create -n mitnanex -c conda-forge -c bioconda seqkit seqtk fpa minimap2 miniasm flye gfastats samtools
   mamba activate mitnanex
