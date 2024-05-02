@@ -37,13 +37,13 @@ The best way to install MITNANEX's dependencies is throught a beautiful conda/ma
 
 * For Mac M1 using mamba (you can change it for conda):
   ```
-  CONDA_SUBDIR=osx-64; mamba create -n mitnanex -c conda-forge -c bioconda seqkit seqtk fpa minimap2 miniasm flye gfastats samtools
+  CONDA_SUBDIR=osx-64; mamba create -n mitnanex -c conda-forge -c bioconda seqkit seqtk fpa minimap2 miniasm flye gfastats samtools Filtlong
   mamba activate mitnanex
   pip install pandas maturin biopython scikit-learn utils-mitnanex
   ```
 * For Linux
   ```
-  conda create -n mitnanex -c conda-forge -c bioconda Seqkit Seqtk fpa Minimap2 Miniasm Flye Gfastats Samtools
+  conda create -n mitnanex -c conda-forge -c bioconda Seqkit Seqtk fpa Minimap2 Miniasm Flye Gfastats Samtools Filtlong
   conda activate mitnanex
   pip install pandas maturin biopython scikit-learn utils-mitnanex
   ```
