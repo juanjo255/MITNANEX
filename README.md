@@ -26,9 +26,9 @@ MITNANEX's main purpose is to extract mitocondrial Nanopore reads **_De novo_** 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
 ### Installing
-* First, you need to clone this repository:
+* First, you need to clone this repository and add to PATH:
 ```
-  git clone https://github.com/juanjo255/MITNANEX.git
+  git clone https://github.com/juanjo255/MITNANEX.git; cd MITNANEX; export PATH=$(pwd):$PATH
 ```
 
 #### Conda/mamba
