@@ -26,17 +26,16 @@ MITNANEX's main purpose is to extract mitocondrial Nanopore reads **_De novo_** 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
 ### Installing
-
-#### Conda/mamba
-
-The best way to use the program is throught a beautiful conda/mamba enviroment, additionally you need to have Rust installed (https://www.rust-lang.org/tools/install).
-* For Mac
-  ```
+* First, you need to clone this repository:
+```
   git clone https://github.com/juanjo255/MITNANEX.git && cd MITNANEX
   bash setup.sh
   ```
-  if it does not work, you still can try to download each dependecy through conda. check dependencies below.
-  
+
+#### Conda/mamba
+
+The best way to install MITNANEX's dependencies is throught a beautiful conda/mamba enviroment, additionally you need to have Rust installed (https://www.rust-lang.org/tools/install).
+
   For Mac M1 using mamba (you can change it for conda):
   ```
   CONDA_SUBDIR=osx-64; mamba create -n mitnanex -c conda-forge -c bioconda seqkit seqtk fpa minimap2 miniasm flye gfastats samtools
