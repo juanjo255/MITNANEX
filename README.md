@@ -33,7 +33,7 @@ MITNANEX's main purpose is to extract mitocondrial Nanopore reads **_De novo_** 
 
 #### Conda/mamba
 
-The best way to install MITNANEX's dependencies is throught a beautiful conda/mamba enviroment, additionally you need to have Rust installed (https://www.rust-lang.org/tools/install).
+The best way to install MITNANEX's dependencies is throught a beautiful conda/mamba enviroment, first you **must** have Rust installed (https://www.rust-lang.org/tools/install).
 
 * For Mac M1 using mamba (you can change it for conda):
   ```
@@ -41,6 +41,13 @@ The best way to install MITNANEX's dependencies is throught a beautiful conda/ma
   mamba activate mitnanex
   pip install pandas maturin biopython scikit-learn utils-mitnanex
   ```
+  It's posible to have problem with the pip module utils-mitnanex, in that case:
+
+  ```
+  pip uninstall utils-mitnanex
+  cd src/utils_rs; maturin develop
+  ```
+  
 * For Linux
   ```
   conda create -n mitnanex -c conda-forge -c bioconda Seqkit Seqtk fpa Minimap2 Miniasm Flye Gfastats Samtools Filtlong
