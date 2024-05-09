@@ -70,7 +70,6 @@ while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:g:k:d' opt; do
         c)
         coverage=$OPTARG
         ;;
-        ;;
         x)
         min_num_clusters=$OPTARG
         ;;
@@ -149,18 +148,8 @@ subsample(){
     echo $timestamp': Step 1: Sampling with seqtk'
     echo " "
     seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
-        seqtk sample $input_file $proportion > $wd$prefix"_sample.sorted.fastq"
+        seqtk sample - $proportion > $wd$prefix"_sample.sorted.fastq"
     echo $timestamp": $(samtools view -c $wd$prefix"_sample.sorted.fastq") reads outputted"
-}
-
-trim_adapters(){
-## $1 input
-## $2 output
-## TRIM ADAPTERS
-    echo " "
-    echo $timestamp': Trimming adapters with porechop'
-    echo " "
-    porechop --verbosity 0 -t $threads -i $1 -o $2 
 }
 
 sort_file(){
@@ -178,7 +167,7 @@ reads_overlap(){
     echo " "
     echo $timestamp': Looking for overlaps with minimap2'
     echo " "
-    minimap2 -x ava-ont -t $threads --dual=yes \
+    minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
         fpa drop --internalmatch --length-lower $min_len > $wd$prefix".paf"
 }
@@ -294,21 +283,14 @@ start=$SECONDS
 
 #### PIPELINE ####
 
-### Trimming adapter with porechop. There in the order of how they were extracted. 
-### It's slow, so I will comfort the dorado feature to remove adapters
-
-##&& trim_adapters $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" \
-##&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq"  \
-##&& trim_adapters $wd$prefix"_collected_reads.fastq" $wd$prefix"_collected_reads.fastq" \
-
 create_wd && subsample \
-&& sort_file && reads_overlap && mt_reads_filt && first_assembly && gfa2fasta \
+&& sort_file && reads_overlap && mt_reads_filt \
+&& first_assembly && gfa2fasta \
 && collecting_mt_reads $wd$prefix"_first_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
 && quality_control && second_assembly && select_contig \
 && collecting_mt_reads $wd$prefix"_second_draft_asm.fasta" $input_file $wd$prefix"_align.bam" $wd$prefix"_collected_reads.fastq" \
-&& quality_control && correct_reads #&& polish_asm
-
-#correct_reads
+&& quality_control 
+#&& correct_reads #&& polish_asm
 
 echo ""
 echo "### MITNANEX finished ###"
