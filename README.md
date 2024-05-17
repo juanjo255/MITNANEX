@@ -128,7 +128,7 @@ MITNANEX needs the following tools:
 
  ## Testing <a name = "testing"></a>
 
-So far, it has only been tested on Fungi. For animals and plant I think it would required some adjustments.
+So far, it has only been tested on Fungi. For animals and plant I think it would require some adjustments.
 
 The following datasets were retrieved from the NCBI. Assembled with MITNANEX and validated with blastn against the NCBI. All of then got 100% query with identity >99%.
 
