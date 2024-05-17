@@ -18,10 +18,11 @@
 + [Getting Started](#getting_started)
 + [Usage](#usage)
 + [Algorithm overview](#algorithm_overview)
++ [Testing](#testing)
 + [Contributing](../CONTRIBUTING.md)
 
 ## 🧐 About <a name = "about"></a>
-MITNANEX's main purpose is to extract mitocondrial Nanopore reads **_De novo_** from the **WGS**, with no need for seeds or reference sequences. However, it will also returned a draft assembly of the mitogenome using [Flye](https://github.com/fenderglass/Flye.git).
+MITNANEX's main purpose is to extract mitocondrial Nanopore reads **_De novo_** from the **WGS**, with no need for seeds or reference sequences. It will also returned a draft assembly of the mitogenome using [Flye](https://github.com/fenderglass/Flye.git).
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
 
@@ -124,8 +125,18 @@ MITNANEX needs the following tools:
     2. It's extremely fast and the unitigs produced are enough for the next step.
   + The unitigs are used to collect more reads from the total of reads to perform a final assembly with Flye.
   + Flye is almost the assembler par excellence for Nanopore reads and it's among the best at circularizing genomes. An important characteristic for mitochondrial genomes. 
-     
- 
+
+ ## Testing <a name = "testing"></a>
+
+So far, it has only been tested on Fungi. For animals and plant I think it would required some adjustments.
+
+The following datasets were retrieved from the NCBI. Assembled with MITNANEX and validated with blastn against the NCBI. All of then got 100% query with identity >99%.
+
+* Datasets tested:
+1. *Ascochyta lentis*: SRR14075486
+2. *Asperguillus fumigatus*: ERR10820709
+3. *Candida auris*: SRR25455202
+
 
 
 
