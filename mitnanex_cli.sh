@@ -40,14 +40,13 @@ mitnanex_help() {
         -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6].
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
-        -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu and for flye. [required].
         -k        keepPercent. Percentage of reads to keep during filter with filtlong. [80]. 
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:g:k:d' opt; do
+while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:d' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -85,9 +84,6 @@ while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:g:k:d' opt; do
         f)
         flye_mode=$OPTARG
         ;;
-        g)
-        genomeSize=$OPTARG
-        ;;
         k)
         keepPercent=$OPTARG
         ;;
@@ -104,13 +100,6 @@ done
 if [ -z "$input_file" ];
 then
   echo "Error: Input file is required."
-  mitnanex_help
-fi
-
-# Check if required arguments are provided
-if [ -z "$genomeSize" ];
-then
-  echo "Error: genome size is required."
   mitnanex_help
 fi
 
