@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MITNANEX</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 900px;
+        }
+        img {
+            max-width: 100%;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        hr {
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+
+<p align="center"><img src="https://github.com/juanjo255/MITNANEX/raw/main/images/MITNANEX.png" alt="MITNANEX"></p>
+
+<h1 align="center">MITochondrial NANopore reads EXtractor</h1>
+
+<div align="center">
+  <a href="#"><img src="https://img.shields.io/badge/status-active-success.svg" alt="Status"></a> 
+  <a href="https://github.com/juanjo255/MITNANEX/issues"><img src="https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg" alt="GitHub Issues"></a>
+  <a href="https://github.com/juanjo255/MITNANEX/pulls"><img src="https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg" alt="GitHub Pull Requests"></a>
+  <a href="/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+</div>
+
+<hr>
+
+<h2>Table of Contents</h2>
+<ul>
+  <li><a href="#about">About</a></li>
+  <li><a href="#getting_started">Getting Started</a></li>
+  <li><a href="#usage">Usage</a></li>
+  <li><a href="#algorithm_overview">Algorithm overview</a></li>
+  <li><a href="#testing">Testing</a></li>
+  <li><a href="../CONTRIBUTING.md">Contributing</a></li>
+</ul>
+
+<h2 id="about">🧐 About</h2>
+<p>MITNANEX's main purpose is to extract mitocondrial Nanopore reads <em>De novo</em> from the <strong>WGS</strong>, with no need for seeds or reference sequences. It will also return a draft assembly of the mitogenome using <a href="https://github.com/fenderglass/Flye.git">Flye</a>.</p>
+
+<h2 id="getting_started">🏁 Getting Started</h2>
+
+<h3>Installing</h3>
+<p>First, you need to clone this repository and add to PATH:</p>
+<pre>
+<code>git clone https://github.com/juanjo255/MITNANEX.git; cd MITNANEX; export PATH=$(pwd):$PATH</code>
+</pre>
+
+<h4>Conda/mamba</h4>
+<p>The best way to install MITNANEX's dependencies is through a beautiful conda/mamba environment, first you <strong>must</strong> have Rust installed (<a href="https://www.rust-lang.org/tools/install">https://www.rust-lang.org/tools/install</a>).</p>
+
+<p>For Mac M1 using mamba (you can change it for conda):</p>
+<pre>
+<code>CONDA_SUBDIR=osx-64; mamba create -n mitnanex -c conda-forge -c bioconda seqkit seqtk fpa minimap2 miniasm flye gfastats samtools Filtlong
+mamba activate mitnanex
+pip install pandas maturin biopython scikit-learn utils-mitnanex</code>
+</pre>
+<p>It's possible to have problem with the pip module utils-mitnanex, in that case:</p>
+<pre>
+<code>pip uninstall utils-mitnanex
+cd src/utils_rs; maturin develop</code>
+</pre>
+
+<p>For Linux:</p>
+<pre>
+<code>conda create -n mitnanex -c conda-forge -c bioconda Seqkit Seqtk fpa Minimap2 Miniasm Flye Gfastats Samtools Filtlong
+conda activate mitnanex
+pip install pandas maturin biopython scikit-learn utils-mitnanex</code>
+</pre>
+
+<h3>Dependencies</h3>
+<p>MITNANEX needs the following tools:</p>
+<ol>
+  <li>Seqkit</li>
+  <li>Seqtk</li>
+  <li>fpa</li>
+  <li>Minimap2</li>
+  <li>Miniasm</li>
+  <li>Flye</li>
+  <li>Pandas</li>
+  <li>Gfastats</li>
+  <li>Samtools</li>
+  <li>Filtlong</li>
+  <li>Maturin</li>
+  <li>Biopython</li>
+  <li>scikit-learn</li>
+  <li>utils-mitnanex</li>
+</ol>
+<p><strong>Notes:</strong></p>
+<ul>
+  <li>This has only been tested on MacOS M1 using a x86 env architecture.</li>
+  <li><code>setup.sh</code> will create a <strong>mamba</strong> environment with all the dependencies in the <code>.yml</code> file.</li>
+</ul>
+
+<h2 id="usage">🎈 Usage</h2>
+
+<p>Quick start:</p>
+<pre>
+<code>./mitnanex_cli.sh -i path/to/fastQ  -p 15000 -m 1000 -t 8 -s 0.6 -g GenomeSize(g|m|k) -w path/to/output</code>
+</pre>
+<p><strong>Notes:</strong></p>
+<ul>
+  <li>It only receives fastQ files.</li>
+</ul>
+
+<p>For help message:</p>
+<pre>
+<code>./mitnanex_cli.sh -h</code>
+</pre>
+<pre>
+<code>Options:
+    -i        Input file. [required]
+    -t        Threads. [4].
+    -p        Proportion. For sampling. It can be a proportion or a number of reads (0.3|10000). [0.3].
+    -m        Min-len. Filter reads by minimum length. Read seqkit seq documentation. [-1].
+    -M        Max-len. Filter reads by maximum length. Read seqkit seq documentation. [-1].
+    -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results].
+    -r        Prefix name add to every produced file. [input file name].
+    -c        Coverage. Minimum coverage per cluster accepted. [-1].
+    -d        Different output directory. Create a different output directory every run (it uses the date and time). [False]
+    -s        Mapping identity. Minimum identity between two reads to be stored in the same cluster. [0.6]
+    -q        Min mapping quality (>=). This is for samtools. [-1].
+    -f        Flye mode. [--nano-hq]
+    -g        GenomeSize. This is your best estimation of the mitogenome for read correction with Canu. [required]
+    *         Help.</code>
+</pre>
+
+<h2 id="algorithm_overview">Algorithm overview</h2>
+<h3>How does MITNANEX work?</h3>
+<p>MITNANEX is a pipeline that depends on other open source tools (see <a href="#getting_started">dependencies</a>).</p>
+<p>Through this, I will show the results that belong to the assembly of <em>Talaromyces santanderensis</em> mitogenome using MITNANEX from a Nanopore run performed at EAFIT university.</p>
+<p>First, it will use seqkit and seqtk to subsample the reads, after that MITNANEX starts with minimap2 finding overlaps between reads. MITNANEX will group reads that have at least a certain level of identity (tweakable parameter), each read will be counted for the "coverage" of the group and each cluster will be represented only by its largest read.</p>
+<p>Once all reads are grouped, MITNANEX will only keep at least 3 groups with the highest coverage (tweakable parameter). Given the short length of the mitochondrial genome and its high coverage during WGS, we expect to have most of it in these clusters.</p>
+<p align="center"><img src="https://github.com/juanjo255/MITNANEX/raw/main/images/Cluster_filter_by_cov.png" alt="Cluster filter by coverage"></p>
+<p>Now with the selected clusters, MITNANEX will use the representative read of each cluster and get its trinucleotidic composition (codon) which will be reduced and normalized by the read length, and reduce its dimensionality to 2 with a PCA such as the classic strategy during metagenomic binning. Here, given the difference between mitochondrial and the nuclear genome, we expect the mitochondrial reads to have an oligocomposition different enough to be separated from the nuclear. The known weakness of Kmeans for outliers made the selection of this clustering algorithm attractive. Thus, using the clustering algorithm Kmeans, with a k set to 2, the cluster with the highest coverage is selected. Below the cluster in yellow was selected.</p>
+<p align="center"><img src="images/Kmeans_on_pca.png" alt="Kmeans on PCA"></p>
+<p>With the reads collected from the selected clusters, miniasm will assemble unitigs, where we expect to assemble most of the mitogenome (small repeats could be solved at this step if enough coverage is available). These unitigs are mapped against the reads again and then Flye is used to perform a polishing, reducing the bias introduced by the ONT and unitigs structure, leading to a draft of the mitochondrial genome of T. santanderensis. This is the draft that is currently published.</p>
+<p align="center"><img src="https://github.com/juanjo255/MITNANEX/raw/main/images/Kmeans_on_pca.png" alt="T. santanderensis draft"></p>
+<p>More steps could be added, for example, circularization, polishing with illumina data, but they are not essential for the purpose of this software and are out of its scope.</p>
+
+<h2 id="testing">⛏️ Testing</h2>
+
+<p>Clone this repository, run <code>setup.sh</code> and then:</p>
+<pre>
+<code>conda activate mitnanex
+pytest</code>
+</pre>
+
+</body>
+</html>
