@@ -28,7 +28,7 @@ help() {
     Usage: mitnanex.sh [subcommand][options] FASTQ
 
     subcommands:
-        ${color} denovo ${no_color}  - Run denovo strategy using kmer analysis.
+        ${color} denovo ${no_color}  - (On Development) Run denovo strategy using kmer analysis.
         ${color} reference ${no_color} - Run using a reference genome.
     
     
