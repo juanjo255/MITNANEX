@@ -96,6 +96,8 @@ while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:d' opt; do
     esac 
 done
 
+echo "optiones received"
+echo $1
 # Check if required arguments are provided
 if [ -z "$input_file" ];
 then
