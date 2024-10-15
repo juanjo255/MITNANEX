@@ -8,6 +8,7 @@ min_qual=0
 minimap2_opts="-ax map-ont"
 min_mapQ=30
 
+
 ## HELP MESSAGE
 help() {
     echo "
@@ -17,8 +18,9 @@ help() {
     Usage: mitnanex.sh --reference genome.fasta --reads reads.fastq [options]
 
     Options:
-        -r, --reference    Reference Genome [required].
+        -r, --reference    Reference organelle Genome [required].
         -i, --reads        Input file. [required].
+        --ID               Use if your reference contains nuclear genome. The ID is the sentence inmidiately next to the '>' without spaces.
         -t, --threads      Threads. [$threads].
         --mm2              Minimap2 options.[$minimap2_opts].
         --wd               Working Directory to place results. [$wd]
@@ -30,7 +32,7 @@ help() {
 }
 
 ## PARSE ARGUMENTS
-ARGS=$(getopt -o "hr:i:t:" --long "help,reference:,reads:,mm2:,threads:," -n 'MITNANEX' -- "$@")
+ARGS=$(getopt -o "hr:i:t:" --long "help,reference:,reads:,mm2:,threads:,ID," -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
 
 while true;do
@@ -41,6 +43,10 @@ while true;do
     ;;
     -i | --reads)
         reads=$2
+        shift 2
+    ;;
+    --ID)
+        ID=$2
         shift 2
     ;;
     --mm2)
@@ -79,8 +85,24 @@ then
     prefix=${prefix%%.*}
 fi
 
+
+
+#FUNCTIONS WORKFLOW
 map_reads(){
-    
-    minimap2 $minimap2_opts --split-prefix "temp" --secondary=no  $ref_genome $reads | samtools view -b --min-MQ $min_mapQ -F4 -T $ref_genome -o "$wd/$prefix.bam"
+    ## Map reads to reference
+    minimap2 $minimap2_opts --split-prefix "temp" --secondary=no  $ref_genome $reads | \
+    samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
+    samtools sort --threads $threads -o "$wd/$prefix.sorted.bam"
+}
+
+select_contig (){
+    ## Select organelle according to reference ID
+    #samtools index "$wd/$prefix.bam" && samtools idxstats "$wd/$prefix.bam"
+    if [ $(cat  $ref_genome | grep -c ">") -gt "1" ];
+    then
+        echo "[ERROR] Your reference genome contains more than 1 contig. Set --ID"
+        exit 1
+    fi 
+    samtools view -b "$wd/$prefix.sorted.bam" $ID > "$wd/$prefix.$ID.sorted.bam"
 }
 
