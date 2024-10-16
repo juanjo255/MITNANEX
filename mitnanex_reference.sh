@@ -64,13 +64,22 @@ while true;do
         shift 1
     ;;
     *)
-        echo "ERROR: Invalid option"
+        echo "ERROR: Invalid option. Use -h or --help to see options"
     ;;
     esac
     break
 done
 
+# ARGUMENTS CHECK
 
+## Checking if there is only 1 reference genome
+if [ $(cat  $ref_genome | grep -c ">") -gt "1" ];
+    then
+        echo "[ERROR] Your reference genome contains more than 1 contig. Set --ID"
+        exit 1
+fi 
+
+## Setting a correct working dir
 if [ ${wd: -1} = / ];
 then 
     wd=$wd$output_folder
@@ -78,7 +87,7 @@ else
     wd=$wd"/"$output_folder
 fi
 
-## PREFIX name to use for the resulting files
+## Prefix name to use for the resulting files
 if [ -z $prefix ];
 then 
     prefix=$(basename $reads)
@@ -93,16 +102,20 @@ map_reads(){
     minimap2 $minimap2_opts --split-prefix "temp" --secondary=no  $ref_genome $reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
     samtools sort --threads $threads -o "$wd/$prefix.sorted.bam"
+    aln_file="$wd/$prefix.sorted.bam"
 }
 
 select_contig (){
     ## Select organelle according to reference ID
     #samtools index "$wd/$prefix.bam" && samtools idxstats "$wd/$prefix.bam"
-    if [ $(cat  $ref_genome | grep -c ">") -gt "1" ];
-    then
-        echo "[ERROR] Your reference genome contains more than 1 contig. Set --ID"
-        exit 1
-    fi 
     samtools view -b "$wd/$prefix.sorted.bam" $ID > "$wd/$prefix.$ID.sorted.bam"
+    aln_file="$wd/$prefix.$ID.sorted.bam"
 }
 
+pipe_exec (){
+    map_reads && echo " "
+    if ! [ -z $ID ];then
+        select_contig && echo " "
+    fi
+    
+}
