@@ -140,6 +140,10 @@ select_contig (){
     #samtools index "$wd/$prefix.bam" && samtools idxstats "$wd/$prefix.bam"
     samtools view -b "$wd/$prefix.sorted.bam" $ID > "$wd/$prefix.$ID.sorted.bam"
     aln_file="$wd/$prefix.$ID.sorted.bam"
+
+    ## Separate mitogenome for future use
+    seqkit grep -p $ID -o "$wd/$prefix.$ID.MT.fasta"
+    ref_genome="$wd/refMT.$ID.fasta"
 }
 
 variant_calling() {
@@ -147,10 +151,25 @@ variant_calling() {
     if [ -z $median_read_len ];then
         median_read_len=$(cramino $aln_file | grep "Median length" | cut -f 2)
     fi
+    
+    #preprocessing files for tools
+
+    ## Create index
+    samtools index $aln_file
+    samtools faidx $ref_genome
+
+    ## BAM to fastq
+    samtools fastq $aln_file -o "$wd/$prefix_reads.$ID.fastq"
+    MT_reads="$wd/$prefix_reads.$ID.fastq"
+
     ## GATK
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
     --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
     $kmer_size -I $aln_file -O "$wd/$prefix.$ID.vcf"
+
+    ## Medaka
+    medaka_variant -i $MT_reads -r $ref_genome -t $threads
+    ## Sniffles
 
 
 }
