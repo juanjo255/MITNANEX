@@ -147,8 +147,8 @@ variant_calling() {
         median_read_len=$(cramino $aln_file | grep "Median length" | cut -f 2)
     fi
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
---dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning 3 \
-$kmer_size -I "$WD_DIR/MT_reference_20240815_medaka/aln_medaka_MT_20240815.readGroups.sorted.bam" \
+--dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
+$kmer_size -I $aln_file -O "$wd/$prefix.$ID.vcf"
 
 }
 
