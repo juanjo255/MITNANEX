@@ -5,9 +5,10 @@ wd="."
 output_folder="mitnanex_results"
 threads=4
 minimap2_opts="-ax map-ont"
-min_mapQ=30
+min_mapQ=20
 min_pruning=3
 kmer_size="--kmer-size 15 --kmer-size 25"
+medaka_model="r1041_e82_400bps_sup_variant_v5.0.0"
 
 ## HELP MESSAGE
 help() {
@@ -126,6 +127,15 @@ then
 fi
 
 #FUNCTIONS WORKFLOW
+
+create_wd(){
+## CREATE WORKING DIRECTORY
+    if ! [ -d $1 ]
+    then
+        mkdir -vp $1
+    fi
+}
+
 map_reads(){
     ## Map reads to reference
     ## GATK needs read groups. -R for that reason.
@@ -147,6 +157,17 @@ select_contig (){
 }
 
 variant_calling() {
+
+    ## Create dirs
+    var_call_folder="$wd/VariantCall/"
+    gatk_folder="$wd/$var_call_folder/gatk_mutect2"
+    medaka_folder="$wd/$var_call_folder/medaka"
+    sniffles_folder="$wd/$var_call_folder/sniffles"
+    create $var_call_folder
+    create $gatk_folder
+    create $medaka_folder
+    create $sniffles_folder
+
     ## Variant calling with GATK and Medaka
     if [ -z $median_read_len ];then
         median_read_len=$(cramino $aln_file | grep "Median length" | cut -f 2)
@@ -166,12 +187,13 @@ variant_calling() {
     ## GATK
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
     --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
-    $kmer_size -I $aln_file -O "$wd/$prefix.$ID.vcf"
+    $kmer_size -I $aln_file -O "$gatk_folder/$prefix.$ID.gatk.vcf" && gatk FilterMutectCalls --mitochondria-mode -O "$gatk_folder/$prefix.$ID.gatk.filt.vcf" \
+    -R $ref_genome -V "$gatk_folder/$prefix.$ID.gatk.vcf"
 
     ## Medaka
-    medaka_variant -i $MT_reads -r $ref_genome -t $threads
+    medaka_variant -t $threads -m $medaka_model -i $MT_reads -r $ref_genome  -o $medaka_folder
     ## Sniffles
-
+    sniffles -t $threads -i  $aln_file --vcf "$sniffles_folder/$prefix.$ID.sniffles.vcf"
 
 }
 
