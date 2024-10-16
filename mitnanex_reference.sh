@@ -162,11 +162,10 @@ variant_calling() {
     var_call_folder="$wd/VariantCall/"
     gatk_folder="$wd/$var_call_folder/gatk_mutect2"
     medaka_folder="$wd/$var_call_folder/medaka"
-    sniffles_folder="$wd/$var_call_folder/sniffles"
+    
     create $var_call_folder
     create $gatk_folder
     create $medaka_folder
-    create $sniffles_folder
 
     ## Variant calling with GATK and Medaka
     if [ -z $median_read_len ];then
@@ -192,8 +191,6 @@ variant_calling() {
 
     ## Medaka
     medaka_variant -t $threads -m $medaka_model -i $MT_reads -r $ref_genome  -o $medaka_folder
-    ## Sniffles
-    sniffles -t $threads -i  $aln_file --vcf "$sniffles_folder/$prefix.$ID.sniffles.vcf"
 
 }
 
