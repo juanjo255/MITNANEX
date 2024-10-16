@@ -6,7 +6,8 @@ output_folder="mitnanex_results"
 threads=4
 minimap2_opts="-ax map-ont"
 min_mapQ=30
-
+min_pruning=3
+kmer_size="--kmer-size 15 --kmer-size 25"
 
 ## HELP MESSAGE
 help() {
@@ -26,12 +27,18 @@ help() {
         -o, --output       Outout directory. [$output_folder].
         --mapq             Minimun mapping quality. [$min_mapQ].
         *                  Help.
+    
+    GATK options:
+    --max_assembly_region_size      Size of active region and assembly for variant discovery.[median read length].
+    --min_pruning                   Min number of reads supporting edge during haplotype assembly.[3]. 
+    -k, --kmer_size                     kmer size for building Debrujin graph for haplotype assembly. Comma separated values. [15,25].
+
     "
     exit 1
 }
 
 ## PARSE ARGUMENTS
-ARGS=$(getopt -o "hr:i:t:" --long "help,reference:,reads:,mm2:,threads:,ID," -n 'MITNANEX' -- "$@")
+ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,threads:,ID:,min_pruning:,kmer_size:,max_assembly_region_size:," -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
 
 while true;do
@@ -64,6 +71,23 @@ while true;do
         output_folder=$2
         shift 2
     ;;
+    --max_assembly_region_size)
+        median_read_len=$2
+        shift 2
+    ;;
+    -k | --kmer_size)
+        kmer_size=""
+        IFS="," read -a kmers <<< "$2"
+        for kmer in "${kmers[@]}";
+        do
+            kmer_size="$kmer_size --kmer-size $kmer"
+        done
+        shift 2
+    ;;
+    --min_pruning)
+        min_pruning=$2
+        shift 2
+    ;;
     --help | -h)
         help 
     ;;
@@ -80,7 +104,7 @@ done
 # ARGUMENTS CHECK
 
 ## Checking if there is only 1 reference genome
-if [ $(cat  $ref_genome | grep -c ">") -gt "1" ];
+if [ $(grep -c ">" $ref_genome) -gt "1" ];
     then
         echo "[ERROR] Your reference genome contains more than 1 contig. Set --ID"
         exit 1
@@ -117,9 +141,23 @@ select_contig (){
     aln_file="$wd/$prefix.$ID.sorted.bam"
 }
 
+variant_calling() {
+    ## Variant calling with GATK and Medaka
+    if [ -z $median_read_len ];then
+        median_read_len=$(cramino $aln_file | grep "Median length" | cut -f 2)
+    fi
+    gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
+--dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning 3 \
+$kmer_size -I "$WD_DIR/MT_reference_20240815_medaka/aln_medaka_MT_20240815.readGroups.sorted.bam" \
+
+}
+
 pipe_exec (){
     map_reads && echo " "
     if ! [ -z $ID ];then
         select_contig && echo " "
+    else
+        ID=$(grep -o "^>[^ ]*" $ref_genome | sed 's/>//g')
     fi
+
 }

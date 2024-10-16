@@ -1,0 +1,6 @@
+# So far (15-10-2024), collected for reference subcommand
+
+#install -c conda-forge -c bioconda minimap2 openjdk=17 cramino
+#pip install medaka
+
+# gatk is better to install a binary release due to license.
