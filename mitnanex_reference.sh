@@ -128,7 +128,8 @@ fi
 #FUNCTIONS WORKFLOW
 map_reads(){
     ## Map reads to reference
-    minimap2 $minimap2_opts --split-prefix "temp" --secondary=no  $ref_genome $reads | \
+    ## GATK needs read groups. -R for that reason.
+    minimap2  --split-prefix "temp" --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
     samtools sort --threads $threads -o "$wd/$prefix.sorted.bam"
     aln_file="$wd/$prefix.sorted.bam"
@@ -146,9 +147,11 @@ variant_calling() {
     if [ -z $median_read_len ];then
         median_read_len=$(cramino $aln_file | grep "Median length" | cut -f 2)
     fi
+    ## GATK
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
---dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
-$kmer_size -I $aln_file -O "$wd/$prefix.$ID.vcf"
+    --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
+    $kmer_size -I $aln_file -O "$wd/$prefix.$ID.vcf"
+
 
 }
 
