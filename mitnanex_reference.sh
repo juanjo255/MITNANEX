@@ -154,9 +154,10 @@ variant_calling() {
     
     #preprocessing files for tools
 
-    ## Create index
+    ## Create index and dict
     samtools index $aln_file
     samtools faidx $ref_genome
+    gatk CreateSequenceDictionary -R $ref_genome
 
     ## BAM to fastq
     samtools fastq $aln_file -o "$wd/$prefix_reads.$ID.fastq"
