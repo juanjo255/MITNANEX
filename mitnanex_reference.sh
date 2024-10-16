@@ -4,7 +4,6 @@
 wd="."
 output_folder="mitnanex_results"
 threads=4
-min_qual=0
 minimap2_opts="-ax map-ont"
 min_mapQ=30
 
@@ -57,6 +56,14 @@ while true;do
         min_mapQ=$2
         shift 2
     ;;
+    --wd)
+        wd=$2
+        shift 2
+    ;;
+    -o | --output)
+        output_folder=$2
+        shift 2
+    ;;
     --help | -h)
         help 
     ;;
@@ -94,8 +101,6 @@ then
     prefix=${prefix%%.*}
 fi
 
-
-
 #FUNCTIONS WORKFLOW
 map_reads(){
     ## Map reads to reference
@@ -106,7 +111,7 @@ map_reads(){
 }
 
 select_contig (){
-    ## Select organelle according to reference ID
+    ## Select organelle with to reference ID
     #samtools index "$wd/$prefix.bam" && samtools idxstats "$wd/$prefix.bam"
     samtools view -b "$wd/$prefix.sorted.bam" $ID > "$wd/$prefix.$ID.sorted.bam"
     aln_file="$wd/$prefix.$ID.sorted.bam"
@@ -117,5 +122,4 @@ pipe_exec (){
     if ! [ -z $ID ];then
         select_contig && echo " "
     fi
-    
 }
