@@ -162,10 +162,10 @@ variant_calling() {
     var_call_folder="$wd/VariantCall/"
     gatk_folder="$wd/$var_call_folder/gatk_mutect2"
     medaka_folder="$wd/$var_call_folder/medaka"
-    
-    create $var_call_folder
-    create $gatk_folder
-    create $medaka_folder
+
+    create_wd $var_call_folder
+    create_wd $gatk_folder
+    create_wd $medaka_folder
 
     ## Variant calling with GATK and Medaka
     if [ -z $median_read_len ];then
@@ -195,6 +195,7 @@ variant_calling() {
 }
 
 pipe_exec (){
+    create_wd $wd
     map_reads && echo " "
     if ! [ -z $ID ];then
         select_contig && echo " "
