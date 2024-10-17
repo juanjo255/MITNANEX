@@ -1,6 +1,20 @@
 # So far (15-10-2024), collected for reference subcommand
 
-#install -c conda-forge -c bioconda minimap2 openjdk=17 cramino
-#pip install medaka
+IMPORTANT!!
+MacOS does NOT have getopt updated, at least that happened with my M1 2020.
+Therefore it must be update it and replace the older one. It can be done with Homebrew.
+Install:
+brew install gnu-getopt
+Replace the old one:
+echo 'export PATH="/opt/homebrew/opt/gnu-getopt/bin:$PATH"' >> ~/.zshrc
 
-# gatk is better to install a binary release due to license.
+CONDA/PIP requirements
+install -c conda-forge -c bioconda minimap2 openjdk=17 cramino
+pip install medaka
+
+PRE-BUILT requirements
+gatk is better to install a binary release due to license.
+wget https://github.com/broadinstitute/gatk/releases/download/4.6.0.0/gatk-4.6.0.0.zip
+unzip gatk-4.6.0.0.zip
+wget https://github.com/genepi/haplogrep3/releases/download/v3.2.1/haplogrep3-3.2.1-linux.zip
+unzip haplogrep3-3.2.1-linux.zip

@@ -1,7 +1,10 @@
 #!/bin/bash
 
+bold=$(tput bold)
+normal=$(tput sgr0)
+
 #DEFAULT
-wd="."
+WD="."
 output_folder="mitnanex_results"
 threads=4
 minimap2_opts="-ax map-ont"
@@ -18,65 +21,68 @@ help() {
 
     Usage: mitnanex.sh --reference genome.fasta --reads reads.fastq [options]
 
-    Options:
+    ${bold}Options:${normal}
         -r, --reference    Reference organelle Genome [required].
         -i, --reads        Input file. [required].
         --ID               Use if your reference contains nuclear genome. The ID is the sentence inmidiately next to the '>' without spaces.
         -t, --threads      Threads. [$threads].
         --mm2              Minimap2 options.[$minimap2_opts].
-        --wd               Working Directory to place results. [$wd]
+        --WD               Working Directory to place results. [$WD]
         -o, --output       Outout directory. [$output_folder].
         --mapq             Minimun mapping quality. [$min_mapQ].
         *                  Help.
     
-    GATK options:
+    ${bold}GATK options:${normal}
     --max_assembly_region_size      Size of active region and assembly for variant discovery.[median read length].
     --min_pruning                   Min number of reads supporting edge during haplotype assembly.[3]. 
     -k, --kmer_size                     kmer size for building Debrujin graph for haplotype assembly. Comma separated values. [15,25].
+
+    ${bold}Medaka options:${normal}
+    -m, model              Medaka model. [$medaka_model]
 
     "
     exit 1
 }
 
 ## PARSE ARGUMENTS
-ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,threads:,ID:,min_pruning:,kmer_size:,max_assembly_region_size:," -n 'MITNANEX' -- "$@")
+ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,max_assembly_region_size:" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
-
-while true;do
-    case $1 in
-    -r | --reference)
+while true;
+do
+    case "$1" in
+    -r | --reference )
         ref_genome=$2
         shift 2
     ;;
-    -i | --reads)
+    -i | --reads )
         reads=$2
         shift 2
     ;;
-    --ID)
+    --ID )
         ID=$2
         shift 2
     ;;
-    --mm2)
+    --mm2 )
         minimap2_opts=$2
         shift 2
     ;;
-    --mapq)
+    --mapq )
         min_mapQ=$2
         shift 2
     ;;
-    --wd)
-        wd=$2
+    --WD )
+        WD=$2
         shift 2
     ;;
-    -o | --output)
+    -o | --output )
         output_folder=$2
         shift 2
     ;;
-    --max_assembly_region_size)
+    --max_assembly_region_size )
         median_read_len=$2
         shift 2
     ;;
-    -k | --kmer_size)
+    -k | --kmer_size )
         kmer_size=""
         IFS="," read -a kmers <<< "$2"
         for kmer in "${kmers[@]}";
@@ -85,21 +91,22 @@ while true;do
         done
         shift 2
     ;;
-    --min_pruning)
+    --min_pruning )
         min_pruning=$2
         shift 2
     ;;
-    --help | -h)
-        help 
+    -h | --help )
+        help
     ;;
-    --) 
-        shift 1
+    -- ) 
+        shift
+        break
     ;;
-    *)
+    * )
         echo "ERROR: Invalid option. Use -h or --help to see options"
+        break
     ;;
     esac
-    break
 done
 
 # ARGUMENTS CHECK
@@ -112,11 +119,11 @@ if [ $(grep -c ">" $ref_genome) -gt "1" ];
 fi 
 
 ## Setting a correct working dir
-if [ ${wd: -1} = / ];
+if [ ${WD: -1} = / ];
 then 
-    wd=$wd$output_folder
+    WD=$WD$output_folder
 else
-    wd=$wd"/"$output_folder
+    WD=$WD"/"$output_folder
 fi
 
 ## Prefix name to use for the resulting files
@@ -141,27 +148,27 @@ map_reads(){
     ## GATK needs read groups. -R for that reason.
     minimap2  --split-prefix "temp" --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
-    samtools sort --threads $threads -o "$wd/$prefix.sorted.bam"
-    aln_file="$wd/$prefix.sorted.bam"
+    samtools sort --threads $threads -o "$WD/$prefix.sorted.bam"
+    aln_file="$WD/$prefix.sorted.bam"
 }
 
-select_contig (){
+select_contig(){
     ## Select organelle with to reference ID
-    #samtools index "$wd/$prefix.bam" && samtools idxstats "$wd/$prefix.bam"
-    samtools view -b "$wd/$prefix.sorted.bam" $ID > "$wd/$prefix.$ID.sorted.bam"
-    aln_file="$wd/$prefix.$ID.sorted.bam"
+    #samtools index "$WD/$prefix.bam" && samtools idxstats "$WD/$prefix.bam"
+    samtools view -b "$WD/$prefix.sorted.bam" $ID > "$WD/$prefix.$ID.sorted.bam"
+    aln_file="$WD/$prefix.$ID.sorted.bam"
 
     ## Separate mitogenome for future use
-    seqkit grep -p $ID -o "$wd/$prefix.$ID.MT.fasta"
-    ref_genome="$wd/refMT.$ID.fasta"
+    seqkit grep -p $ID -o "$WD/$prefix.$ID.MT.fasta"
+    ref_genome="$WD/refMT.$ID.fasta"
 }
 
 variant_calling() {
 
     ## Create dirs
-    var_call_folder="$wd/VariantCall/"
-    gatk_folder="$wd/$var_call_folder/gatk_mutect2"
-    medaka_folder="$wd/$var_call_folder/medaka"
+    var_call_folder="$WD/VariantCall/"
+    gatk_folder="$WD/$var_call_folder/gatk_mutect2"
+    medaka_folder="$WD/$var_call_folder/medaka"
 
     create_wd $var_call_folder
     create_wd $gatk_folder
@@ -180,8 +187,8 @@ variant_calling() {
     gatk CreateSequenceDictionary -R $ref_genome
 
     ## BAM to fastq
-    samtools fastq $aln_file -o "$wd/$prefix_reads.$ID.fastq"
-    MT_reads="$wd/$prefix_reads.$ID.fastq"
+    samtools fastq $aln_file -o "$WD/$prefix_reads.$ID.fastq"
+    MT_reads="$WD/$prefix_reads.$ID.fastq"
 
     ## GATK
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
@@ -194,8 +201,14 @@ variant_calling() {
 
 }
 
-pipe_exec (){
-    create_wd $wd
+haplogroup_class(){
+    haplogroup_folder="$WD/haplogroup/"
+    create_wd $haplogroup_folder
+
+}
+
+pipe_exec(){
+    create_wd $WD
     map_reads && echo " "
     if ! [ -z $ID ];then
         select_contig && echo " "
@@ -204,3 +217,4 @@ pipe_exec (){
     fi
 
 }
+
