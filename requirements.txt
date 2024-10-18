@@ -9,7 +9,7 @@ Replace the old one:
 echo 'export PATH="/opt/homebrew/opt/gnu-getopt/bin:$PATH"' >> ~/.zshrc
 
 CONDA/PIP requirements
-install -c conda-forge -c bioconda minimap2 openjdk=17 cramino
+install -c conda-forge -c bioconda minimap2 openjdk=17 cramino  python>=3.8 samtools>=1.14 bcftools>=1.14 pygraphviz matplotlib biopython python-edlib networkx>=2.6<3.4 gfapy karateclub numpy>=1.24<1.27 pandas>=1.3<3 pysam>=0.20<0.23 scipy>=1.8<1.13
 pip install medaka
 
 PRE-BUILT requirements

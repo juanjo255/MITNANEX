@@ -6,12 +6,15 @@ normal=$(tput sgr0)
 #DEFAULT
 WD="."
 output_folder="mitnanex_results"
-threads=4
+threads="4"
 minimap2_opts="-ax map-ont"
-min_mapQ=20
-min_pruning=3
+min_mapQ="20"
+min_pruning="3"
 kmer_size="--kmer-size 15 --kmer-size 25"
 medaka_model="r1041_e82_400bps_sup_variant_v5.0.0"
+haplogrep_trees="phylotree-rcrs@17.2"
+haplogrep_posible_trees=$("$exec_path/haplogrep3" trees)
+$top_hits="3"
 
 ## HELP MESSAGE
 help() {
@@ -39,6 +42,9 @@ help() {
 
     ${bold}Medaka options:${normal}
     -m, model              Medaka model. [$medaka_model]
+
+    ${bold}Haplogrep options:${normal}
+    --trees                PhyloTree mt for haplogroup. [$haplogrep_trees]. Possible options {$haplogrep_posible_trees}   
 
     "
     exit 1
@@ -199,11 +205,23 @@ variant_calling() {
     ## Medaka
     medaka_variant -t $threads -m $medaka_model -i $MT_reads -r $ref_genome  -o $medaka_folder
 
+    vcf_file="$gatk_folder/$prefix.$ID.gatk.vcf"
 }
 
 haplogroup_class(){
     haplogroup_folder="$WD/haplogroup/"
     create_wd $haplogroup_folder
+
+    ## Install trees
+    "$exec_path/haplogrep3" install-tree $haplogrep_trees && echo " " || echo "Error while downloading trees. Make sure .yaml has permissions" exit 1
+
+    ## Classify 
+    IFS="," read -a trees <<< "$haplogrep_trees"
+        for tree in "${trees[@]}";
+        do
+            "$exec_path/haplogrep3" classify --tree=$tree  --in $vcf_file --hits $top_hits \
+                --extend-report --out "$haplogroup_folder/haplogrep3.$tree"
+        done
 
 }
 
