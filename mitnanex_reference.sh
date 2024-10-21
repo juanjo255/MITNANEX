@@ -15,6 +15,8 @@ medaka_model="r1041_e82_400bps_sup_variant_v5.0.0"
 haplogrep_trees="phylotree-rcrs@17.2"
 haplogrep_posible_trees=$("$exec_path/haplogrep3" trees)
 top_hits="3"
+keep_percent=50
+min_length=500
 
 ## HELP MESSAGE
 help() {
@@ -46,12 +48,18 @@ help() {
     ${bold}Haplogrep options:${normal}
     --trees                PhyloTrees mt for Haplogrep3. comma separated. e.g. value1,value2. [$haplogrep_trees]. Possible options {$haplogrep_posible_trees}   
     --top_hits             Return the INT top hits. [$top_hits].
+    
+
+    --keep_percent         Throw out the worst PERCENT(%) of reads. [$keep_percent].
+    --min_length           Min read length. [$min_length]
+    
     "
+
     exit 1
 }
 
 ## PARSE ARGUMENTS
-ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,max_assembly_region_size:,trees:,top_hits:," -n 'MITNANEX' -- "$@")
+ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
 while true;
 do
@@ -107,6 +115,14 @@ do
     ;;
     --top_hits )
         top_hits=$2
+        shift 2
+    ;;
+    --min_length )
+        min_length=$2
+        shift 2
+    ;;
+    --keep_percent )
+        keep_percent=$2
         shift 2
     ;;
     -h | --help )
@@ -232,6 +248,28 @@ haplogroup_class(){
                 --extend-report --out "$haplogroup_folder/haplogrep3.$tree"
         done
 
+}
+
+annotate_vcf(){
+    #Annotate VFC with rCRS reference
+    if [ -s $vcf_file ]; then
+    bcftools annotate -a $vcf_file/HV.bed.gz    $vcf_file -c "CHROM,FROM,TO,Hypervariable"  -h <(echo '##INFO=<ID=Hypervariable,Number=1,Type=String,Description="Hypervariable">') -o vcf_file_annotated 
+    bcftools annotate -a $vcf_file/HP.bed.gz    $vcf_file -c "CHROM,FROM,TO,Homopolymer"  -h <(echo '##INFO=<ID=Homopolymer,Number=0,Type=Flag,Description="Homoloplymer">') -o vcf_file_annotated 
+    bcftools annotate -a $vcf_file/HS.bed.gz    $vcf_file -c "CHROM,FROM,TO,Hotspot"  -h <(echo '##INFO=<ID=Hotspot,Number=0,Type=Flag,Description="Hotspot">')              -o vcf_file_annotated 
+    bcftools annotate -a $vcf_file/CDS.bed.gz   $vcf_file -c "CHROM,FROM,TO,CDS" -h <(echo '##INFO=<ID=CDS,Number=1,Type=String,Description="CDS">')                         -o vcf_file_annotated 
+    bcftools annotate -a $vcf_file/RNR.bed.gz   $vcf_file -c "CHROM,FROM,TO,RNR"  -h <(echo '##INFO=<ID=RNR,Number=1,Type=String,Description="rRNA">')                       -o vcf_file_annotated 
+    bcftools annotate -a $vcf_file/TRN.bed.gz   $vcf_file -c "CHROM,FROM,TO,TRN"  -h <(echo '##INFO=<ID=TRN,Number=1,Type=String,Description="tRNA">')                       -o vcf_file_annotated 
+    bcftools annotate -a $vcf_file/DLOOP.bed.gz $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    -o vcf_file_annotated 
+    fi
+}
+
+assemble_haplotype(){
+    ## Assemble an individual mitogenome
+    ## Maybe this could improved, so far the logic is to generate a consensus using a simple nucleotide frequency
+    ## With filtlong we will keep the most similar reads, so consensus with samtools is better set with the most fequeunt haplotype
+    ## However, given that we are using very old people, idk how true this consensus will be.
+    filtered_MT_reads="$WD/$prefix_reads.$ID.filtlong.fastq"
+    filtlong --min_length $min_length --keep_percent $keep_percent $MT_reads > $filtered_MT_reads 
 }
 
 pipe_exec(){

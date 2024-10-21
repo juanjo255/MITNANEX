@@ -13,6 +13,7 @@ wd="./"
 flye_mode='--nano-hq'
 keepPercent=90
 output_dir='mitnanex_results/'
+miniasm_stage=7
 
 ## Help message
 mitnanex_help() {
@@ -29,7 +30,7 @@ mitnanex_help() {
     Options:
         -i        Input file. [required].
         -t        Threads. [4].
-        -p        Proportion. For sampling. It can be a proportion or a number of reads (0.3|10000). [0.3].
+        -p        Proportion. For sampling. It can be a proportion or a number of reads or -1 for no sampling (0.3|10000). [0.3].
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [-1].
         -M        Max-len. Filter reads by maximun length. Read seqkit seq documentation. [-1].
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results].
@@ -37,10 +38,11 @@ mitnanex_help() {
         -c        Coverage. Minimum coverage per cluster accepted. [-1].
         -x        Minimum number of cluster to keep with the highest coverage. [3].
         -d        Different output directory. Create a different output directory every run (it uses the date and time). [False].
-        -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[0.6].
+        -s        Mapping identity. Minimun identity between two reads to be store in the same cluster.[$map_identity].
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
-        -k        keepPercent. Percentage of reads to keep during filter with filtlong. [80]. 
+        -k        keepPercent. Percentage of reads to keep during filter with filtlong. [$keepPercent].
+        -S        Miniasm stage. [$miniasm_stage] 
         *         Help.
     "
     exit 1
@@ -138,9 +140,15 @@ subsample(){
     echo " "
     echo $timestamp': Step 1: Sampling with seqtk'
     echo " "
-    seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
-        seqtk sample - $proportion > $wd$prefix"_sample.sorted.fastq"
-    echo $timestamp": $(samtools view -c $wd$prefix"_sample.sorted.fastq") reads outputted"
+
+    if [[ $proportion -gt 0 ]]; then
+        seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
+        seqtk sample - $proportion > $wd$prefix"_sample.fastq"
+    else
+        seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file -o $wd$prefix"_sample.fastq"
+    fi
+
+    echo $timestamp": $(samtools view -c $wd$prefix"_sample.fastq") reads outputted"
 }
 
 sort_file(){
@@ -149,7 +157,7 @@ sort_file(){
     echo $timestamp': Sorting file with seqkit'
     echo " "
     seqkit sort --threads $threads --by-length --reverse \
-    -o $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq"
+    -o $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.fastq"
 }
 
 reads_overlap(){
@@ -178,7 +186,7 @@ first_assembly(){
     echo " "
     minimap2 -x ava-ont -t $threads --dual=yes \
     $wd$prefix"_putative_mt_reads.fasta" $wd$prefix"_putative_mt_reads.fasta" | \
-        miniasm -S7 -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
+        miniasm -S $miniasm_stage -f $wd$prefix"_putative_mt_reads.fasta" - > $wd$prefix"_first_draft_asm.gfa"
 }
 
 gfa2fasta(){
