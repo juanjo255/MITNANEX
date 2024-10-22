@@ -215,7 +215,7 @@ select_contig(){
     #samtools index "$WD/$prefix.bam" && samtools idxstats "$WD/$prefix.bam"
     
 
-    samtools view -b $aln_file $ID > "$WD/$prefix.$ID.sorted.bam"
+    samtools view -b -F256,2048 $aln_file $ID > "$WD/$prefix.$ID.sorted.bam"
     
     # Reassign variable to keep using along the pipeline
     aln_file="$WD/$prefix.$ID.sorted.bam"
