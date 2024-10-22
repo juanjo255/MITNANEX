@@ -61,10 +61,7 @@ help() {
 ## PARSE ARGUMENTS
 ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
-if ! $ARGS; then
-    # Error, getopt will put out a message for us
-    exit 1
-fi
+
 while [ $# -gt 0 ];
 do
     case "$1" in
