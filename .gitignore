@@ -4,7 +4,6 @@ notes/Internship
 *.paf
 *fastq
 *fastq.gz
-*.fna
 .vscode/
 **/__pycache__
 **/*.ipynb
