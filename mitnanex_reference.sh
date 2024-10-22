@@ -291,7 +291,7 @@ assemble_haplotype(){
     ## With filtlong we will keep the best reads, so consensus with flye is better set with the most frequent haplotype
     ## However, given that we are using very old people, idk how true this consensus will be.
     filtered_MT_reads="$WD/$prefix_reads.$ID.filtlong.fastq"
-    filtlong --min_length $min_length --keep_percent $keep_percent $MT_reads > $filtered_MT_reads && echo "" || echo "Something wrong with Filtlong"
+    filtlong --min_length $min_length --keep_percent $keep_percent $MT_reads > $filtered_MT_reads
 
 }
 
