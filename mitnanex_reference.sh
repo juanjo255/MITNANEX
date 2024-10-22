@@ -8,7 +8,7 @@ WD="."
 output_folder="mitnanex_results"
 threads="4"
 minimap2_opts="-ax map-ont"
-min_mapQ="20"
+min_mapQ="30"
 min_pruning="3"
 kmer_size="--kmer-size 15 --kmer-size 25"
 medaka_model="r1041_e82_400bps_sup_variant_v5.0.0"
@@ -206,7 +206,7 @@ map_reads(){
 
     minimap2  --split-prefix $prefix --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
-    samtools sort -o $aln_file
+    samtools sort --threads $threads -o $aln_file
     
 }
 
