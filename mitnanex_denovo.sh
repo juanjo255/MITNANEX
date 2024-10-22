@@ -14,6 +14,7 @@ flye_mode='--nano-hq'
 keepPercent=90
 output_dir='mitnanex_results/'
 miniasm_stage=7
+haplotype_asm=0
 
 ## Help message
 mitnanex_help() {
@@ -42,13 +43,14 @@ mitnanex_help() {
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
         -k        keepPercent. Percentage of reads to keep during filter with filtlong. [$keepPercent].
-        -S        Miniasm stage. [$miniasm_stage] 
+        -S        Miniasm stage. [$miniasm_stage].
+        -y        Haplotype assembly. [False].
         *         Help.
     "
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:dS:' opt; do
+while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:dS:y' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -94,6 +96,9 @@ while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:dS:' opt; do
         ;;
         S)
         miniasm_stage=$OPTARG
+        ;;
+        y)
+        haplotype_asm=1
         ;;
         *)
         mitnanex_help
@@ -180,7 +185,7 @@ mt_reads_filt(){
     echo " "
     echo $timestamp': Clustering and discriminating potential mt reads with MITNANEX'
     echo " "
-    python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix".paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta" $min_num_clusters
+    python3 main.py $wd$prefix"_sample.sorted.fastq" $wd$prefix".paf" $coverage $map_identity $wd$prefix"_putative_mt_reads.fasta" $min_num_clusters $haplotype_asm
 }
 
 first_assembly(){

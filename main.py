@@ -17,6 +17,7 @@ if __name__ == "__main__":
     map_identity = float(args[4])  # minimun coverage per cluster
     output = args[5]  # file to write mt reads
     min_num_clusters = int(args[6]) ## Minimum number of clusters to keep with the highest coverage
+    haplotype_asm= int(args[7]) ## If true perform selection of reads of haplotyping
 
     # MAIN PROGRAM
     clusters_list = run(paf_file, map_identity)
@@ -43,7 +44,6 @@ if __name__ == "__main__":
     clusters_info["coverage_norm"] = (
         clusters_info["coverage"] / clusters_info["repr_read_len"]
     )
-
     ## Get kmer composition from representative reads from all the cluster passed
     repr_reads = [i for i in clusters_info["id_longest_read"]]
     kmer_profiles, ids = utils_rs.get_kmer_profiles(repr_reads, reads_file, 3)
@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     ## Clustering reads using K-means expecting 2 clusters ##
     kmer_reduction_df["cluster_prediction"] = cluster_kmer_profiles(
-        kmer_reduction_df=kmer_reduction_df, n_clusters=2, max_iter=100
+        kmer_reduction_df=kmer_reduction_df, n_clusters=(len(kmer_reduction_df) if haplotype_asm else 2), max_iter=100
     )
 
     ## Get the cluster of interest ##

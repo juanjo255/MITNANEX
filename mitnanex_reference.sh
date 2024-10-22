@@ -252,14 +252,15 @@ haplogroup_class(){
 
 annotate_vcf(){
     #Annotate VFC with rCRS reference
+    vcf_file_annotated=$vcf_file
     if [ -s $vcf_file ]; then
-    bcftools annotate -a $vcf_file/HV.bed.gz    $vcf_file -c "CHROM,FROM,TO,Hypervariable"  -h <(echo '##INFO=<ID=Hypervariable,Number=1,Type=String,Description="Hypervariable">') -o vcf_file_annotated 
-    bcftools annotate -a $vcf_file/HP.bed.gz    $vcf_file -c "CHROM,FROM,TO,Homopolymer"  -h <(echo '##INFO=<ID=Homopolymer,Number=0,Type=Flag,Description="Homoloplymer">') -o vcf_file_annotated 
-    bcftools annotate -a $vcf_file/HS.bed.gz    $vcf_file -c "CHROM,FROM,TO,Hotspot"  -h <(echo '##INFO=<ID=Hotspot,Number=0,Type=Flag,Description="Hotspot">')              -o vcf_file_annotated 
-    bcftools annotate -a $vcf_file/CDS.bed.gz   $vcf_file -c "CHROM,FROM,TO,CDS" -h <(echo '##INFO=<ID=CDS,Number=1,Type=String,Description="CDS">')                         -o vcf_file_annotated 
-    bcftools annotate -a $vcf_file/RNR.bed.gz   $vcf_file -c "CHROM,FROM,TO,RNR"  -h <(echo '##INFO=<ID=RNR,Number=1,Type=String,Description="rRNA">')                       -o vcf_file_annotated 
-    bcftools annotate -a $vcf_file/TRN.bed.gz   $vcf_file -c "CHROM,FROM,TO,TRN"  -h <(echo '##INFO=<ID=TRN,Number=1,Type=String,Description="tRNA">')                       -o vcf_file_annotated 
-    bcftools annotate -a $vcf_file/DLOOP.bed.gz $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    -o vcf_file_annotated 
+    bcftools annotate -a $vcf_file/HV.bed.gz    $vcf_file -c "CHROM,FROM,TO,Hypervariable"  -h <(echo '##INFO=<ID=Hypervariable,Number=1,Type=String,Description="Hypervariable">') -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/HP.bed.gz    $vcf_file -c "CHROM,FROM,TO,Homopolymer"  -h <(echo '##INFO=<ID=Homopolymer,Number=0,Type=Flag,Description="Homoloplymer">') -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/HS.bed.gz    $vcf_file -c "CHROM,FROM,TO,Hotspot"  -h <(echo '##INFO=<ID=Hotspot,Number=0,Type=Flag,Description="Hotspot">')              -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/CDS.bed.gz   $vcf_file -c "CHROM,FROM,TO,CDS" -h <(echo '##INFO=<ID=CDS,Number=1,Type=String,Description="CDS">')                         -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/RNR.bed.gz   $vcf_file -c "CHROM,FROM,TO,RNR"  -h <(echo '##INFO=<ID=RNR,Number=1,Type=String,Description="rRNA">')                       -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/TRN.bed.gz   $vcf_file -c "CHROM,FROM,TO,TRN"  -h <(echo '##INFO=<ID=TRN,Number=1,Type=String,Description="tRNA">')                       -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/DLOOP.bed.gz $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    -o $vcf_file_annotated 
     fi
 }
 
