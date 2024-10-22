@@ -170,12 +170,7 @@ then
   help
 fi
 
-## Checking if there is only 1 reference genome
-if [ $(grep -c ">" $ref_genome) -gt 1 ];
-    then
-        echo "[ERROR]: Your reference genome contains more than 1 contig. Set --ID"
-        exit 1
-fi 
+
 
 ## Setting a correct working dir
 if [ ${WD: -1} = / ];
@@ -257,15 +252,17 @@ variant_calling() {
     samtools fastq $aln_file -o "$WD/$prefix_reads.$ID.fastq"
     MT_reads="$WD/$prefix_reads.$ID.fastq"
 
+    ## GATK output
+    vcf_nofilt_file="$gatk_folder/$prefix.$ID.gatk.vcf"
+    vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
+
     ## GATK
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
     --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
-    $kmer_size -I $aln_file -O "$gatk_folder/$prefix.$ID.gatk.vcf" && gatk FilterMutectCalls --mitochondria-mode -O "$gatk_folder/$prefix.$ID.gatk.filt.vcf" \
-    -R $ref_genome -V "$gatk_folder/$prefix.$ID.gatk.vcf"
+    $kmer_size -I $aln_file -O $vcf_nofilt_file && gatk FilterMutectCalls --mitochondria-mode -O $vcf_file \
+    -R $ref_genome -V $vcf_nofilt_file
 
     
-    ## RETURN
-    vcf_file="$gatk_folder/$prefix.$ID.gatk.vcf"
 }
 
 haplogroup_class(){
@@ -316,10 +313,20 @@ assemble_haplotype(){
 pipe_exec(){
     create_wd $WD
     map_reads && echo " "
+
+    ## If user do not set ID. try to get it. 
+    ## WARNING: The fasta ID is better if it does not contain space-separated text
     if ! [ -z $ID ];then
         select_contig && echo " "
     else
-        ID=$(grep -o "^>[^ ]*" $ref_genome | sed 's/>//g')
+        ## Checking if there is only 1 reference genome
+        if [ $(grep -c ">" $ref_genome) -gt 1 ];
+            then
+                echo "[ERROR]: Your reference genome contains more than 1 contig. Set --ID"
+                exit 1
+        else
+            ID=$(grep -o "^>[^ ]*" $ref_genome | sed 's/>//g')
+        fi 
     fi
 
 }
