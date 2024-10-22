@@ -17,6 +17,8 @@ haplogrep_trees="phylotree-rcrs@17.2"
 top_hits="3"
 keep_percent=50
 min_length=500
+flye_preset="--nano-hq"
+other_flye_opts=""
 
 ## HELP MESSAGE
 help() {
@@ -49,17 +51,21 @@ help() {
     --trees                PhyloTrees mt for Haplogrep3. comma separated. e.g. value1,value2. [$haplogrep_trees]. Possible options {$haplogrep_posible_trees}   
     --top_hits             Return the INT top hits. [$top_hits].
     
-
+    ${bold}Filtlong options:${normal}
     --keep_percent         Throw out the worst PERCENT(%) of reads. [$keep_percent].
     --min_length           Min read length. [$min_length]
     
+    ${bold}Flye options:${normal}
+    --flye_preset            Sequencing technology. [$flye_preset].              
+    --other_flye_opts        Other flye options. [" "].  
     "
 
     exit 1
 }
 
 ## PARSE ARGUMENTS
-ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:" -n 'MITNANEX' -- "$@")
+ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,
+max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:,flye_preset:,other_flye_opts:" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
 
 while [ $# -gt 0 ];
@@ -124,6 +130,14 @@ do
     ;;
     --keep_percent )
         keep_percent=$2
+        shift 2
+    ;;
+    --flye_preset )
+        flye_preset=$2
+        shift 2
+    ;;
+    --other_flye_opts )
+        other_flye_opts=$2
         shift 2
     ;;
     -h | --help )
@@ -292,6 +306,10 @@ assemble_haplotype(){
     ## However, given that we are using very old people, idk how true this consensus will be.
     filtered_MT_reads="$WD/$prefix_reads.$ID.filtlong.fastq"
     filtlong --min_length $min_length --keep_percent $keep_percent $MT_reads > $filtered_MT_reads
+    
+    ## Define output
+    flye_folder="$WD/assembly"
+    flye -t $threads --meta --no-alt-contigs $other_flye_opts $flye_preset $filtered_MT_reads -o $flye_folder
 
 }
 
@@ -306,4 +324,3 @@ pipe_exec(){
 
 }
 
-assemble_haplotype
