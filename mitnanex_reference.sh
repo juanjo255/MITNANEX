@@ -176,21 +176,29 @@ create_wd(){
 map_reads(){
     ## Map reads to reference
     ## GATK needs read groups. -R for that reason.
-    minimap2  --split-prefix "temp" --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
-    samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
-    samtools sort --threads $threads -o "$WD/$prefix.sorted.bam"
+    
+    ## Define output
     aln_file="$WD/$prefix.sorted.bam"
+
+    minimap2  --split-prefix $prefix --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
+    samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
+    samtools sort -o $aln_file
+    
 }
 
 select_contig(){
     ## Select organelle with to reference ID
     #samtools index "$WD/$prefix.bam" && samtools idxstats "$WD/$prefix.bam"
-    samtools view -b "$WD/$prefix.sorted.bam" $ID > "$WD/$prefix.$ID.sorted.bam"
+    
+
+    samtools view -b $aln_file $ID > "$WD/$prefix.$ID.sorted.bam"
+    
+    # Reassign variable to keep using along the pipeline
     aln_file="$WD/$prefix.$ID.sorted.bam"
 
     ## Separate mitogenome for future use
-    seqkit grep -p $ID -o "$WD/$prefix.$ID.MT.fasta"
     ref_genome="$WD/refMT.$ID.fasta"
+    seqkit grep -p $ID -o $ref_genome
 }
 
 variant_calling() {
@@ -226,9 +234,7 @@ variant_calling() {
     $kmer_size -I $aln_file -O "$gatk_folder/$prefix.$ID.gatk.vcf" && gatk FilterMutectCalls --mitochondria-mode -O "$gatk_folder/$prefix.$ID.gatk.filt.vcf" \
     -R $ref_genome -V "$gatk_folder/$prefix.$ID.gatk.vcf"
 
-    ## Medaka
-    medaka_variant -t $threads -m $medaka_model -i $MT_reads -r $ref_genome  -o $medaka_folder
-
+    
     ## RETURN
     vcf_file="$gatk_folder/$prefix.$ID.gatk.vcf"
 }
@@ -252,15 +258,15 @@ haplogroup_class(){
 
 annotate_vcf(){
     #Annotate VFC with rCRS reference
-    vcf_file_annotated=$vcf_file
+    vcf_file_annotated="$gatk_folder/$prefix.$ID.gatk.annot.vcf"
     if [ -s $vcf_file ]; then
-    bcftools annotate -a $vcf_file/HV.bed.gz    $vcf_file -c "CHROM,FROM,TO,Hypervariable"  -h <(echo '##INFO=<ID=Hypervariable,Number=1,Type=String,Description="Hypervariable">') -o $vcf_file_annotated 
-    bcftools annotate -a $vcf_file/HP.bed.gz    $vcf_file -c "CHROM,FROM,TO,Homopolymer"  -h <(echo '##INFO=<ID=Homopolymer,Number=0,Type=Flag,Description="Homoloplymer">') -o $vcf_file_annotated 
-    bcftools annotate -a $vcf_file/HS.bed.gz    $vcf_file -c "CHROM,FROM,TO,Hotspot"  -h <(echo '##INFO=<ID=Hotspot,Number=0,Type=Flag,Description="Hotspot">')              -o $vcf_file_annotated 
-    bcftools annotate -a $vcf_file/CDS.bed.gz   $vcf_file -c "CHROM,FROM,TO,CDS" -h <(echo '##INFO=<ID=CDS,Number=1,Type=String,Description="CDS">')                         -o $vcf_file_annotated 
-    bcftools annotate -a $vcf_file/RNR.bed.gz   $vcf_file -c "CHROM,FROM,TO,RNR"  -h <(echo '##INFO=<ID=RNR,Number=1,Type=String,Description="rRNA">')                       -o $vcf_file_annotated 
-    bcftools annotate -a $vcf_file/TRN.bed.gz   $vcf_file -c "CHROM,FROM,TO,TRN"  -h <(echo '##INFO=<ID=TRN,Number=1,Type=String,Description="tRNA">')                       -o $vcf_file_annotated 
-    bcftools annotate -a $vcf_file/DLOOP.bed.gz $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/HV.bed   $vcf_file -c "CHROM,FROM,TO,Hypervariable"  -h <(echo '##INFO=<ID=Hypervariable,Number=1,Type=String,Description="Hypervariable">') -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/HP.bed    $vcf_file -c "CHROM,FROM,TO,Homopolymer"  -h <(echo '##INFO=<ID=Homopolymer,Number=0,Type=Flag,Description="Homoloplymer">') -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/HS.bed    $vcf_file -c "CHROM,FROM,TO,Hotspot"  -h <(echo '##INFO=<ID=Hotspot,Number=0,Type=Flag,Description="Hotspot">')              -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/CDS.bed   $vcf_file -c "CHROM,FROM,TO,CDS" -h <(echo '##INFO=<ID=CDS,Number=1,Type=String,Description="CDS">')                         -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/RNR.bed   $vcf_file -c "CHROM,FROM,TO,RNR"  -h <(echo '##INFO=<ID=RNR,Number=1,Type=String,Description="rRNA">')                       -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/TRN.bed   $vcf_file -c "CHROM,FROM,TO,TRN"  -h <(echo '##INFO=<ID=TRN,Number=1,Type=String,Description="tRNA">')                       -o $vcf_file_annotated 
+    bcftools annotate -a $vcf_file/DLOOP.bed $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    -o $vcf_file_annotated 
     fi
 }
 
