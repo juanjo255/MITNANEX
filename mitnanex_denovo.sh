@@ -15,6 +15,7 @@ keepPercent=90
 output_dir='mitnanex_results/'
 miniasm_stage=7
 haplotype_asm=0
+minimap_kmer=15
 
 ## Help message
 mitnanex_help() {
@@ -43,6 +44,7 @@ mitnanex_help() {
         -q        Min mapping quality (>=). This is for samtools. [-1].
         -f        Flye mode. [--nano-hq]
         -k        keepPercent. Percentage of reads to keep during filter with filtlong. [$keepPercent].
+        -K        Minimap kmer for AvA. [$minimap_kmer]
         -S        Miniasm stage. [$miniasm_stage].
         -y        Haplotype assembly. [False].
         *         Help.
@@ -96,6 +98,9 @@ while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:dS:y' opt; do
         ;;
         S)
         miniasm_stage=$OPTARG
+        ;;
+        K)
+        minimap_kmer=$OPTARG
         ;;
         y)
         haplotype_asm=1
@@ -175,7 +180,7 @@ reads_overlap(){
     echo " "
     echo $timestamp': Looking for overlaps with minimap2'
     echo " "
-    minimap2 -x ava-ont -t $threads --dual=yes --split-prefix $prefix \
+    minimap2 -x ava-ont -k $minimap_kmer -t $threads --dual=yes --split-prefix $prefix \
     $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
         fpa drop --internalmatch --length-lower $min_len > $wd$prefix".paf"
 }
