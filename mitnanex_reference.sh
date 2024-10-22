@@ -13,7 +13,7 @@ min_pruning="3"
 kmer_size="--kmer-size 15 --kmer-size 25"
 medaka_model="r1041_e82_400bps_sup_variant_v5.0.0"
 haplogrep_trees="phylotree-rcrs@17.2"
-haplogrep_posible_trees=$("$exec_path/haplogrep3" trees)
+#haplogrep_posible_trees=$("$exec_path/haplogrep3" trees)
 top_hits="3"
 keep_percent=50
 min_length=500
@@ -61,7 +61,11 @@ help() {
 ## PARSE ARGUMENTS
 ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
-while true;
+if ! $ARGS; then
+    # Error, getopt will put out a message for us
+    exit 1
+fi
+while [ $# -gt 0 ];
 do
     case "$1" in
     -r | --reference )
@@ -134,17 +138,31 @@ do
     ;;
     * )
         echo "ERROR: Invalid option. Use -h or --help to see options"
-        break
+        exit 1
     ;;
     esac
 done
 
 # ARGUMENTS CHECK
 
+if [ -z "$ref_genome" ];
+then
+  echo "[ERROR]: reference genome is required."
+  echo " "
+  help
+fi
+
+if [ -z "$reads" ];
+then
+  echo "[ERROR]: reads are required."
+  echo " "
+  help
+fi
+
 ## Checking if there is only 1 reference genome
-if [ $(grep -c ">" $ref_genome) -gt "1" ];
+if [ $(grep -c ">" $ref_genome) -gt 1 ];
     then
-        echo "[ERROR] Your reference genome contains more than 1 contig. Set --ID"
+        echo "[ERROR]: Your reference genome contains more than 1 contig. Set --ID"
         exit 1
 fi 
 
@@ -273,10 +291,11 @@ annotate_vcf(){
 assemble_haplotype(){
     ## Assemble an individual mitogenome
     ## Maybe this could improved, so far the logic is to generate a consensus using a simple nucleotide frequency
-    ## With filtlong we will keep the most similar reads, so consensus with samtools is better set with the most fequeunt haplotype
+    ## With filtlong we will keep the best reads, so consensus with flye is better set with the most frequent haplotype
     ## However, given that we are using very old people, idk how true this consensus will be.
     filtered_MT_reads="$WD/$prefix_reads.$ID.filtlong.fastq"
-    filtlong --min_length $min_length --keep_percent $keep_percent $MT_reads > $filtered_MT_reads 
+    filtlong --min_length $min_length --keep_percent $keep_percent $MT_reads > $filtered_MT_reads && echo "" || echo "Something wrong with Filtlong"
+
 }
 
 pipe_exec(){
@@ -290,3 +309,4 @@ pipe_exec(){
 
 }
 
+assemble_haplotype
