@@ -52,7 +52,7 @@ mitnanex_help() {
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:dS:y' opt; do
+while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:dS:yK:' opt; do
     case $opt in
         i)
         input_file=$OPTARG
