@@ -48,7 +48,7 @@ mitnanex_help() {
     exit 1
 }
 
-while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:d' opt; do
+while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:dS:' opt; do
     case $opt in
         i)
         input_file=$OPTARG
@@ -91,6 +91,9 @@ while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:d' opt; do
         ;;
         d)
         output_dir="mitnanex_results_$(date  "+%Y-%m-%d_%H-%M-%S")/"
+        ;;
+        S)
+        miniasm_stage=$OPTARG
         ;;
         *)
         mitnanex_help
