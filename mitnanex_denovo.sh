@@ -161,6 +161,7 @@ sort_file(){
     echo " "
     seqkit sort --threads $threads --by-length --reverse \
     -o $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.fastq"
+    rm $wd$prefix"_sample.fastq"
 }
 
 reads_overlap(){
