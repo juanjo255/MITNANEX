@@ -221,10 +221,9 @@ map_reads(){
     
     custom_prints "Filter reads and mapping to reference"
     ## Seqkit output
-    seqkit_output="$WD/$prefix.filtQ$min_mean_quality.fastq"
-    seqkit seq -g --threads $threads --min-len $min_length --max-len $max_length $reads | \
-    chopper -q $min_mean_quality -o $seqkit_output
-    reads=$seqkit_output
+    chopper_output="$WD/$prefix.filtQ$min_mean_quality.fastq"
+    chopper --threads $threads -q $min_mean_quality --minlength $min_length --maxlength $max_length --input $reads > $chopper_output
+    reads=$chopper_output
 
     
     ## Map reads to reference
