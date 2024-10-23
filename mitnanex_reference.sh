@@ -19,6 +19,8 @@ keep_percent=50
 min_length=500
 flye_preset="--nano-hq"
 other_flye_opts=""
+max_length=""
+min_mean_quality=15
 
 ## HELP MESSAGE
 help() {
@@ -37,6 +39,9 @@ help() {
         --WD               Working Directory to place results. [$WD]
         -o, --output       Outout directory. [$output_folder].
         --mapq             Minimun mapping quality. [$min_mapQ].
+        --min_length       Min read length. [$min_length].
+        --max_length       Max read length. [reference length].
+        --min_mean_quality Min average read quality. [$min_mean_quality].
         *                  Help.
     
     ${bold}GATK options:${normal}
@@ -44,16 +49,13 @@ help() {
     --min_pruning                   Min number of reads supporting edge during haplotype assembly.[3]. 
     -k, --kmer_size                     kmer size for building Debrujin graph for haplotype assembly. Comma separated values, e.g. value1,value2. [15,25].
 
-    ${bold}Medaka options:${normal}
-    -m, model              Medaka model. [$medaka_model]
-
     ${bold}Haplogrep options:${normal}
     --trees                PhyloTrees mt for Haplogrep3. comma separated. e.g. value1,value2. [$haplogrep_trees]. Possible options {$haplogrep_posible_trees}   
     --top_hits             Return the INT top hits. [$top_hits].
     
     ${bold}Filtlong options:${normal}
     --keep_percent         Throw out the worst PERCENT(%) of reads. [$keep_percent].
-    --min_length           Min read length. [$min_length]
+    
     
     ${bold}Flye options:${normal}
     --flye_preset            Sequencing technology. [$flye_preset].              
@@ -65,7 +67,7 @@ help() {
 
 ## PARSE ARGUMENTS
 ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,
-max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:,flye_preset:,other_flye_opts:" -n 'MITNANEX' -- "$@")
+max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:,flye_preset:,other_flye_opts:,min_mean_quality:,max_length:" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
 
 while [ $# -gt 0 ];
@@ -128,6 +130,14 @@ do
         min_length=$2
         shift 2
     ;;
+    --max_length )
+        max_length=$2
+        shift 2
+    ;;
+    --min_mean_quality )
+        min_mean_quality=$2
+        shift 2
+    ;;
     --keep_percent )
         keep_percent=$2
         shift 2
@@ -170,8 +180,6 @@ then
   help
 fi
 
-
-
 ## Setting a correct working dir
 if [ ${WD: -1} = / ];
 then 
@@ -197,14 +205,17 @@ create_wd(){
     fi
 }
 
-map_reads_and_rm_numts(){
+map_reads(){
     ## Map reads to reference
     ## GATK needs read groups. -R for that reason.
     
+    seqkit seq -g --threads $threads --min-len $min_length --max-len $max_length $reads | chopper -q  -o "$WD/filtered_reads.fastq"
+    reads="$WD/filtered_reads.fastq"
+
     ## Define output
     aln_file="$WD/$prefix.sorted.bam"
 
-    minimap2  --split-prefix $prefix --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
+    minimap2  --split-prefix $prefix --secondary=no -g 1k -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
     samtools sort --threads $threads -o $aln_file
 
@@ -217,11 +228,10 @@ map_reads_and_rm_numts(){
 
     contig_ID=$(sort -n -k3 $flye_folder"assembly_info.txt" | tail -n 1 | cut -f 1)
     minimap2  --split-prefix $prefix --secondary=no -R '@RG\tID:samplename\tSM:samplename' \ 
-        $minimap2_opts $flye_folder"/assembly.fasta" $MT_reads | samtools view --threads $threads -b --min-MQ $min_mapQ -F2048 -T $flye_folder"/assembly.fasta" | \
+        $minimap2_opts $flye_folder"/assembly.fasta" $MT_reads | samtools view --threads $threads -b --min-MQ $min_mapQ -F2048 | \
         samtools view --threads $threads -b - $contig_ID | samtools sort --threads $threads -o $aln_file 
 
 }
-
 
 variant_calling() {
 
@@ -308,22 +318,15 @@ assemble_haplotype(){
 
 pipe_exec(){
     create_wd $WD
-    map_reads && echo " "
 
-    ## If user do not set ID. try to get it. 
-    ## WARNING: The fasta ID is better if it does not contain space-separated text
-    if ! [ -z $ID ];then
-        select_contig && echo " "
+    ## Checking if there is only 1 reference genome
+    if [ $(grep -c ">" $ref_genome) -gt 1 ];
+        then
+            echo "[ERROR]: Your reference genome contains more than 1 contig."
+            exit 1
     else
-        ## Checking if there is only 1 reference genome
-        if [ $(grep -c ">" $ref_genome) -gt 1 ];
-            then
-                echo "[ERROR]: Your reference genome contains more than 1 contig. Set --ID"
-                exit 1
-        else
-            ID=$(grep -o "^>[^ ]*" $ref_genome | sed 's/>//g')
-        fi 
+        ID=$(grep -o "^>[^ ]*" $ref_genome | sed 's/>//g')
+        max_length=$(seqkit fx2tab -l -n $ref_genome | cut -f 2)
     fi
 
 }
-

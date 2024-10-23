@@ -176,7 +176,7 @@ reads_overlap(){
     echo " "
     echo $timestamp': Looking for overlaps with minimap2'
     echo " "
-    minimap2 -x ava-ont -k $minimap_kmer -t $threads --dual=yes --split-prefix $prefix \
+    minimap2 -x ava-ont -k $minimap_kmer -t $threads --dual=yes \
     $wd$prefix"_sample.sorted.fastq" $wd$prefix"_sample.sorted.fastq" | \
         fpa drop --internalmatch --length-lower $min_len > $wd$prefix".paf"
 }
