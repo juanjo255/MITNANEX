@@ -204,32 +204,52 @@ create_wd(){
         mkdir -vp $1
     fi
 }
+custom_prints(){
+    color_cyan='\033[0;36m'
+    no_color='\033[0m'
+    echo " "
+    echo -e "#########${color_cyan} $1 ${no_color}#########"
+    echo " "
+}
+
 
 map_reads(){
-    ## Map reads to reference
-    ## GATK needs read groups. -R for that reason.
     
-    seqkit seq -g --threads $threads --min-len $min_length --max-len $max_length $reads | chopper -q  -o "$WD/filtered_reads.fastq"
-    reads="$WD/filtered_reads.fastq"
+    custom_prints "Filter reads and mapping to reference"
+    ## Seqkit output
+    seqkit_output="$WD/$prefix.filtQ$min_mean_quality.fastq"
+    seqkit seq -g --threads $threads --min-len $min_length --max-len $max_length $reads | \
+    chopper -q $min_mean_quality -o $seqkit_output
+    reads=$seqkit_output
 
-    ## Define output
+    
+    ## Map reads to reference
+    ## GATK needs read groups. -R for that reason in Minimap2.
+    
+    ## Minimap2 output
     aln_file="$WD/$prefix.sorted.bam"
-
-    minimap2  --split-prefix $prefix --secondary=no -g 1k -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
-    samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
-    samtools sort --threads $threads -o $aln_file
+    minimap2  --split-prefix $prefix --secondary=no -g 1k $minimap2_opts $ref_genome $reads | \
+    samtools view -@ $threads -b --min-MQ $min_mapQ -F2052 -T $ref_genome | \
+    samtools sort -@ $threads -o $aln_file
 
     ## Assemble with flye to remove possible NUMTs 
-    ## BAM to fastq
+    custom_prints "Assemble with MetaFlye to remove bad quality and some Numts "
+
+    ## Output for first MT reads and flye
     MT_reads="$WD/$prefix_reads.$ID.fastq"
     flye_folder="$WD/flye_for_numts"    
-    samtools fastq --threads $threads $aln_file -o $MT_reads
+    samtools fastq -@ $threads $aln_file -o $MT_reads
     flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
 
+    # Map to flye assembly
+    minimap2 --secondary=no -R '@RG\tID:samplename\tSM:samplename' \ 
+        $minimap2_opts $flye_folder"/assembly.fasta" $MT_reads | samtools view --threads $threads -b --min-MQ $min_mapQ -F2048 > $flye_folder"/aln_"$prefix".sorted.bam"
+    
+    # Retrieve the mitochondria in the flye assembly which is the one with the highest coverage. 
     contig_ID=$(sort -n -k3 $flye_folder"assembly_info.txt" | tail -n 1 | cut -f 1)
-    minimap2  --split-prefix $prefix --secondary=no -R '@RG\tID:samplename\tSM:samplename' \ 
-        $minimap2_opts $flye_folder"/assembly.fasta" $MT_reads | samtools view --threads $threads -b --min-MQ $min_mapQ -F2048 | \
-        samtools view --threads $threads -b - $contig_ID | samtools sort --threads $threads -o $aln_file 
+    samtools view -@ $threads -b -F2048 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID | samtools sort -@ $threads -o $aln_file
+    samtools fastq -@ $threads $aln_file -o $MT_reads
+
 
 }
 
