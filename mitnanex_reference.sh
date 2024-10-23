@@ -250,6 +250,13 @@ map_reads(){
     samtools view -@ $threads -b -F2048 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID | samtools sort -@ $threads -o $aln_file
     samtools fastq -@ $threads $aln_file -o $MT_reads
 
+    ## Removing unneeded files
+    rm $flye_folder"/aln_"$prefix".sorted.bam"
+
+    ## Final align file for variant calling 
+    minimap2 --secondary=no $minimap2_opts $ref_genome $MT_reads | \
+    samtools view -@ $threads -b -F2052 -T $ref_genome | \
+    samtools sort -@ $threads -o $aln_file
 
 }
 
@@ -258,11 +265,9 @@ variant_calling() {
     ## Create dirs
     var_call_folder="$WD/VariantCall/"
     gatk_folder="$WD/$var_call_folder/gatk_mutect2"
-    medaka_folder="$WD/$var_call_folder/medaka"
 
     create_wd $var_call_folder
     create_wd $gatk_folder
-    create_wd $medaka_folder
 
     ## Variant calling with GATK and Medaka
     if [ -z $median_read_len ];then
@@ -348,5 +353,7 @@ pipe_exec(){
         ID=$(grep -o "^>[^ ]*" $ref_genome | sed 's/>//g')
         max_length=$(seqkit fx2tab -l -n $ref_genome | cut -f 2)
     fi
-
+    map_reads
 }
+
+pipe_exec
