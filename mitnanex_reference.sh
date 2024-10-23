@@ -6,7 +6,7 @@ normal=$(tput sgr0)
 #DEFAULT
 WD="."
 output_folder="mitnanex_results"
-threads="4"
+threads="8"
 minimap2_opts="-ax map-ont"
 min_mapQ="30"
 min_pruning="3"
@@ -197,7 +197,7 @@ create_wd(){
     fi
 }
 
-map_reads(){
+map_reads_and_rm_numts(){
     ## Map reads to reference
     ## GATK needs read groups. -R for that reason.
     
@@ -207,23 +207,21 @@ map_reads(){
     minimap2  --split-prefix $prefix --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F4 -T $ref_genome | \
     samtools sort --threads $threads -o $aln_file
-    
+
+    ## Assemble with flye to remove possible NUMTs 
+    ## BAM to fastq
+    MT_reads="$WD/$prefix_reads.$ID.fastq"
+    flye_folder="$WD/flye_for_numts"    
+    samtools fastq --threads $threads $aln_file -o $MT_reads
+    flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
+
+    contig_ID=$(sort -n -k3 $flye_folder"assembly_info.txt" | tail -n 1 | cut -f 1)
+    minimap2  --split-prefix $prefix --secondary=no -R '@RG\tID:samplename\tSM:samplename' \ 
+        $minimap2_opts $flye_folder"/assembly.fasta" $MT_reads | samtools view --threads $threads -b --min-MQ $min_mapQ -F2048 -T $flye_folder"/assembly.fasta" | \
+        samtools view --threads $threads -b - $contig_ID | samtools sort --threads $threads -o $aln_file 
+
 }
 
-select_contig(){
-    ## Select organelle with to reference ID
-    #samtools index "$WD/$prefix.bam" && samtools idxstats "$WD/$prefix.bam"
-    
-
-    samtools view -b -F256,2048 $aln_file $ID > "$WD/$prefix.$ID.sorted.bam"
-    
-    # Reassign variable to keep using along the pipeline
-    aln_file="$WD/$prefix.$ID.sorted.bam"
-
-    ## Separate mitogenome for future use
-    ref_genome="$WD/refMT.$ID.fasta"
-    seqkit grep -p $ID -o $ref_genome
-}
 
 variant_calling() {
 
@@ -248,9 +246,7 @@ variant_calling() {
     samtools faidx $ref_genome
     gatk CreateSequenceDictionary -R $ref_genome
 
-    ## BAM to fastq
-    samtools fastq $aln_file -o "$WD/$prefix_reads.$ID.fastq"
-    MT_reads="$WD/$prefix_reads.$ID.fastq"
+    
 
     ## GATK output
     vcf_nofilt_file="$gatk_folder/$prefix.$ID.gatk.vcf"
