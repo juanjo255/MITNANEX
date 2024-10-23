@@ -37,7 +37,7 @@ help() {
         -t, --threads      Threads. [$threads].
         --mm2              Minimap2 options.[$minimap2_opts].
         --WD               Working Directory to place results. [$WD]
-        -o, --output       Outout directory. [$output_folder].
+        -o, --output       Directory name. [$output_folder].
         --mapq             Minimun mapping quality. [$min_mapQ].
         --min_length       Min read length. [$min_length].
         --max_length       Max read length. [reference length].
