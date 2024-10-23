@@ -32,7 +32,7 @@ mitnanex_help() {
     Options:
         -i        Input file. [required].
         -t        Threads. [4].
-        -p        Proportion. For sampling. It can be a proportion or a number of reads or -1 for no sampling (0.3|10000). [0.3].
+        -p        Proportion. For sampling. It can be a proportion or a number of reads (0.3|10000). [$proportion].
         -m        Min-len. Filter reads by minimun length. Read seqkit seq documentation. [-1].
         -M        Max-len. Filter reads by maximun length. Read seqkit seq documentation. [-1].
         -w        Working directory. Path to create the folder which will contain all mitnanex information. [./mitnanex_results].
@@ -111,7 +111,7 @@ while getopts 'i:t:p:m:M:w:c:x:r:s:q:f:k:dS:yK:' opt; do
     esac 
 done
 
-echo "optiones received"
+echo "options received"
 echo $1
 # Check if required arguments are provided
 if [ -z "$input_file" ];
@@ -154,12 +154,8 @@ subsample(){
     echo $timestamp': Step 1: Sampling with seqtk'
     echo " "
 
-    if [[ $proportion -gt 0 ]]; then
-        seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
-        seqtk sample - $proportion > $wd$prefix"_sample.fastq"
-    else
-        seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file -o $wd$prefix"_sample.fastq"
-    fi
+    seqkit seq -g --threads $threads --min-len $min_len --max-len $max_len $input_file | \
+    seqtk sample - $proportion > $wd$prefix"_sample.fastq"
 
     echo $timestamp": $(samtools view -c $wd$prefix"_sample.fastq") reads outputted"
 }
