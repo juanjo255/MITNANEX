@@ -81,6 +81,10 @@ do
         reads=$2
         shift 2
     ;;
+    -t | --threads )
+        threads=$2
+        shift 2
+    ;;
     --ID )
         ID=$2
         shift 2
@@ -158,7 +162,7 @@ do
         break
     ;;
     * )
-        echo "ERROR: Invalid option. Use -h or --help to see options"
+        echo "ERROR: Invalid option $1. Use -h or --help to see options"
         exit 1
     ;;
     esac
