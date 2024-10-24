@@ -268,7 +268,7 @@ map_reads(){
     ## PRINT
     custom_prints "Retrieve mitochondria and remap reads"
     # Retrieve the mitochondria in the flye assembly which is the one with the highest coverage. 
-    contig_ID=$(sort -n -k3 $flye_folder"assembly_info.txt" | tail -n 1 | cut -f 1)
+    contig_ID=$(sort -n -k3 $flye_folder"/assembly_info.txt" | tail -n 1 | cut -f 1)
 
     ## Save mitogenome flye consensus
     consensus_mitogenome=$(seqkit grep -p $contig_ID "$flye_folder/assembly.fasta")
