@@ -301,13 +301,15 @@ variant_calling() {
     var_call_folder="$WD/VariantCall/"
     gatk_folder="$WD/$var_call_folder/gatk_mutect2"
 
-    create_wd $var_call_folder
-    create_wd $gatk_folder
+    #create_wd $var_call_folder
+    #create_wd $gatk_folder
 
     ## Variant calling with GATK
     
     if [ -z $median_read_len ];then
         median_read_len=$(cramino -t $threads $aln_file | grep "Median length" | cut -f 2)
+        median_read_len=${median_read_len%%.*}
+        median_read_len=$(($median_read_len + 1))
     fi
     
     #preprocessing files for tools
@@ -363,6 +365,7 @@ annotate_vcf(){
     fi
 }
 
+
 pipe_exec(){
     create_wd $WD
 
@@ -376,7 +379,6 @@ pipe_exec(){
         max_length=$(seqkit fx2tab -l -n $ref_genome | cut -f 2)
     
         if [[ $? -eq 0 ]]; then
-
             if [[ $no_filter -eq 1 ]]; then
                 filter_by_quality
             fi
