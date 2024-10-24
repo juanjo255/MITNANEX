@@ -248,7 +248,7 @@ map_reads(){
     custom_prints "Assemble with MetaFlye to remove bad quality and some Numts "
 
     ## Output for first MT reads and flye
-    MT_reads="$WD/$prefix_reads.$ID.fastq"
+    MT_reads="$WD/$prefix.$ID.fastq"
     flye_folder="$WD/flye_for_numts"    
     samtools fastq -@ $threads $aln_file > $MT_reads
     flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
@@ -264,7 +264,8 @@ map_reads(){
     contig_ID=$(sort -n -k3 $flye_folder"/assembly_info.txt" | tail -n 1 | cut -f 1)
 
     ## Save mitogenome flye consensus
-    consensus_mitogenome=$(seqkit grep -p $contig_ID "$flye_folder/assembly.fasta")
+    consensus_mitogenome="$WD/MT_genome.fasta"
+    seqkit grep -p $contig_ID "$flye_folder/assembly.fasta" > $consensus_mitogenome
 
     ## Retrieve reads which mapped to the consensus_mitogenome 
     samtools view  -@ $threads -b -F2052 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
