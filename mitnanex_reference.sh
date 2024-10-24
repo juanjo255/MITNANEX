@@ -307,9 +307,8 @@ variant_calling() {
     #preprocessing files for tools
 
     ## Create index and dict
-    samtools index $aln_file
-    samtools faidx $ref_genome
-    gatk CreateSequenceDictionary -R $ref_genome
+    #samtools faidx $ref_genome
+    #gatk CreateSequenceDictionary -R $ref_genome
 
     
 
@@ -318,6 +317,7 @@ variant_calling() {
     vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
 
     ## GATK
+    aln_file="$WD/$prefix.$ID.sorted.bam"
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
     --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
     $kmer_size -I $aln_file -O $vcf_nofilt_file && gatk FilterMutectCalls --mitochondria-mode -O $vcf_file \
@@ -374,7 +374,8 @@ pipe_exec(){
             if [[ $no_filter -eq 1 ]]; then
                 filter_by_quality
             fi
-            map_reads
+            #map_reads
+            variant_calling
 
         else
             echo "[${color_red}ERROR${no_color}] $?: Something wrong with reference genome."
