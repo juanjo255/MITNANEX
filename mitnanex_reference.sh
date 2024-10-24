@@ -2,6 +2,9 @@
 
 bold=$(tput bold)
 normal=$(tput sgr0)
+color_red='\033[0;91m'
+color_cyan='\033[0;36m'
+no_color='\033[0m' 
 timestamp=$(date -u +"%Y-%m-%d %T")
 
 #DEFAULT
@@ -162,7 +165,7 @@ do
         break
     ;;
     * )
-        echo "ERROR: Invalid option $1. Use -h or --help to see options"
+        echo "${color_red}${color_red}ERROR${no_color}${no_color}: Invalid option $1. Use -h or --help to see options"
         exit 1
     ;;
     esac
@@ -172,14 +175,14 @@ done
 
 if [ -z "$ref_genome" ];
 then
-  echo "[ERROR]: reference genome is required."
+  echo "[${color_red}ERROR${no_color}]: reference genome is required."
   echo " "
   help
 fi
 
 if [ -z "$reads" ];
 then
-  echo "[ERROR]: reads are required."
+  echo "[${color_red}ERROR${no_color}]: reads are required."
   echo " "
   help
 fi
@@ -209,8 +212,6 @@ create_wd(){
     fi
 }
 custom_prints(){
-    color_cyan='\033[0;36m'
-    no_color='\033[0m'
     echo " "
     echo -e "$timestamp #########${color_cyan} $1 ${no_color}#########"
     echo " "
@@ -330,7 +331,7 @@ haplogroup_class(){
     create_wd $haplogroup_folder
 
     ## Install trees
-    "$exec_path/haplogrep3" install-tree $haplogrep_trees && echo " " || echo "Error while downloading trees. Make sure .yaml has permissions" exit 1
+    "$exec_path/haplogrep3" install-tree $haplogrep_trees && echo " " || echo "${color_red}ERROR${no_color} while downloading trees. Make sure .yaml has permissions" exit 1
 
     ## Classify 
     IFS="," read -a trees <<< "$haplogrep_trees"
@@ -362,7 +363,7 @@ pipe_exec(){
     ## Checking if there is only 1 reference genome
     if [ $(grep -c ">" $ref_genome) -gt 1 ];
         then
-            echo "[ERROR]: Your reference genome contains more than 1 contig."
+            echo "[${color_red}ERROR${no_color}]: Your reference genome contains more than 1 contig."
             exit 1
     else
         ID=$(grep -o "^>[^ ]*" $ref_genome | sed 's/>//g')
@@ -376,7 +377,7 @@ pipe_exec(){
             map_reads
 
         else
-            echo "[ERROR] $?: Something wrong with reference genome."
+            echo "[${color_red}ERROR${no_color}] $?: Something wrong with reference genome."
             exit $?
         fi
     fi
