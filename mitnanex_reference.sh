@@ -298,11 +298,8 @@ variant_calling() {
     custom_prints "Starting Variant calling"
     
     ## Create dirs
-    var_call_folder="$WD/VariantCall/"
-    gatk_folder="$var_call_folder/gatk_mutect2"
-
-    #create_wd $var_call_folder
-    #create_wd $gatk_folder
+    gatk_folder="$WD/VariantCall/gatk_mutect2"
+    create_wd $gatk_folder
 
     ## Variant calling with GATK
     
