@@ -160,7 +160,7 @@ do
     ;;
     --no_filter )
         no_filter=0
-        shift 2
+        shift 1
     ;;
     -h | --help )
         help
