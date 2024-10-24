@@ -22,6 +22,7 @@ max_length=2147483647
 flye_preset="--nano-hq"
 other_flye_opts=""
 min_mean_quality=10
+no_filter=1
 
 ## HELP MESSAGE
 help() {
@@ -43,6 +44,7 @@ help() {
         --min_length       Min read length. [$min_length].
         --max_length       Max read length. [reference length].
         --min_mean_quality Min average read quality. [$min_mean_quality].
+        --no_filter        Do not filter reads by quality and length. [False].
         *                  Help.
     
     ${bold}GATK options:${normal}
@@ -68,7 +70,8 @@ help() {
 
 ## PARSE ARGUMENTS
 ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,
-max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:,flye_preset:,other_flye_opts:,min_mean_quality:,max_length:" -n 'MITNANEX' -- "$@")
+max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:,flye_preset:,other_flye_opts:,min_mean_quality:,
+max_length:,no_filter" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
 
 while [ $# -gt 0 ];
@@ -155,6 +158,10 @@ do
         other_flye_opts=$2
         shift 2
     ;;
+    --no_filter )
+        no_filter=0
+        shift 2
+    ;;
     -h | --help )
         help
     ;;
@@ -217,17 +224,21 @@ custom_prints(){
     echo " "
 }
 
-
-map_reads(){
+filter_by_quality(){
     
     ## PRINT
-    custom_prints "Filter reads and mapping to reference"
+    custom_prints "Filter reads by: Qual:$min_mean_quality MinLen: $min_length MaxLen: $max_length"
     
     ## Seqkit output
     chopper_output="$WD/$prefix.filtQ$min_mean_quality.fastq"
     chopper --threads $threads -q $min_mean_quality --minlength $min_length --maxlength $max_length --input $reads > $chopper_output
     reads=$chopper_output
+}
 
+map_reads(){
+    
+    ## PRINT
+    custom_prints "Mapping to reference"
     
     ## Map reads to reference
     ## GATK needs read groups. -R for that reason in Minimap2.
@@ -377,7 +388,12 @@ pipe_exec(){
         max_length=$(seqkit fx2tab -l -n $ref_genome | cut -f 2)
     
         if [[ $? -eq 0 ]]; then
+
+            if [[ $no_filter -eq 1 ]]; then
+                filter_by_quality
+            fi
             map_reads
+
         else
             echo "[ERROR] $?: Something wrong with reference genome."
             exit $?
