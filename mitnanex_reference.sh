@@ -274,8 +274,9 @@ map_reads(){
     consensus_mitogenome=$(seqkit grep -p $contig_ID "$flye_folder/assembly.fasta")
 
     ## Retrieve reads which mapped to the consensus_mitogenome 
-    samtools view -@ $threads -b -F2048 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
-    samtools sort -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.bam" > $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
+    samtools index -@ $threads $flye_folder"/aln_"$prefix".sorted.bam"
+    samtools view  -@ $threads -b -F2048 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
+    samtools sort  -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.bam" > $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
     samtools fastq -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam" > $MT_reads
 
     ## Removing unneeded files
