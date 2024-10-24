@@ -56,10 +56,6 @@ help() {
     --trees                PhyloTrees mt for Haplogrep3. comma separated. e.g. value1,value2. [$haplogrep_trees]. Possible options {$haplogrep_posible_trees}   
     --top_hits             Return the INT top hits. [$top_hits].
     
-    ${bold}Filtlong options:${normal}
-    --keep_percent         Throw out the worst PERCENT(%) of reads. [$keep_percent].
-    
-    
     ${bold}Flye options:${normal}
     --flye_preset            Sequencing technology. [$flye_preset].              
     --other_flye_opts        Other flye options. [" "].  
@@ -144,10 +140,6 @@ do
     ;;
     --min_mean_quality )
         min_mean_quality=$2
-        shift 2
-    ;;
-    --keep_percent )
-        keep_percent=$2
         shift 2
     ;;
     --flye_preset )
@@ -263,8 +255,9 @@ map_reads(){
 
     # Map to flye assembly
     minimap2 --secondary=no $minimap2_opts -k 25 $flye_folder"/assembly.fasta" $MT_reads | \
-    samtools view --threads $threads -b --min-MQ $min_mapQ -F2052 > $flye_folder"/aln_"$prefix".sorted.bam"
-    
+    samtools view --threads $threads -b --min-MQ $min_mapQ -F2052 | samtools sort  -@ $threads > $flye_folder"/aln_"$prefix".sorted.bam"
+    samtools index -@ $threads $flye_folder"/aln_"$prefix".sorted.bam"
+
     ## PRINT
     custom_prints "Retrieve mitochondria and remap reads"
     # Retrieve the mitochondria in the flye assembly which is the one with the highest coverage. 
@@ -274,7 +267,6 @@ map_reads(){
     consensus_mitogenome=$(seqkit grep -p $contig_ID "$flye_folder/assembly.fasta")
 
     ## Retrieve reads which mapped to the consensus_mitogenome 
-    samtools index -@ $threads $flye_folder"/aln_"$prefix".sorted.bam"
     samtools view  -@ $threads -b -F2052 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
     samtools sort  -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.bam" > $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
     samtools fastq -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam" > $MT_reads
@@ -286,6 +278,7 @@ map_reads(){
     ## Final align file for variant calling 
     minimap2 --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $MT_reads | \
     samtools view -@ $threads -b -F2052 -T $ref_genome | samtools sort -@ $threads > $aln_file
+    samtools index -@ $threads $aln_file
 
     ## PRINT OUTPUT SUMMARY
     echo "$timestamp [ATTENTION]: Consensus mitogenome is at" $consensus_mitogenome
@@ -360,20 +353,6 @@ annotate_vcf(){
     bcftools annotate -a $vcf_file/TRN.bed   $vcf_file -c "CHROM,FROM,TO,TRN"  -h <(echo '##INFO=<ID=TRN,Number=1,Type=String,Description="tRNA">')                       -o $vcf_file_annotated 
     bcftools annotate -a $vcf_file/DLOOP.bed $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    -o $vcf_file_annotated 
     fi
-}
-
-assemble_haplotype(){
-    ## Assemble an individual mitogenome
-    ## Maybe this could improved, so far the logic is to generate a consensus using a simple nucleotide frequency
-    ## With filtlong we will keep the best reads, so consensus with flye is better set with the most frequent haplotype
-    ## However, given that we are using very old people, idk how true this consensus will be.
-    filtered_MT_reads="$WD/$prefix_reads.$ID.filtlong.fastq"
-    filtlong --min_length $min_length --keep_percent $keep_percent $MT_reads > $filtered_MT_reads
-    
-    ## Define output
-    flye_folder="$WD/assembly"
-    flye -t $threads --meta --no-alt-contigs $other_flye_opts $flye_preset $filtered_MT_reads -o $flye_folder
-
 }
 
 pipe_exec(){
