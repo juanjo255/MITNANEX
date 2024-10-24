@@ -292,6 +292,8 @@ map_reads(){
 
 variant_calling() {
 
+    custom_prints "Starting Variant calling"
+    
     ## Create dirs
     var_call_folder="$WD/VariantCall/"
     gatk_folder="$WD/$var_call_folder/gatk_mutect2"
