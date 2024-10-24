@@ -379,7 +379,7 @@ pipe_exec(){
             if [[ $no_filter -eq 1 ]]; then
                 filter_by_quality
             fi
-            #map_reads
+            map_reads
             variant_calling
 
         else
