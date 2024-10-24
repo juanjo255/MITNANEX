@@ -273,8 +273,8 @@ map_reads(){
     samtools fastq -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam" > $MT_reads
 
     ## Removing unneeded files
-    rm $flye_folder"/aln_"$prefix"_$contig_ID.bam"
-    rm $flye_folder"/aln_"$prefix".sorted.bam"
+    #rm $flye_folder"/aln_"$prefix"_$contig_ID.bam"
+    #rm $flye_folder"/aln_"$prefix".sorted.bam"
 
     ## Final align file for variant calling 
     minimap2 --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $MT_reads | \
