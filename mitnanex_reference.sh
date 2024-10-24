@@ -4,7 +4,7 @@ bold=$(tput bold)
 normal=$(tput sgr0)
 color_red='\033[0;91m'
 color_cyan='\033[0;36m'
-no_color='\033[0m' 
+no_color='\033[0m'
 timestamp=$(date -u +"%Y-%m-%d %T")
 
 #DEFAULT
@@ -379,7 +379,7 @@ pipe_exec(){
             if [[ $no_filter -eq 1 ]]; then
                 filter_by_quality
             fi
-            map_reads
+            #map_reads
             variant_calling
 
         else
