@@ -263,7 +263,7 @@ map_reads(){
 
     # Map to flye assembly
     minimap2 --secondary=no $minimap2_opts -k 25 $flye_folder"/assembly.fasta" $MT_reads | \
-    samtools view --threads $threads -b --min-MQ $min_mapQ -F2048 > $flye_folder"/aln_"$prefix".sorted.bam"
+    samtools view --threads $threads -b --min-MQ $min_mapQ -F2052 > $flye_folder"/aln_"$prefix".sorted.bam"
     
     ## PRINT
     custom_prints "Retrieve mitochondria and remap reads"
@@ -275,7 +275,7 @@ map_reads(){
 
     ## Retrieve reads which mapped to the consensus_mitogenome 
     samtools index -@ $threads $flye_folder"/aln_"$prefix".sorted.bam"
-    samtools view  -@ $threads -b -F2048 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
+    samtools view  -@ $threads -b -F2052 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
     samtools sort  -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.bam" > $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
     samtools fastq -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam" > $MT_reads
 
