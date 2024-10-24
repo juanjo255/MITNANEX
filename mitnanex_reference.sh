@@ -2,6 +2,7 @@
 
 bold=$(tput bold)
 normal=$(tput sgr0)
+timestamp=$(date -u +"%Y-%m-%d %T")
 
 #DEFAULT
 WD="."
@@ -20,7 +21,7 @@ min_length=500
 max_length=2147483647
 flye_preset="--nano-hq"
 other_flye_opts=""
-min_mean_quality=15
+min_mean_quality=10
 
 ## HELP MESSAGE
 help() {
@@ -212,7 +213,7 @@ custom_prints(){
     color_cyan='\033[0;36m'
     no_color='\033[0m'
     echo " "
-    echo -e "#########${color_cyan} $1 ${no_color}#########"
+    echo -e "$timestamp #########${color_cyan} $1 ${no_color}#########"
     echo " "
 }
 
@@ -270,6 +271,11 @@ map_reads(){
     samtools view -@ $threads -b -F2052 -T $ref_genome | \
     samtools sort -@ $threads > $aln_file
 
+    ## PRINT OUTPUT SUMMARY
+    echo "$timestamp [ATTENTION]: Mitochondrial reads are at: " $MT_reads
+    echo "$timestamp [ATTENTION]: Mitochondrial reads mapped mitochondrial reference $(basename $ref_genome) at: " $aln_file
+    num_mapped_reads=$(samtools view -c $aln_file)
+    echo "$timestamp Number of reads mapped: $aln_file"
 }
 
 variant_calling() {
