@@ -239,16 +239,16 @@ map_reads(){
     aln_file="$WD/$prefix.bam"
     minimap2 --secondary=no $minimap2_opts -g 1k  $ref_genome $reads | \
     samtools view -@ $threads -b --min-MQ $min_mapQ -F2052 -T $ref_genome > $aln_file
-    samtools sort -@ $threads $aln_file > "$WD/$prefix.sorted.bam"
+    samtools sort -@ $threads $aln_file > "$WD/$prefix.$ID.sorted.bam"
     rm $aln_file
-    aln_file="$WD/$prefix.sorted.bam"
+    aln_file="$WD/$prefix.$ID.sorted.bam"
 
     ## PRINT   
     ## Assemble with flye to remove possible NUMTs 
     custom_prints "Assemble with MetaFlye to remove bad quality and some Numts "
 
     ## Output for first MT reads and flye
-    MT_reads="$WD/$prefix.$ID.fastq"
+    MT_reads="$WD/$prefix.fastq"
     flye_folder="$WD/flye_for_numts"    
     samtools fastq -@ $threads $aln_file > $MT_reads
     flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
