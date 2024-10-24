@@ -251,7 +251,7 @@ map_reads(){
     flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
 
     # Map to flye assembly
-    minimap2 --secondary=no $minimap2_opts -k 25 -w 10 $flye_folder"/assembly.fasta" $MT_reads | \
+    minimap2 --secondary=no $minimap2_opts -k 25 $flye_folder"/assembly.fasta" $MT_reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F2048 > $flye_folder"/aln_"$prefix".sorted.bam"
     
     ## PRINT
@@ -260,16 +260,15 @@ map_reads(){
     contig_ID=$(sort -n -k3 $flye_folder"assembly_info.txt" | tail -n 1 | cut -f 1)
     samtools view -@ $threads -b -F2048 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
     samtools sort -@ $threads > $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
-    rm $flye_folder"/aln_"$prefix"_$contig_ID.bam"
     samtools fastq -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam" > $MT_reads
+    #rm $flye_folder"/aln_"$prefix"_$contig_ID.bam"
 
     ## Removing unneeded files
-    rm $flye_folder"/aln_"$prefix".sorted.bam"
+    #rm $flye_folder"/aln_"$prefix".sorted.bam"
 
     ## Final align file for variant calling 
     minimap2 --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $MT_reads | \
-    samtools view -@ $threads -b -F2052 -T $ref_genome | \
-    samtools sort -@ $threads > $aln_file
+    samtools view -@ $threads -b -F2052 -T $ref_genome | samtools sort -@ $threads > $aln_file
 
     ## PRINT OUTPUT SUMMARY
     echo "$timestamp [ATTENTION]: Mitochondrial reads are at: " $MT_reads
