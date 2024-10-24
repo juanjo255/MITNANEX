@@ -236,21 +236,20 @@ map_reads(){
     ## GATK needs read groups. -R for that reason in Minimap2.
     
     ## Minimap2 output
-    aln_file="$WD/$prefix.bam"
-    minimap2 --secondary=no $minimap2_opts -g 1k  $ref_genome $reads | \
-    samtools view -@ $threads -b --min-MQ $min_mapQ -F2052 -T $ref_genome > $aln_file
-    samtools sort -@ $threads $aln_file > "$WD/$prefix.$ID.sorted.bam"
-    rm $aln_file
     aln_file="$WD/$prefix.$ID.sorted.bam"
+    minimap2 --secondary=no $minimap2_opts -g 1k  $ref_genome $reads | \
+    samtools view -@ $threads -b --min-MQ $min_mapQ -F2052 -T $ref_genome | \
+    samtools sort -@ $threads > $aln_file
 
     ## PRINT   
     ## Assemble with flye to remove possible NUMTs 
     custom_prints "Assemble with MetaFlye to remove bad quality and some Numts "
 
-    ## Output for first MT reads and flye
+    ## Output for first MT reads and assemble with flye
     MT_reads="$WD/$prefix.fastq"
     flye_folder="$WD/flye_for_numts"    
     samtools fastq -@ $threads $aln_file > $MT_reads
+    rm $aln_file
     flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
 
     # Map to flye assembly
@@ -285,6 +284,7 @@ map_reads(){
     echo "$timestamp [ATTENTION]: Consensus mitogenome is at" $consensus_mitogenome
     echo "$timestamp [ATTENTION]: Mitochondrial reads are at: " $MT_reads
     echo "$timestamp [ATTENTION]: Mitochondrial reads mapped mitochondrial reference $(basename $ref_genome) at: " $aln_file
+    echo "$timestamp [ATTENTION]: Mitochondrial reads mapped mitochondrial consensus at: " $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
     num_mapped_reads=$(samtools view -c $aln_file)
     echo "$timestamp Number of reads mapped: $aln_file"
 }
