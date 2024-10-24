@@ -299,7 +299,7 @@ variant_calling() {
     
     ## Create dirs
     var_call_folder="$WD/VariantCall/"
-    gatk_folder="$WD/$var_call_folder/gatk_mutect2"
+    gatk_folder="$var_call_folder/gatk_mutect2"
 
     #create_wd $var_call_folder
     #create_wd $gatk_folder
@@ -328,8 +328,8 @@ variant_calling() {
     
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
     --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
-    $kmer_size -I $aln_file -O $vcf_nofilt_file 
-    #&& gatk FilterMutectCalls --mitochondria-mode -O $vcf_file -R $ref_genome -V $vcf_nofilt_file
+    $kmer_size -I $aln_file -O $vcf_nofilt_file && \
+    gatk FilterMutectCalls --mitochondria-mode -O $vcf_file -R $ref_genome -V $vcf_nofilt_file
 
     
 }
