@@ -17,9 +17,9 @@ haplogrep_trees="phylotree-rcrs@17.2"
 top_hits="3"
 keep_percent=50
 min_length=500
+max_length=2147483647
 flye_preset="--nano-hq"
 other_flye_opts=""
-max_length=""
 min_mean_quality=15
 
 ## HELP MESSAGE
@@ -359,8 +359,14 @@ pipe_exec(){
     else
         ID=$(grep -o "^>[^ ]*" $ref_genome | sed 's/>//g')
         max_length=$(seqkit fx2tab -l -n $ref_genome | cut -f 2)
+    
+        if [[ $? -eq 0 ]]; then
+            map_reads
+        else
+            echo "[ERROR] $?: Something wrong with reference genome."
+            exit $?
+        fi
     fi
-    map_reads
 }
 
 pipe_exec
