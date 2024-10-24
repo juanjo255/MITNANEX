@@ -13,7 +13,7 @@ output_folder="mitnanex_results"
 threads="8"
 minimap2_opts="-ax map-ont"
 min_mapQ="30"
-min_pruning="3"
+min_pruning=3
 kmer_size="--kmer-size 15 --kmer-size 25"
 medaka_model="r1041_e82_400bps_sup_variant_v5.0.0"
 haplogrep_trees="phylotree-rcrs@17.2"
@@ -292,6 +292,9 @@ map_reads(){
 
 variant_calling() {
 
+    ## In case you are starting from here you need this file
+    aln_file="$WD/$prefix.$ID.sorted.bam"
+
     custom_prints "Starting Variant calling"
     
     ## Create dirs
@@ -301,9 +304,10 @@ variant_calling() {
     create_wd $var_call_folder
     create_wd $gatk_folder
 
-    ## Variant calling with GATK and Medaka
+    ## Variant calling with GATK
+    
     if [ -z $median_read_len ];then
-        median_read_len=$(cramino $aln_file | grep "Median length" | cut -f 2)
+        median_read_len=$(cramino -t $threads $aln_file | grep "Median length" | cut -f 2)
     fi
     
     #preprocessing files for tools
@@ -319,7 +323,7 @@ variant_calling() {
     vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
 
     ## GATK
-    aln_file="$WD/$prefix.$ID.sorted.bam"
+    
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
     --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
     $kmer_size -I $aln_file -O $vcf_nofilt_file && gatk FilterMutectCalls --mitochondria-mode -O $vcf_file \
