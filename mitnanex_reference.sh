@@ -219,7 +219,9 @@ custom_prints(){
 
 map_reads(){
     
+    ## PRINT
     custom_prints "Filter reads and mapping to reference"
+    
     ## Seqkit output
     chopper_output="$WD/$prefix.filtQ$min_mean_quality.fastq"
     chopper --threads $threads -q $min_mean_quality --minlength $min_length --maxlength $max_length --input $reads > $chopper_output
@@ -237,6 +239,7 @@ map_reads(){
     rm $aln_file
     aln_file="$WD/$prefix.sorted.bam"
 
+    ## PRINT   
     ## Assemble with flye to remove possible NUMTs 
     custom_prints "Assemble with MetaFlye to remove bad quality and some Numts "
 
@@ -250,6 +253,8 @@ map_reads(){
     minimap2 --secondary=no $minimap2_opts -k 25 -w 10 $flye_folder"/assembly.fasta" $MT_reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F2048 > $flye_folder"/aln_"$prefix".sorted.bam"
     
+    ## PRINT
+    custom_prints "Retrieve mitochondria and remap reads"
     # Retrieve the mitochondria in the flye assembly which is the one with the highest coverage. 
     contig_ID=$(sort -n -k3 $flye_folder"assembly_info.txt" | tail -n 1 | cut -f 1)
     samtools view -@ $threads -b -F2048 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
