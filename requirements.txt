@@ -19,3 +19,4 @@ wget https://github.com/broadinstitute/gatk/releases/download/4.6.0.0/gatk-4.6.0
 unzip gatk-4.6.0.0.zip
 wget https://github.com/genepi/haplogrep3/releases/download/v3.2.1/haplogrep3-3.2.1-linux.zip
 unzip haplogrep3-3.2.1-linux.zip
+chmod +x haplogrep3.yaml

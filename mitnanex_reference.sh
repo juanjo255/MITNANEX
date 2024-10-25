@@ -380,7 +380,8 @@ pipe_exec(){
                 filter_by_quality
             fi
             #map_reads
-            variant_calling
+            #variant_calling
+            haplogroup_class
 
         else
             echo "[${color_red}ERROR${no_color}] $?: Something wrong with reference genome."
