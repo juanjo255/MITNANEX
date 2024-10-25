@@ -368,7 +368,7 @@ annotate_vcf(){
 
     #Annotate VFC with rCRS reference
     reference_annot=$exec_path"/refseqMT"
-    vcf_file="$gatk_folder/$prefix.$ID.gatk.annot.vcf"
+    #vcf_file="$gatk_folder/$prefix.$ID.gatk.annot.vcf"
 
     bcftools annotate -a $reference_annot/HV.bed   $vcf_file -c "CHROM,FROM,TO,Hypervariable"  -h <(echo '##INFO=<ID=Hypervariable,Number=1,Type=String,Description="Hypervariable">') -o $vcf_file 
     bcftools annotate -a $reference_annot/HP.bed    $vcf_file -c "CHROM,FROM,TO,Homopolymer"  -h <(echo '##INFO=<ID=Homopolymer,Number=0,Type=Flag,Description="Homoloplymer">') -o $vcf_file 
