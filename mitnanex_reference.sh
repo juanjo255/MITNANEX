@@ -332,6 +332,10 @@ variant_calling() {
 }
 
 haplogroup_class(){
+    
+    ## In case you are starting from here, you need this varibles
+    vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
+    
     haplogroup_folder="$WD/haplogroup/"
     create_wd $haplogroup_folder
 
