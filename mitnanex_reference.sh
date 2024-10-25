@@ -354,7 +354,7 @@ haplogroup_class(){
         done
 
     ## SUMMARY RESULTS
-    echo "$timestamp [ATTENTION]: The report with the top $top_hits closest haplogroups is at" $"$haplogroup_folder/haplogrep3.$tree.txt"
+    echo "$timestamp [ATTENTION]: The report with the top $top_hits closest haplogroups is at" "$haplogroup_folder/haplogrep3.$tree.txt"
     
 }
 
@@ -370,8 +370,6 @@ annotate_vcf(){
     reference_annot=$exec_path"/refseqMT"
     vcf_file_annotated="$gatk_folder/$prefix.$ID.gatk.annot.vcf"
 
-
-    if [ -s $vcf_file ]; then
     bcftools annotate -a $reference_annot/HV.bed   $vcf_file -c "CHROM,FROM,TO,Hypervariable"  -h <(echo '##INFO=<ID=Hypervariable,Number=1,Type=String,Description="Hypervariable">') -o $vcf_file_annotated 
     bcftools annotate -a $reference_annot/HP.bed    $vcf_file -c "CHROM,FROM,TO,Homopolymer"  -h <(echo '##INFO=<ID=Homopolymer,Number=0,Type=Flag,Description="Homoloplymer">') -o $vcf_file_annotated 
     bcftools annotate -a $reference_annot/HS.bed    $vcf_file -c "CHROM,FROM,TO,Hotspot"  -h <(echo '##INFO=<ID=Hotspot,Number=0,Type=Flag,Description="Hotspot">')              -o $vcf_file_annotated 
@@ -379,7 +377,11 @@ annotate_vcf(){
     bcftools annotate -a $reference_annot/RNR.bed   $vcf_file -c "CHROM,FROM,TO,RNR"  -h <(echo '##INFO=<ID=RNR,Number=1,Type=String,Description="rRNA">')                       -o $vcf_file_annotated 
     bcftools annotate -a $reference_annot/TRN.bed   $vcf_file -c "CHROM,FROM,TO,TRN"  -h <(echo '##INFO=<ID=TRN,Number=1,Type=String,Description="tRNA">')                       -o $vcf_file_annotated 
     bcftools annotate -a $reference_annot/DLOOP.bed $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    -o $vcf_file_annotated 
-    fi
+
+    echo "$timestamp [ATTENTION]: The annotated VCF is at" $vcf_file_annotated
+ 
+
+
 }
 
 
