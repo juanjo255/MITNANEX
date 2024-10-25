@@ -16,6 +16,7 @@ else
     else
         exec_path="./"
     fi
+    export exec_path=$exec_path
 fi
 
 ## Help message
