@@ -334,6 +334,7 @@ variant_calling() {
 haplogroup_class(){
     
     ## In case you are starting from here, you need this varibles
+    gatk_folder="$WD/VariantCall/gatk_mutect2"
     vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
     
     haplogroup_folder="$WD/haplogroup/"
