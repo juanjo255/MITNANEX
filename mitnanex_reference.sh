@@ -339,7 +339,7 @@ haplogroup_class(){
     gatk_folder="$WD/VariantCall/gatk_mutect2"
     vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
     
-    haplogroup_folder="$WD/haplogroup/"
+    haplogroup_folder="$WD/haplogroup"
     create_wd $haplogroup_folder
 
     ## Install trees
@@ -350,11 +350,11 @@ haplogroup_class(){
         for tree in "${trees[@]}";
         do
             "$exec_path/haplogrep3" classify --tree=$tree --in $vcf_file --hits $top_hits \
-                --extend-report --out "$haplogroup_folder/haplogrep3.$tree" || echo "${color_red} ERROR ${no_color} Are the trees downloaded?"
+                --extend-report --out "$haplogroup_folder/haplogrep3.$tree.txt" || echo "${color_red} ERROR ${no_color} Are the trees downloaded?"
         done
 
     ## SUMMARY RESULTS
-    echo "$timestamp [ATTENTION]: The report with the top $top_hits closest haplogroups is at" $"$haplogroup_folder/haplogrep3.$tree"
+    echo "$timestamp [ATTENTION]: The report with the top $top_hits closest haplogroups is at" $"$haplogroup_folder/haplogrep3.$tree.txt"
     
 }
 
