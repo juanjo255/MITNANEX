@@ -343,14 +343,14 @@ haplogroup_class(){
     create_wd $haplogroup_folder
 
     ## Install trees
-    "$exec_path/haplogrep3" install-tree $haplogrep_trees && echo " " || echo "${color_red}ERROR${no_color} while downloading trees. Make sure .yaml has permissions" exit 1
+    "$exec_path/haplogrep3" install-tree $haplogrep_trees && echo " " || echo "${color_red} ERROR ${no_color} while downloading trees. Make sure .yaml has permissions and that you have internet"
 
     ## Classify 
     IFS="," read -a trees <<< "$haplogrep_trees"
         for tree in "${trees[@]}";
         do
             "$exec_path/haplogrep3" classify --tree=$tree --in $vcf_file --hits $top_hits \
-                --extend-report --out "$haplogroup_folder/haplogrep3.$tree"
+                --extend-report --out "$haplogroup_folder/haplogrep3.$tree" || echo "${color_red} ERROR ${no_color} Are the trees downloaded?"
         done
 
     ## SUMMARY RESULTS
