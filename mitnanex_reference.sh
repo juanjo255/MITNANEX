@@ -333,6 +333,8 @@ variant_calling() {
 
 haplogroup_class(){
     
+    custom_prints "Classify haplogroup"
+
     ## In case you are starting from here, you need this varibles
     gatk_folder="$WD/VariantCall/gatk_mutect2"
     vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
@@ -351,6 +353,9 @@ haplogroup_class(){
                 --extend-report --out "$haplogroup_folder/haplogrep3.$tree"
         done
 
+    ## SUMMARY RESULTS
+    echo "$timestamp [ATTENTION]: The report with the top $top_hits closest haplogroups is at" $"$haplogroup_folder/haplogrep3.$tree"
+    
 }
 
 annotate_vcf(){
