@@ -328,6 +328,8 @@ variant_calling() {
     $kmer_size -I $aln_file -O $vcf_nofilt_file && \
     gatk FilterMutectCalls --mitochondria-mode -O $vcf_file -R $ref_genome -V $vcf_nofilt_file
 
+    echo "$timestamp [ATTENTION]: The variant calling is at" $vcf_file
+
     
 }
 
