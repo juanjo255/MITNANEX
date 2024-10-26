@@ -1,11 +1,22 @@
 #!/bin/bash
 
+## AESTHETICS
 bold=$(tput bold)
 normal=$(tput sgr0)
 color_red='\033[0;91m'
 color_cyan='\033[0;36m'
 no_color='\033[0m'
 timestamp=$(date -u +"%Y-%m-%d %T")
+
+## IMPORT SCRIPTS
+scripts_path="$exec_path/scripts"
+source "$scripts_path/filter_by_quality.sh"
+source "$scripts_path/map_reads.sh"
+source "$scripts_path/variant_calling.sh"
+source "$scripts_path/haplogroup_class.sh"
+source "$scripts_path/annotate_vcf.sh"
+source "$scripts_path/annotate_mito.sh"
+
 
 #DEFAULT
 WD="."
@@ -217,182 +228,6 @@ custom_prints(){
     echo " "
 }
 
-filter_by_quality(){
-    
-    ## PRINT
-    custom_prints "Filter reads by: Qual:$min_mean_quality MinLen: $min_length MaxLen: $max_length"
-    
-    ## Seqkit output
-    chopper_output="$WD/$prefix.filtQ$min_mean_quality.fastq"
-    chopper --threads $threads -q $min_mean_quality --minlength $min_length --maxlength $max_length --input $reads > $chopper_output
-    reads=$chopper_output
-}
-
-map_reads(){
-    
-    ## PRINT
-    custom_prints "Mapping to reference"
-    
-    ## Map reads to reference
-    ## GATK needs read groups. -R for that reason in Minimap2.
-    
-    ## Minimap2 output
-    aln_file="$WD/$prefix.$ID.sorted.bam"
-    minimap2 --secondary=no $minimap2_opts -g 1k  $ref_genome $reads | \
-    samtools view -@ $threads -b --min-MQ $min_mapQ -F2052 -T $ref_genome | \
-    samtools sort -@ $threads > $aln_file
-
-    ## PRINT   
-    ## Assemble with flye to remove possible NUMTs 
-    custom_prints "Assemble with MetaFlye to remove bad quality and some Numts "
-
-    ## Output for first MT reads and assemble with flye
-    MT_reads="$WD/$prefix.fastq"
-    flye_folder="$WD/flye_for_numts"    
-    samtools fastq -@ $threads $aln_file > $MT_reads
-    rm $aln_file
-    flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
-
-    # Map to flye assembly
-    minimap2 --secondary=no $minimap2_opts -k 25 $flye_folder"/assembly.fasta" $MT_reads | \
-    samtools view --threads $threads -b --min-MQ $min_mapQ -F2052 | samtools sort  -@ $threads > $flye_folder"/aln_"$prefix".sorted.bam"
-    samtools index -@ $threads $flye_folder"/aln_"$prefix".sorted.bam"
-
-    ## PRINT
-    custom_prints "Retrieve mitochondria and remap reads"
-    # Retrieve the mitochondria in the flye assembly which is the one with the highest coverage. 
-    contig_ID=$(sort -n -k3 $flye_folder"/assembly_info.txt" | tail -n 1 | cut -f 1)
-
-    ## Save mitogenome flye consensus
-    consensus_mitogenome="$WD/MT_genome.fasta"
-    seqkit grep -p $contig_ID "$flye_folder/assembly.fasta" > $consensus_mitogenome
-
-    ## Retrieve reads which mapped to the consensus_mitogenome 
-    samtools view  -@ $threads -b -F2052 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
-    samtools sort  -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.bam" > $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
-    samtools fastq -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam" > $MT_reads
-
-    ## Removing unneeded files
-    #rm $flye_folder"/aln_"$prefix"_$contig_ID.bam"
-    #rm $flye_folder"/aln_"$prefix".sorted.bam"
-
-    ## Final align file for variant calling 
-    minimap2 --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $MT_reads | \
-    samtools view -@ $threads -b -F2052 -T $ref_genome | samtools sort -@ $threads > $aln_file
-    samtools index -@ $threads $aln_file
-
-    ## PRINT OUTPUT SUMMARY
-    echo "$timestamp [ATTENTION]: Consensus mitogenome is at" $consensus_mitogenome
-    echo "$timestamp [ATTENTION]: Mitochondrial reads are at: " $MT_reads
-    echo "$timestamp [ATTENTION]: Mitochondrial reads mapped mitochondrial reference $(basename $ref_genome) at: " $aln_file
-    echo "$timestamp [ATTENTION]: Mitochondrial reads mapped mitochondrial consensus at: " $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
-    num_mapped_reads=$(samtools view -c $aln_file)
-    echo "$timestamp Number of reads mapped: $aln_file"
-}
-
-variant_calling() {
-
-    ## In case you are starting from here you need this file
-    aln_file="$WD/$prefix.$ID.sorted.bam"
-
-    custom_prints "Starting Variant calling"
-    
-    ## Create dirs
-    gatk_folder="$WD/VariantCall/gatk_mutect2"
-    create_wd $gatk_folder
-
-    ## Variant calling with GATK
-    
-    if [ -z $median_read_len ];then
-        median_read_len=$(cramino -t $threads $aln_file | grep "Median length" | cut -f 2)
-        median_read_len=${median_read_len%%.*}
-        median_read_len=$(($median_read_len + 1))
-    fi
-    
-    #preprocessing files for tools
-
-    ## Create index and dict
-    #samtools faidx $ref_genome
-    #gatk CreateSequenceDictionary -R $ref_genome
-
-    
-
-    ## GATK output
-    vcf_nofilt_file="$gatk_folder/$prefix.$ID.gatk.vcf"
-    vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
-
-    ## GATK
-    
-    gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
-    --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
-    $kmer_size -I $aln_file -O $vcf_nofilt_file && \
-    gatk FilterMutectCalls --mitochondria-mode -O $vcf_file -R $ref_genome -V $vcf_nofilt_file
-
-    echo "$timestamp [ATTENTION]: The variant calling is at" $vcf_file
-
-    
-}
-
-haplogroup_class(){
-    
-    custom_prints "Classify haplogroup"
-
-    ## In case you are starting from here, you need this varibles
-    gatk_folder="$WD/VariantCall/gatk_mutect2"
-    vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
-    
-    haplogroup_folder="$WD/haplogroup"
-    create_wd $haplogroup_folder
-
-    ## Install trees
-    "$exec_path/haplogrep3" install-tree $haplogrep_trees && echo " " || echo "${color_red} ERROR ${no_color} while downloading trees. Make sure .yaml has permissions and that you have internet"
-
-    ## Classify 
-    IFS="," read -a trees <<< "$haplogrep_trees"
-        for tree in "${trees[@]}";
-        do
-            "$exec_path/haplogrep3" classify --tree=$tree --in $vcf_file --hits $top_hits \
-                --extend-report --out "$haplogroup_folder/haplogrep3.$tree.txt" || echo "${color_red} ERROR ${no_color} Are the trees downloaded?"
-        done
-
-    ## SUMMARY RESULTS
-    echo "$timestamp [ATTENTION]: The report with the top $top_hits closest haplogroups is at" "$haplogroup_folder/haplogrep3.$tree.txt"
-    
-}
-
-annotate_vcf(){
-
-    custom_prints "Annotate variants with reference features context"
-
-    ## In case you started from here you need
-    gatk_folder="$WD/VariantCall/gatk_mutect2"
-    vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
-    vcf_file_annot="$gatk_folder/$prefix.$ID.gatk.filt.anno.vcf"
-
-    #Annotate VFC with rCRS reference
-    reference_annot=$exec_path"/refseqMT"
-    #vcf_file="$gatk_folder/$prefix.$ID.gatk.annot.vcf"
-
-    bcftools annotate -a "$reference_annot/HV.bed"   $vcf_file -c "CHROM,FROM,TO,Hypervariable"  -h <(echo '##INFO=<ID=Hypervariable,Number=1,Type=String,Description="Hypervariable">') > $vcf_file_annot
-    cp $vcf_file_annot $vcf_file 
-    bcftools annotate -a "$reference_annot/HP.bed"    $vcf_file -c "CHROM,FROM,TO,Homopolymer"  -h <(echo '##INFO=<ID=Homopolymer,Number=0,Type=Flag,Description="Homoloplymer">') > $vcf_file_annot 
-    cp $vcf_file_annot $vcf_file
-    bcftools annotate -a "$reference_annot/HS.bed"    $vcf_file -c "CHROM,FROM,TO,Hotspot"  -h <(echo '##INFO=<ID=Hotspot,Number=0,Type=Flag,Description="Hotspot">')              > $vcf_file_annot 
-    cp $vcf_file_annot $vcf_file
-    bcftools annotate -a "$reference_annot/CDS.bed"   $vcf_file -c "CHROM,FROM,TO,CDS" -h <(echo '##INFO=<ID=CDS,Number=1,Type=String,Description="CDS">')                         > $vcf_file_annot 
-    cp $vcf_file_annot $vcf_file
-    bcftools annotate -a "$reference_annot/RNR.bed"   $vcf_file -c "CHROM,FROM,TO,RNR"  -h <(echo '##INFO=<ID=RNR,Number=1,Type=String,Description="rRNA">')                       > $vcf_file_annot 
-    cp $vcf_file_annot $vcf_file
-    bcftools annotate -a "$reference_annot/TRN.bed"   $vcf_file -c "CHROM,FROM,TO,TRN"  -h <(echo '##INFO=<ID=TRN,Number=1,Type=String,Description="tRNA">')                       > $vcf_file_annot 
-    cp $vcf_file_annot $vcf_file
-    bcftools annotate -a "$reference_annot/DLOOP.bed" $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    > $vcf_file_annot 
-
-    echo "$timestamp [ATTENTION]: The annotated VCF is at" $vcf_file
- 
-
-
-}
-
 
 pipe_exec(){
     create_wd $WD
@@ -411,9 +246,9 @@ pipe_exec(){
                 filter_by_quality
             fi
             #map_reads
-            variant_calling
+            #variant_calling
             #haplogroup_class
-            annotate_vcf
+            #annotate_vcf
 
 
         else

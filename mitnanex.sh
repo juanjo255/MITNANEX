@@ -44,11 +44,11 @@ while true;do
     case $1 in
     denovo)
         shift 1
-        bash "$exec_path/mitnanex_denovo.sh" $@
+        source "$exec_path/mitnanex_denovo.sh" $@
     ;;
     reference)
         shift 1
-        bash "$exec_path/mitnanex_reference.sh" $@
+        source "$exec_path/mitnanex_reference.sh" $@
     ;;
     --help | -h)
         help 
