@@ -103,5 +103,5 @@ NC_012920.1	RefSeq	exon	15888	15953	.	+	.	ID=exon-TRNT-1;Parent=rna-TRNT;Dbxref=
 NC_012920.1	RefSeq	gene	15956	16023	.	-	.	ID=gene-TRNP;Dbxref=GeneID:4571,HGNC:HGNC:7494,MIM:590075;Name=TRNP;gbkey=Gene;gene=TRNP;gene_biotype=tRNA;gene_synonym=MTTP
 NC_012920.1	RefSeq	tRNA	15956	16023	.	-	.	ID=rna-TRNP;Parent=gene-TRNP;Dbxref=GeneID:4571,HGNC:HGNC:7494,MIM:590075;Note=NAR: 1597;anticodon=(pos:complement(15990..15992));codons=CCA;gbkey=tRNA;gene=TRNP;product=tRNA-Pro
 NC_012920.1	RefSeq	exon	15956	16023	.	-	.	ID=exon-TRNP-1;Parent=rna-TRNP;Dbxref=GeneID:4571,HGNC:HGNC:7494,MIM:590075;Note=NAR: 1597;anticodon=(pos:complement(15990..15992));codons=CCA;gbkey=tRNA;gene=TRNP;product=tRNA-Pro
-NC_012920.1	RefSeq	D_loop	16024	17145	.	-	.	ID=id-NC_012920.1:1..16569;gbkey=D-loop
+NC_012920.1	RefSeq	gene	16024	17145	.	-	.	ID=id-NC_012920.1:1..16569;gbkey=D-loop
 
