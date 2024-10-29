@@ -249,6 +249,7 @@ pipe_exec(){
             #variant_calling
             #haplogroup_class
             #annotate_vcf
+            annotate_mito
 
 
         else

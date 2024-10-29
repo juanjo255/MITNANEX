@@ -7,7 +7,7 @@ annotate_mito(){
     annotation_file="$WD/annotation/$prefix.liftoff.gff"
 
     liftoff -g "$exec_path/refseqMT/chrMT_NC_012920.gff3" "$consensus_mitogenome" \
-    "$exec_path/refseqMT/chrMT.fna" -cds -o $annotation_file
+    "$exec_path/refseqMT/chrMT.fna" -o $annotation_file
 
     echo "$timestamp [ATTENTION]: Mitochondrial consensus annotation file is at" $annotation_file
 

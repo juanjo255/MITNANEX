@@ -9,12 +9,12 @@ Replace the old one:
 echo 'export PATH="/opt/homebrew/opt/gnu-getopt/bin:$PATH"' >> ~/.zshrc
 
 CONDA/PIP requirements for linux and osx-64
-install -c conda-forge -c bioconda minimap2 openjdk=17 bcftools seqkit liftover=1.6.3
+install -c conda-forge -c bioconda minimap2 openjdk=17 bcftools seqkit liftoff=1.6.3 samtools flye
 cargo install cramino
 
 
 PRE-BUILT requirements
-gatk is better to install a binary release due to license.
+#gatk is better to install a binary release due to license.
 wget https://github.com/broadinstitute/gatk/releases/download/4.6.0.0/gatk-4.6.0.0.zip
 unzip gatk-4.6.0.0.zip
 wget https://github.com/genepi/haplogrep3/releases/download/v3.2.1/haplogrep3-3.2.1-linux.zip
