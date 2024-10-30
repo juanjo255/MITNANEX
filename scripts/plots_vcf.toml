@@ -8,14 +8,35 @@ passed = true
 [[instance]]
 formula = 'DEPTHs{0} ~ CHROM'
 title = 'Depth distribution on each Mitogenome'
-ggs = 'theme_dark()'
+ggs = 'theme_dark(); ylab("Depth")'
+figtype = 'violin'
 
 [[instance]]
 formula = 'COUNT(1, group=VARTYPE) ~ CHROM'
 title = 'Types of variants on Mitogenome'
+ggs = 'theme_light(); ylab("Count")'
+figtype = 'bar'
 
 [[instance]]
 formula = 'AAF ~ CHROM'
 title = 'Allele frequency on each Mitogenome'
-ggs = 'theme_bw()'
+ggs = 'theme_light()'
 figtype = 'density'
+
+[[instance]]
+formula = 'COUNT(1, VARTYPE[snp]) ~ SUBST[A>T,A>G,A>C,T>A,T>G,T>C,G>A,G>T,G>C,C>A,C>T,C>G]'
+title = 'Number of substitutions of SNPs'
+ggs = 'theme_light(); ylab("Count")'
+figtype = 'col'
+
+[[instance]]
+formula = 'COUNT(1) ~ CHROM'
+title = 'Number of Variants at each Mitogenome'
+ggs = 'theme_light(); ylab("Count")'
+figtype = 'col'
+
+[[instance]]
+formula = 'COUNT(1) ~ TITV'
+title = 'Number of TiTv at Mitogenome'
+ggs = 'theme_light(); ylab("Count")'
+figtype = 'bar'
