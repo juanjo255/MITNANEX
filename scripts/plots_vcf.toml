@@ -1,0 +1,21 @@
+## PARAMETERS FOR PLOTTING VCF
+
+# General options
+devpars = {width = 1000, height = 1000, res = 100}
+passed = true
+
+# Plots
+[[instance]]
+formula = 'DEPTHs{0} ~ CHROM'
+title = 'Depth distribution on each Mitogenome'
+ggs = 'theme_dark()'
+
+[[instance]]
+formula = 'COUNT(1, group=VARTYPE) ~ CHROM'
+title = 'Types of variants on Mitogenome'
+
+[[instance]]
+formula = 'AAF ~ CHROM'
+title = 'Allele frequency on each Mitogenome'
+ggs = 'theme_bw()'
+figtype = 'density'
