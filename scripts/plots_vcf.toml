@@ -1,14 +1,14 @@
 ## PARAMETERS FOR PLOTTING VCF
 
 # General options
-devpars = {width = 1000, height = 1000, res = 100}
+devpars = {width = 1000, height = 1000, res = 200}
 passed = true
 
 # Plots
 [[instance]]
 formula = 'DEPTHs{0} ~ CHROM'
 title = 'Depth distribution on each Mitogenome'
-ggs = 'theme_dark(); ylab("Depth")'
+ggs = 'theme_dark(); ylab("Read-depth")'
 figtype = 'violin'
 
 [[instance]]
@@ -22,6 +22,12 @@ formula = 'AAF ~ CHROM'
 title = 'Allele frequency on each Mitogenome'
 ggs = 'theme_light()'
 figtype = 'density'
+
+[[instance]]
+formula = 'AAF ~ 1'
+title = 'Overall allele frequency distribution' 
+ggs = 'theme_light()'
+figtype = 'histogram'
 
 [[instance]]
 formula = 'COUNT(1, VARTYPE[snp]) ~ SUBST[A>T,A>G,A>C,T>A,T>G,T>C,G>A,G>T,G>C,C>A,C>T,C>G]'
@@ -40,3 +46,9 @@ formula = 'COUNT(1) ~ TITV'
 title = 'Number of TiTv at Mitogenome'
 ggs = 'theme_light(); ylab("Count")'
 figtype = 'bar'
+
+[[instance]]
+formula = 'DEPTHs ~ 1'
+title = 'Number of positions per depth'
+ggs = 'stat_bin(bins=5);theme_light(); ylab("# Positions");xlab("Read-depth")'
+figtype = 'histogram'
