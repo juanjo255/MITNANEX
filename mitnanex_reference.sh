@@ -16,6 +16,8 @@ source "$scripts_path/variant_calling.sh"
 source "$scripts_path/haplogroup_class.sh"
 source "$scripts_path/annotate_vcf.sh"
 source "$scripts_path/annotate_mito.sh"
+source "$scripts_path/mitomap.sh"
+source "$scripts_path/plot_vcf.sh"
 
 
 #DEFAULT
@@ -252,8 +254,6 @@ pipe_exec(){
             #annotate_vcf
             #plot_vcf
             #annotate_mito
-            
-
 
         else
             echo "[${color_red}ERROR${no_color}] $?: Something wrong with reference genome."
