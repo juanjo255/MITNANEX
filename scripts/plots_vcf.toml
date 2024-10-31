@@ -24,10 +24,10 @@ ggs = 'theme_light()'
 figtype = 'density'
 
 [[instance]]
-formula = 'AAF ~ 1'
+formula = 'AF ~ 1'
 title = 'Overall allele frequency distribution' 
 ggs = 'theme_light()'
-figtype = 'histogram'
+figtype = 'density'
 
 [[instance]]
 formula = 'COUNT(1, VARTYPE[snp]) ~ SUBST[A>T,A>G,A>C,T>A,T>G,T>C,G>A,G>T,G>C,C>A,C>T,C>G]'
