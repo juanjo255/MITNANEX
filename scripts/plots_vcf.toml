@@ -52,3 +52,9 @@ formula = 'DEPTHs ~ 1'
 title = 'Number of positions per depth'
 ggs = 'stat_bin(bins=5);theme_light(); ylab("# Positions");xlab("Read-depth")'
 figtype = 'histogram'
+
+[[instance]]
+formula = 'MBQ ~ CHROM'
+title = 'Median base quality by allele'
+ggs = 'theme_light(); ylab("MBQ");xlab("CHROM")'
+figtype = 'boxplot'
