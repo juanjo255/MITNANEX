@@ -2,9 +2,6 @@
 
 variant_calling() {
 
-    ## In case you are starting from here you need this file
-    aln_file="$WD/$prefix.$ID.sorted.bam"
-
     custom_prints "Starting Variant calling"
     
     ## Create dirs
@@ -32,7 +29,6 @@ variant_calling() {
     vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
 
     ## GATK
-    
     gatk Mutect2 -R $ref_genome -L $ID --mitochondria-mode \
     --dont-use-soft-clipped-bases --max-assembly-region-size $median_read_len --min-pruning $min_pruning \
     $kmer_size -I $aln_file -O $vcf_nofilt_file && \

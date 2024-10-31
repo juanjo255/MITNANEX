@@ -13,7 +13,7 @@ scripts_path="$exec_path/scripts"
 source "$scripts_path/filter_by_quality.sh"
 source "$scripts_path/map_reads.sh"
 source "$scripts_path/variant_calling.sh"
-source "$scripts_path/haplogroup_class.sh"
+#source "$scripts_path/haplogroup_class.sh"
 source "$scripts_path/annotate_vcf.sh"
 source "$scripts_path/annotate_mito.sh"
 source "$scripts_path/mitomap.sh"
@@ -29,7 +29,7 @@ min_mapQ="30"
 min_pruning=3
 kmer_size="--kmer-size 15 --kmer-size 25"
 medaka_model="r1041_e82_400bps_sup_variant_v5.0.0"
-haplogrep_trees="phylotree-rcrs@17.2"
+#haplogrep_trees="phylotree-rcrs@17.2"
 #haplogrep_posible_trees=$("$exec_path/haplogrep3" trees)
 top_hits="3"
 keep_percent=50
@@ -230,6 +230,27 @@ custom_prints(){
     echo " "
 }
 
+vars_definition(){
+    # This is to keep in one place all outputs need it by other processes
+    # In case you are starting a specific process you already have the variables defined
+    
+    # Map reads
+    aln_file="$WD/$prefix.$ID.sorted.bam"
+    MT_reads="$WD/$prefix.fastq"
+    consensus_mitogenome="$WD/MT_genome.fasta"
+    
+    # Variant calling
+    gatk_folder="$WD/VariantCall/gatk_mutect2"
+    vcf_file="$gatk_folder/$prefix.$ID.gatk.filt.vcf"
+
+    # annotate mito
+    annot_folder="$WD/annotation/"
+    annot_file="$annot_folder/$prefix.liftoff.gff"
+
+    # Mitomap
+    mitomap_out="$WD/variant_annot.mitomap.txt"
+}
+
 
 pipe_exec(){
     create_wd $WD
@@ -249,11 +270,10 @@ pipe_exec(){
             fi
             #map_reads
             #variant_calling
-            #haplogroup_class
-            #mitomap
             #annotate_vcf
             #plot_vcf
             #annotate_mito
+            mitomap
 
         else
             echo "[${color_red}ERROR${no_color}] $?: Something wrong with reference genome."
