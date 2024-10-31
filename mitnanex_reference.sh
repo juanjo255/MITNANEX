@@ -268,6 +268,7 @@ pipe_exec(){
             if [[ $no_filter -eq 1 ]]; then
                 filter_by_quality
             fi
+            vars_definition
             #map_reads
             #variant_calling
             #annotate_vcf
