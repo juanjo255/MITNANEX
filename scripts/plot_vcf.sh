@@ -9,7 +9,7 @@ plot_vcf(){
     create_wd $vcfplotsdir
 
     
-    vcfstats --vcf $$vcf_file --outdir $vcfplotsdir \
+    vcfstats --vcf $vcf_file --outdir $vcfplotsdir \
     --config "$exec_path/scripts/plots_vcf.toml" \
     --macro "$exec_path/scripts/custom_macro.py"
 
