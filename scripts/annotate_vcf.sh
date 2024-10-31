@@ -4,7 +4,10 @@ annotate_vcf(){
     custom_prints "Annotate variants with reference features context"
 
     ## Temp file to annotate. The final annotation file will be $vcf_file
-    vcf_file_annot="$gatk_folder/$prefix.$ID.gatk.filt.anno.vcf"
+    vcf_file_annot="$gatk_folder/$prefix.$ID.gatk.filt.temp.vcf"
+
+    ## Keep old name
+    vcf_file_old=$vcf_file
 
     #Annotate VFC with rCRS reference
     reference_annot=$exec_path"/refseqMT"
@@ -23,7 +26,8 @@ annotate_vcf(){
     cp $vcf_file_annot $vcf_file
     bcftools annotate -a "$reference_annot/DLOOP.bed" $vcf_file -c "CHROM,FROM,TO,DLOOP"  -h <(echo '##INFO=<ID=DLOOP,Number=0,Type=Flag,Description="DLOOP">')                    > $vcf_file_annot 
     
-    ## Temp file no needed anymore
-    rm $vcf_file_annot
+    ## Change name to old name
+    mv $vcf_file_annot $vcf_file_old
+
     echo "$timestamp [ATTENTION]: The annotated VCF is at" $vcf_file
 }
