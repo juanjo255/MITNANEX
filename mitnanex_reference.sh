@@ -248,8 +248,11 @@ pipe_exec(){
             #map_reads
             #variant_calling
             #haplogroup_class
+            #mitomap
             #annotate_vcf
-            annotate_mito
+            #plot_vcf
+            #annotate_mito
+            
 
 
         else
