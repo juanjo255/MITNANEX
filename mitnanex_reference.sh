@@ -269,11 +269,11 @@ pipe_exec(){
                 filter_by_quality
             fi
             vars_definition
-            #map_reads
-            #variant_calling
-            #annotate_vcf
-            #plot_vcf
-            #annotate_mito
+            map_reads
+            variant_calling
+            annotate_vcf
+            plot_vcf
+            annotate_mito
             mitomap
 
         else
