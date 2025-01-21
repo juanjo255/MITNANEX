@@ -85,7 +85,7 @@ help() {
 ## PARSE ARGUMENTS
 ARGS=$(getopt -o "hr:i:g:t:k:o:" --long "help,reference:,gff:,reads:,output:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,
 max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:,flye_preset:,other_flye_opts:,min_mean_quality:,
-max_length:,no_filter" -n 'MITNANEX' -- "$@")
+max_length:,mapq:,no_filter" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
 
 while [ $# -gt 0 ];
@@ -276,10 +276,10 @@ pipe_exec(){
             fi
             vars_definition
             map_reads
-            variant_calling
-            annotate_vcf
-            plot_vcf
-            annotate_mito
+            #variant_calling
+            #annotate_vcf
+            #plot_vcf
+            #annotate_mito
             #mitomap
 
         else

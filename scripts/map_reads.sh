@@ -11,7 +11,7 @@ map_reads(){
     ## Minimap2 output
     aln_file="$WD/$prefix.$ID.sorted.bam"
     minimap2 --secondary=no $minimap2_opts -g 1k  $ref_genome $reads | \
-    samtools view -@ $threads -b --min-MQ $min_mapQ -F2052 -T $ref_genome | \
+    samtools view -@ $threads -b --min-MQ $min_mapQ -T $ref_genome | \
     samtools sort -@ $threads > $aln_file
 
     ## PRINT   
