@@ -7,6 +7,6 @@ filter_by_quality(){
     
     ## Seqkit output
     chopper_output="$WD/$prefix.filtQ$min_mean_quality.fastq"
-    chopper --threads $threads -q $min_mean_quality --minlength $min_length --maxlength $max_length --input $reads > $chopper_output
+    chopper --threads $threads -q $min_mean_quality --minlength $min_length --maxlength $max_length < $reads > $chopper_output
     reads=$chopper_output
 }
