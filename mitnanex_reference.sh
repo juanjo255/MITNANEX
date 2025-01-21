@@ -39,6 +39,7 @@ flye_preset="--nano-hq"
 other_flye_opts=""
 min_mean_quality=10
 no_filter=1
+ref_gff="$exec_path/refseqMT/chrMT_NC_012920.gff3"
 
 ## HELP MESSAGE
 help() {
@@ -50,6 +51,7 @@ help() {
 
     ${bold}Options:${normal}
         -r, --reference    Reference organelle Genome [required].
+        -g, --gff          Reference GFF3 file to liftover. [human.gff3].
         -i, --reads        Input file. [required].
         --ID               Use if your reference contains nuclear genome. The ID is the sentence inmidiately next to the '>' without spaces.
         -t, --threads      Threads. [$threads].
@@ -81,7 +83,7 @@ help() {
 }
 
 ## PARSE ARGUMENTS
-ARGS=$(getopt -o "hr:i:t:k:" --long "help,reference:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,
+ARGS=$(getopt -o "hr:i:g:t:k:" --long "help,reference:,gff:,reads:,mm2:,WD:,threads:,ID:,min_pruning:,kmer_size:,
 max_assembly_region_size:,trees:,top_hits:,keep_percent:,min_length:,flye_preset:,other_flye_opts:,min_mean_quality:,
 max_length:,no_filter" -n 'MITNANEX' -- "$@")
 eval set -- "$ARGS"
@@ -91,6 +93,10 @@ do
     case "$1" in
     -r | --reference )
         ref_genome=$2
+        shift 2
+    ;;
+     -g | --gff )
+        ref_gff=$2
         shift 2
     ;;
     -i | --reads )
@@ -274,7 +280,7 @@ pipe_exec(){
             annotate_vcf
             plot_vcf
             annotate_mito
-            mitomap
+            #mitomap
 
         else
             echo "[${color_red}ERROR${no_color}] $?: Something wrong with reference genome."
