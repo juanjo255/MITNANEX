@@ -23,7 +23,7 @@ map_reads(){
     
     flye_folder="$WD/flye_for_numts"    
     samtools fastq -@ $threads $aln_file > $MT_reads
-    filtlong  --keep_percent $keep_percent $MT_reads > "$WD/$prefix.filtlong.fastq"
+    filtlong  --keep_percent $keep_percent --mean_q_weight 10 $MT_reads > "$WD/$prefix.filtlong.fastq"
     MT_reads="$WD/$prefix.filtlong.fastq"
     rm $aln_file
     flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
