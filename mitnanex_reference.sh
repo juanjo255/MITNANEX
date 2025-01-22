@@ -32,7 +32,7 @@ medaka_model="r1041_e82_400bps_sup_variant_v5.0.0"
 #haplogrep_trees="phylotree-rcrs@17.2"
 #haplogrep_posible_trees=$("$exec_path/haplogrep3" trees)
 top_hits="3"
-keep_percent=50
+keep_percent=80
 min_length=500
 max_length=2147483647
 flye_preset="--nano-hq"
@@ -62,6 +62,7 @@ help() {
         --min_length       Min read length. [$min_length].
         --max_length       Max read length. [reference length].
         --min_mean_quality Min average read quality. [$min_mean_quality].
+        --keep_percent     For Filtlong. Throws out the worst 10% of read bases. [$keep_percent].
         --no_filter        Do not filter reads by quality and length. [False].
         *                  Help.
     
@@ -162,6 +163,10 @@ do
     ;;
     --min_mean_quality )
         min_mean_quality=$2
+        shift 2
+    ;;
+    --keep_percent )
+        keep_percent=$2
         shift 2
     ;;
     --flye_preset )
