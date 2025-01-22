@@ -43,7 +43,13 @@ map_reads(){
     consensus_mitogenome="$WD/MT_genome.fasta"
     seqkit grep -p $contig_ID "$flye_folder/assembly.fasta" > $consensus_mitogenome
 
+
+    # To avoid confusion I remove reads used during assembly \
+    # as I will keep only reads remapped to consensus
+    rm $MT_reads
+    
     ## Retrieve reads which mapped to the consensus_mitogenome 
+    MT_reads="$WD/$prefix.fastq"
     samtools view  -@ $threads -b -F4 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
     samtools sort  -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.bam" > $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam"
     samtools fastq -@ $threads $flye_folder"/aln_"$prefix"_$contig_ID.sorted.bam" > $MT_reads
