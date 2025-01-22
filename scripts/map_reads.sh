@@ -10,7 +10,7 @@ map_reads(){
     
     ## Minimap2 output
     aln_file="$WD/$prefix.$ID.sorted.bam"
-    minimap2 --secondary=no $minimap2_opts -g 1k  $ref_genome $reads | \
+    minimap2 -t $threads --secondary=no $minimap2_opts -g 1k  $ref_genome $reads | \
     samtools view -@ $threads -b --min-MQ $min_mapQ -F4,2048 -T $ref_genome | \
     samtools sort -@ $threads > $aln_file
 
@@ -23,13 +23,13 @@ map_reads(){
     
     flye_folder="$WD/flye_for_numts"    
     samtools fastq -@ $threads $aln_file > $MT_reads
-    filtlong  --keep_percent $keep_percent --length_weight 10 $MT_reads > "$WD/$prefix.filtlong.fastq"
+    filtlong  --keep_percent $keep_percent $MT_reads > "$WD/$prefix.filtlong.fastq"
     MT_reads="$WD/$prefix.filtlong.fastq"
     rm $aln_file
     flye -t $threads --meta $flye_preset $MT_reads -o $flye_folder 
 
     # Map to flye assembly
-    minimap2 --secondary=no $minimap2_opts -k 25 $flye_folder"/assembly.fasta" $MT_reads | \
+    minimap2 -t $threads --secondary=no $minimap2_opts -k 25 $flye_folder"/assembly.fasta" $MT_reads | \
     samtools view --threads $threads -b --min-MQ $min_mapQ -F4,2048 | samtools sort  -@ $threads > $flye_folder"/aln_"$prefix".sorted.bam"
     samtools index -@ $threads $flye_folder"/aln_"$prefix".sorted.bam"
 
@@ -47,7 +47,7 @@ map_reads(){
     # To avoid confusion I remove reads used during assembly \
     # as I will keep only reads remapped to consensus
     rm $MT_reads
-    
+
     ## Retrieve reads which mapped to the consensus_mitogenome 
     MT_reads="$WD/$prefix.fastq"
     samtools view  -@ $threads -b -F4 $flye_folder"/aln_"$prefix".sorted.bam" $contig_ID >  $flye_folder"/aln_"$prefix"_$contig_ID.bam"
@@ -59,7 +59,7 @@ map_reads(){
     #rm $flye_folder"/aln_"$prefix".sorted.bam"
 
     ## Final align file for variant calling 
-    minimap2 --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $MT_reads | \
+    minimap2 -t $threads --secondary=no -R '@RG\tID:samplename\tSM:samplename' $minimap2_opts $ref_genome $MT_reads | \
     samtools view -@ $threads -b -F4 -T $ref_genome | samtools sort -@ $threads > $aln_file
     samtools index -@ $threads $aln_file
 
