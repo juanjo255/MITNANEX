@@ -1,7 +1,7 @@
 ## PARAMETERS FOR PLOTTING VCF
 
 # General options
-devpars = {width = 1000, height = 1000, res = 200}
+devpars = {width = 1300, height = 1000, res = 200}
 passed = true
 
 # Plots

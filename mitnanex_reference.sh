@@ -281,9 +281,9 @@ pipe_exec(){
             fi
             vars_definition
             map_reads
-            #variant_calling
+            variant_calling
             #annotate_vcf
-            #plot_vcf
+            plot_vcf
             #annotate_mito
             #mitomap
 
