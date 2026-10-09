@@ -15,3 +15,9 @@ mitnanex_rs/target/
 haplogrep*
 trees/
 refseq63m/
+mitnanex_results*/
+*.egg-info/
+.pytest_cache/
+*.bam
+*.bai
+*.gfa

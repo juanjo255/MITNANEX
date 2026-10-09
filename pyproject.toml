@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mitnanex"
+dynamic = ["version"]
+description = "MITochondrial NANopore reads EXtractor"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+  { name = "Juan Jose Picon Cossio" },
+  { name = "Javier Correa Alvarez" },
+  { name = "Gustavo Gamez de las Armas" },
+]
+# Python dependencies are installed with mamba (environment.yml); listed here for pip users.
+dependencies = ["numpy", "pandas>=2.0", "scikit-learn", "matplotlib"]
+
+[project.optional-dependencies]
+mitomap = ["requests"]
+test = ["pytest"]
+
+[project.scripts]
+mitnanex = "mitnanex.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "mitnanex.__version__" }
+
+[tool.setuptools.packages.find]
+include = ["mitnanex*"]
+
+[tool.setuptools.package-data]
+mitnanex = ["data/refseqMT/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

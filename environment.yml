@@ -1,0 +1,32 @@
+# MITNANEX environment.  Create it with:
+#   mamba env create -f environment.yml
+#   mamba activate mitnanex
+#   pip install --no-deps -e .
+# On Apple Silicon some bioconda tools are x86_64 builds and run under Rosetta 2.
+name: mitnanex
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python>=3.10
+  # Python libraries
+  - numpy
+  - pandas>=2.0
+  - scikit-learn
+  - matplotlib
+  - requests          # only for the optional MITOMAP query
+  - pytest
+  # de novo pipeline
+  - seqkit
+  - seqtk
+  - minimap2
+  - miniasm
+  - samtools
+  - filtlong
+  - flye
+  # reference pipeline
+  - chopper
+  - gatk4
+  - bcftools          # also provides bgzip/tabix via htslib
+  - htslib
+  - pip
